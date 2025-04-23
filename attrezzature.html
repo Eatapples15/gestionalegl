@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Attrezzature</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Gestione Attrezzature</h1>
+        <button>Aggiungi Nuova Attrezzatura</button>
+    </header>
+
+    <main>
+        <div class="filters">
+            <label for="tipologia">Filtra per Tipologia:</label>
+            <select id="tipologia">
+                <option value="">Tutte le Tipologie</option>
+            </select>
+
+            <label for="posizione">Filtra per Posizione:</label>
+            <select id="posizione">
+                <option value="">Tutte le Posizioni</option>
+            </select>
+
+            <input type="text" placeholder="Cerca per nome o codice">
+        </div>
+
+        <table id="lista-attrezzature">
+            <thead>
+                <tr>
+                    <th>Tipologia</th>
+                    <th>Quantità</th>
+                    <th>Posizione</th>
+                    <th>Stato</th>
+                    <th>Codice</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Associazione di Protezione Civile</p>
+    </footer>
+</body>
+</html>
