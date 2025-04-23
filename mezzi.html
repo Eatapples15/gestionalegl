@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Mezzi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Gestione Mezzi</h1>
+        <button>Aggiungi Nuovo Mezzo</button>
+    </header>
+
+    <main>
+        <div class="filters">
+            <label for="stato">Filtra per Stato:</label>
+            <select id="stato">
+                <option value="">Tutti gli Stati</option>
+                </select>
+
+            <label for="settore">Filtra per Settore:</label>
+            <select id="settore">
+                <option value="">Tutti i Settori</option>
+            </select>
+
+            <input type="text" placeholder="Cerca per targa o modello">
+        </div>
+
+        <table id="lista-mezzi">
+            <thead>
+                <tr>
+                    <th>Tipologia</th>
+                    <th>Settore</th>
+                    <th>Targa</th>
+                    <th>Scadenza Assicurazione</th>
+                    <th>Scadenza Revisione</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Associazione di Protezione Civile</p>
+    </footer>
+</body>
+</html>
