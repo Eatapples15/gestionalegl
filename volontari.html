@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Volontari</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Gestione Volontari</h1>
+        <button>Aggiungi Nuovo Volontario</button>
+    </header>
+
+    <main>
+        <div class="filters">
+            <label for="ruolo">Filtra per Ruolo:</label>
+            <select id="ruolo">
+                <option value="">Tutti i Ruoli</option>
+                </select>
+
+            <label for="competenza">Filtra per Competenza:</label>
+            <select id="competenza">
+                <option value="">Tutte le Competenze</option>
+            </select>
+
+            <input type="text" placeholder="Cerca per nome o cognome">
+        </div>
+
+        <table id="lista-volontari">
+            <thead>
+                <tr>
+                    <th>Nome e Cognome</th>
+                    <th>Ruolo</th>
+                    <th>Competenze</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Associazione di Protezione Civile</p>
+    </footer>
+</body>
+</html>
