@@ -21,8 +21,16 @@
             padding: 20px;
         }
 
-        .sidebar h2 {
+        .sidebar h1 { /* Modificato h2 in h1 per il logo */
             margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .sidebar img {
+            max-width: 100%; /* Adatta il logo alla larghezza del sidebar */
+            height: auto;
+            display: block;
+            margin-bottom: 10px;
         }
 
         .sidebar ul {
@@ -50,14 +58,18 @@
             padding: 20px;
         }
 
-        h1 {
+        h2 { /* Era h1, ora è h2 per il titolo della sezione principale */
             color: #333;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <h2>Gestionale</h2>
+        <h1>
+            <a href="home.html">
+                <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+            </a>
+        </h1>
         <ul>
             <li><a href="home.html">Home</a></li>
             <li><a href="volontario.html">Volontario</a></li>
@@ -67,7 +79,7 @@
     </div>
 
     <div class="content">
-        <h1>Benvenuto nel Gestionale Gruppo Lucano</h1>
+        <h2>Benvenuto nel Gestionale Gruppo Lucano</h2>
         <p>Questa è la pagina iniziale del gestionale. Utilizza il menu laterale per navigare tra le sezioni.</p>
     </div>
 </body>
