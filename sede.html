@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sede di Tricarico - Gestionale Gruppo Lucano</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        .dati-sede, .mezzi, .attrezzature {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .mezzi table, .attrezzature table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .mezzi th, .mezzi td, .attrezzature th, .attrezzature td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .mezzi th, .attrezzature th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sede di Tricarico</h1>
+
+    <div class="dati-sede">
+        <h2>Dati Sede</h2>
+        <p><strong>Nome:</strong> Sede di Tricarico</p>
+        <p><strong>Indirizzo:</strong> Via Roma, 123</p>
+        <p><strong>Responsabile:</strong> [Nome del Responsabile]</p>
+        <p><strong>Contatti:</strong> [Numero di Telefono], [Email]</p>
+    </div>
+
+    <div class="mezzi">
+        <h2>Mezzi in Dotazione</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Targa</th>
+                    <th>Modello</th>
+                    <th>Scadenza Revisione</th>
+                    <th>Stato</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AA123BB</td>
+                    <td>Fiat Panda</td>
+                    <td>2025-12-31</td>
+                    <td>Operativo</td>
+                </tr>
+                <tr>
+                    <td>CC456DD</td>
+                    <td>Ambulanza Tipo A</td>
+                    <td>2026-03-15</td>
+                    <td>In Manutenzione</td>
+                </tr>
+                <tr>
+                    <td>EE789FF</td>
+                    <td>Fuoristrada 4x4</td>
+                    <td>2025-11-20</td>
+                    <td>Operativo</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="attrezzature">
+        <h2>Attrezzature</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipologia</th>
+                    <th>Stato</th>
+                    <th>Ultima Manutenzione</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Defibrillatore AED</td>
+                    <td>Funzionante</td>
+                    <td>2025-01-15</td>
+                </tr>
+                <tr>
+                    <td>Kit di Primo Soccorso</td>
+                    <td>Completo</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>Radio Ricetrasmittente</td>
+                    <td>Funzionante</td>
+                    <td>2024-12-01</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
