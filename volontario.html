@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volontario - Gestionale Gruppo Lucano</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .data-volontario, .tesserino {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        .tesserino {
+            text-align: center;
+            border: 2px solid #333;
+            padding: 30px;
+        }
+
+        .tesserino h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .corsi-formazione ul {
+            list-style: disc;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Area Volontario</h1>
+
+    <div class="data-volontario">
+        <h2>I Tuoi Dati</h2>
+        <form>
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" value="Mario Rossi">
+            </div>
+            <div class="form-group">
+                <label for="cognome">Cognome:</label>
+                <input type="text" id="cognome" value="Rossi">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="mario.rossi@example.com">
+            </div>
+            <div class="form-group">
+                <label for="data_nascita">Data di Nascita:</label>
+                <input type="date" id="data_nascita" value="1985-05-10">
+            </div>
+            <div class="form-group">
+                <label for="sede">Sede di Riferimento:</label>
+                <input type="text" id="sede" value="Tricarico" readonly>
+            </div>
+            <button type="submit">Salva Modifiche</button>
+        </form>
+    </div>
+
+    <div class="tesserino">
+        <h2>Tesserino Personale</h2>
+        <h3>Gruppo Lucano</h3>
+        <p><strong>Nome:</strong> Mario Rossi</p>
+        <p><strong>Qualifica:</strong> Volontario Attivo</p>
+        <p><strong>Sede:</strong> Tricarico</p>
+        <img src="immagine_tesserino_placeholder.png" alt="Tesserino" style="max-width: 150px;">
+        <p><em>[Codice Identificativo]</em></p>
+    </div>
+
+    <div class="corsi-formazione">
+        <h2>Corsi di Formazione</h2>
+        <ul>
+            <li>Corso Base di Primo Soccorso - Completato il 15/03/2025</li>
+            <li>Formazione Specifica Rischio Alto - In corso (Prossima sessione: 28/04/2025)</li>
+            <li>Aggiornamento BLS - Da frequentare</li>
+        </ul>
+    </div>
+</body>
+</html>
