@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLGestionale - Dashboard Coordinamento</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 15px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background-color: #28a745; /* Verde coordinamento */
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 95%;
+            border-radius: 5px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        .header a:first-child {
+            margin-left: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .header img {
+            max-height: 40px;
+            margin-right: 10px;
+        }
+
+        h1 {
+            color: #28a745;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .overview-container {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .overview-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+
+        .overview-item h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .overview-item p {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 0;
+        }
+
+        .menu-container {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 800px;
+        }
+
+        .menu-container h2 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .menu-container ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .menu-container ul li {
+            margin-bottom: 10px;
+        }
+
+        .menu-container ul li a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-container ul li a:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const sediCollection = collection(db, 'sedi');
+        const volontariCollection = collection(db, 'volontari');
+        const mezziCollection = collection(db, 'mezzi');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            onAuthStateChanged(auth, async user => {
+                if (user && user.email === 'coordinamento@pcgl.it') {
+                    console.log("Coordinatore loggato.");
+                    await loadOverviewData();
+                } else {
+                    console.log("Utente non autorizzato o non loggato, reindirizzo.");
+                    window.location.href = '/gestionalegl/index.html'; // Reindirizza alla homepage o login
+                }
+            });
+        });
+
+        async function loadOverviewData() {
+            const sediSnapshot = await getDocs(sediCollection);
+            const volontariSnapshot = await getDocs(volontariCollection);
+            const mezziSnapshot = await getDocs(mezziCollection);
+
+            document.getElementById('num-sedi').textContent = sediSnapshot.size;
+            document.getElementById('num-volontari').textContent = volontariSnapshot.size;
+            document.getElementById('num-mezzi').textContent = mezziSnapshot.size;
+        }
+
+        function logout() {
+            signOut(auth).then(() => {
+                window.location.href = '/gestionalegl/index.html';
+            }).catch((error) => {
+                console.error("Errore durante il logout:", error);
+                alert("Errore durante il logout.");
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <a href="https://eatapples15.github.io/gestionalegl/index.html" style="display: flex; align-items: center;">
+            <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+            <span>Gestionale Gruppo Lucano - Coordinamento</span>
+        </a>
+        <a href="https://eatapples15.github.io/gestionalegl/index.html">Home</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <div class="container">
+        <h1>Dashboard Coordinamento</h1>
+
+        <div class="overview-container">
+            <div class="overview-item">
+                <h3>Numero Sedi</h3>
+                <p id="num-sedi">0</p>
+            </div>
+            <div class="overview-item">
+                <h3>Numero Volontari</h3>
+                <p id="num-volontari">0</p>
+            </div>
+            <div class="overview-item">
+                <h3>Numero Mezzi</h3>
+                <p id="num-mezzi">0</p>
+            </div>
+        </div>
+
+        <div class="menu-container">
+            <h2>Gestione Risorse</h2>
+            <ul>
+                <li><a href="#">Visualizza Sedi</a></li>
+                <li><a href="#">Visualizza Volontari</a></li>
+                <li><a href="#">Visualizza Mezzi</a></li>
+                <li><a href="#">Gestione Tesserini</a></li>
+            </ul>
+        </div>
+
+        <div class="menu-container">
+            <h2>Gestione Corsi e Attestati</h2>
+            <ul>
+                <li><a href="#">Crea Nuovo Corso</a></li>
+                <li><a href="#">Assegna Attestati</a></li>
+                <li><a href="#">Visualizza Tutti i Corsi</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
