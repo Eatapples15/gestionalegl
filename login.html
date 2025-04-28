@@ -59,12 +59,10 @@
         }
     </style>
     <script type="module">
-        // Importa le funzioni necessarie dal Firebase JS SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js"; // Import aggiunte
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-        // Le tue credenziali Firebase (CONFIGURAZIONE WEB)
         const firebaseConfig = {
             apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
             authDomain: "glgest.firebaseapp.com",
@@ -74,10 +72,9 @@
             appId: "1:423155306554:web:c598640f199e296d276503"
         };
 
-        // Inizializza Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app); // Inizializzazione di Firestore
+        const db = getFirestore(app);
 
         document.addEventListener('DOMContentLoaded', () => {
             const loginForm = document.getElementById('loginForm');
@@ -94,133 +91,38 @@
                 try {
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
-                    console.log('Utente loggato:', user);
-                     if (email === 'coordinamento@pcgl.it') {
-                        // Reindirizza alla dashboard del coordinamento
-                        window.location.href = '/gestionalegl/coordinamento/dashboard_coordinamento.html';
-                    } else {
+                    console.log('Utente loggato con UID:', user.uid, 'Email:', user.email);
 
-                    // Array degli indirizzi email degli amministratori di sede
+                    if (email === 'coordinamento@pcgl.it') {
+                        console.log('Reindirizzo coordinamento a /gestionalegl/coordinamento/dashboard_coordinamento.html');
+                        window.location.href = '/gestionalegl/coordinamento/dashboard_coordinamento.html';
+                        return;
+                    }
+
                     const adminEmails = [
-                        'accettura@pcgl.it',
-                        'acerenza@pcgl.it',
-                        'aliano@pcgl.it',
-                        'armento@pcgl.it',
-                        'atriano@pcgl.it',
-                        'balvano@pcgl.it',
-                        'banzi@pcgl.it',
-                        'baragiano@pcgl.it',
-                        'barile@pcgl.it',
-                        'bella@pcgl.it',
-                        'brienza@pcgl.it',
-                        'brindisi_montagna@pcgl.it',
-                        'calciano@pcgl.it',
-                        'camarda@pcgl.it',
-                        'campomaggiore@pcgl.it',
-                        'cancellara@pcgl.it',
-                        'carbone@pcgl.it',
-                        'castelgrande@pcgl.it',
-                        'castelluccio_inferiore@pcgl.it',
-                        'castelluccio_superiore@pcgl.it',
-                        'castelmezzano@pcgl.it',
-                        'castelsaraceno@pcgl.it',
-                        'cella@pcgl.it',
-                        'cerchiara@pcgl.it',
-                        'chiaromonte@pcgl.it',
-                        'corleto_perticara@pcgl.it',
-                        'episcopia@pcgl.it',
-                        'fardella@pcgl.it',
-                        'forenza@pcgl.it',
-                        'francavilla@pcgl.it',
-                        'gallicchio@pcgl.it',
-                        'genzano@pcgl.it',
-                        'ginestra@pcgl.it',
-                        'grassano@pcgl.it',
-                        'grottole@pcgl.it',
-                        'guardia_perticara@pcgl.it',
-                        'lagonegro@pcgl.it',
-                        'latronico@pcgl.it',
-                        'lauria@pcgl.it',
-                        'lavello@pcgl.it',
-                        'maratea@pcgl.it',
-                        'marsico_nuovo@pcgl.it',
-                        'marsicovetere@pcgl.it',
-                        'maschito@pcgl.it',
-                        'matera@pcgl.it',
-                        'melito@pcgl.it',
-                        'miglionico@pcgl.it',
-                        'missanello@pcgl.it',
-                        'moliterno@pcgl.it',
-                        'montalbano@pcgl.it',
-                        'montemilone@pcgl.it',
-                        'montemurro@pcgl.it',
-                        'muro_lucano@pcgl.it',
-                        'nemoli@pcgl.it',
-                        'noepoli@pcgl.it',
-                        'oppido_lucano@pcgl.it',
-                        'palazzo@pcgl.it',
-                        'paterno@pcgl.it',
-                        'pescopagano@pcgl.it',
-                        'picerno@pcgl.it',
-                        'pietragalla@pcgl.it',
-                        'pietrapertosa@pcgl.it',
-                        'pignola@pcgl.it',
-                        'potenza@pcgl.it',
-                        'rapolla@pcgl.it',
-                        'rapone@pcgl.it',
-                        'rionero@pcgl.it',
-                        'ripacandida@pcgl.it',
-                        'rivello@pcgl.it',
-                        'roccanova@pcgl.it',
-                        'rotonda@pcgl.it',
-                        'rustico@pcgl.it',
-                        'san_chirico_nuovo@pcgl.it',
-                        'san_chirico_rapano@pcgl.it',
-                        'san_costantino_albanese@pcgl.it',
-                        'san_felice@pcgl.it',
-                        'san_martino_d_agri@pcgl.it',
-                        'san_paolo_albanese@pcgl.it',
-                        'san_severino@pcgl.it',
-                        'sant_angelo_le_fratte@pcgl.it',
-                        'satriano@pcgl.it',
-                        'saviano@pcgl.it',
-                        'scanzano@pcgl.it',
-                        'senise@pcgl.it',
-                        'spinoso@pcgl.it',
-                        'stigliano@pcgl.it',
-                        'tolve@pcgl.it',
-                        'tramutola@pcgl.it',
-                        'trecchina@pcgl.it',
-                        'tricarico@pcgl.it',
-                        'varano@pcgl.it',
-                        'venosa@pcgl.it',
-                        'vietri@pcgl.it',
-                        'viggianello@pcgl.it',
-                        'viggiano@pcgl.it',
-                        'villapiana@pcgl.it'
+                        'accettura@pcgl.it', 'acerenza@pcgl.it', 'aliano@pcgl.it', 'armento@pcgl.it', 'atriano@pcgl.it', 'balvano@pcgl.it', 'banzi@pcgl.it', 'baragiano@pcgl.it', 'barile@pcgl.it', 'bella@pcgl.it', 'brienza@pcgl.it', 'brindisi_montagna@pcgl.it', 'calciano@pcgl.it', 'camarda@pcgl.it', 'campomaggiore@pcgl.it', 'cancellara@pcgl.it', 'carbone@pcgl.it', 'castelgrande@pcgl.it', 'castelluccio_inferiore@pcgl.it', 'castelluccio_superiore@pcgl.it', 'castelmezzano@pcgl.it', 'castelsaraceno@pcgl.it', 'cella@pcgl.it', 'cerchiara@pcgl.it', 'chiaromonte@pcgl.it', 'corleto_perticara@pcgl.it', 'episcopia@pcgl.it', 'fardella@pcgl.it', 'forenza@pcgl.it', 'francavilla@pcgl.it', 'gallicchio@pcgl.it', 'genzano@pcgl.it', 'ginestra@pcgl.it', 'grassano@pcgl.it', 'grottole@pcgl.it', 'guardia_perticara@pcgl.it', 'lagonegro@pcgl.it', 'latronico@pcgl.it', 'lauria@pcgl.it', 'lavello@pcgl.it', 'maratea@pcgl.it', 'marsico_nuovo@pcgl.it', 'marsicovetere@pcgl.it', 'maschito@pcgl.it', 'matera@pcgl.it', 'melito@pcgl.it', 'miglionico@pcgl.it', 'missanello@pcgl.it', 'moliterno@pcgl.it', 'montalbano@pcgl.it', 'montemilone@pcgl.it', 'montemurro@pcgl.it', 'muro_lucano@pcgl.it', 'nemoli@pcgl.it', 'noepoli@pcgl.it', 'oppido_lucano@pcgl.it', 'palazzo@pcgl.it', 'paterno@pcgl.it', 'pescopagano@pcgl.it', 'picerno@pcgl.it', 'pietragalla@pcgl.it', 'pietrapertosa@pcgl.it', 'pignola@pcgl.it', 'potenza@pcgl.it', 'rapolla@pcgl.it', 'rapone@pcgl.it', 'rionero@pcgl.it', 'ripacandida@pcgl.it', 'rivello@pcgl.it', 'roccanova@pcgl.it', 'rotonda@pcgl.it', 'rustico@pcgl.it', 'san_chirico_nuovo@pcgl.it', 'san_chirico_rapano@pcgl.it', 'san_costantino_albanese@pcgl.it', 'san_felice@pcgl.it', 'san_martino_d_agri@pcgl.it', 'san_paolo_albanese@pcgl.it', 'san_severino@pcgl.it', 'sant_angelo_le_fratte@pcgl.it', 'satriano@pcgl.it', 'saviano@pcgl.it', 'scanzano@pcgl.it', 'senise@pcgl.it', 'spinoso@pcgl.it', 'stigliano@pcgl.it', 'tolve@pcgl.it', 'tramutola@pcgl.it', 'trecchina@pcgl.it', 'tricarico@pcgl.it', 'varano@pcgl.it', 'venosa@pcgl.it', 'vietri@pcgl.it', 'viggianello@pcgl.it', 'viggiano@pcgl.it', 'villapiana@pcgl.it'
                     ];
 
                     if (adminEmails.includes(user.email)) {
-                        // Reindirizza gli amministratori di sede alla pagina admin
+                        console.log('Reindirizzo admin sede a /gestionalegl/sede/admin_sede.html');
                         window.location.href = '/gestionalegl/sede/admin_sede.html';
+                        return;
+                    }
+
+                    const volontariCollection = collection(db, 'volontari');
+                    const q = query(volontariCollection, where("uid", "==", user.uid));
+                    const querySnapshot = await getDocs(q);
+
+                    if (!querySnapshot.empty) {
+                        const userData = querySnapshot.docs[0].data();
+                        const sedeIscrizione = userData.sede_iscrizione;
+                        console.log('Sede iscrizione volontario:', sedeIscrizione);
+                        console.log('Reindirizzo volontario a /gestionalegl/sede/sede_template.html?sede=' + encodeURIComponent(sedeIscrizione));
+                        window.location.href = `/gestionalegl/sede/sede_template.html?sede=${encodeURIComponent(sedeIscrizione)}`;
                     } else {
-                        // Recupera i dati dell'utente dal database (collezione 'volontari')
-                        const volontariCollection = collection(db, 'volontari');
-                        const q = query(volontariCollection, where("uid", "==", user.uid));
-                        const querySnapshot = await getDocs(q);
-
-                        if (!querySnapshot.empty) {
-                            const userData = querySnapshot.docs[0].data();
-                            const sedeIscrizione = userData.sede_iscrizione;
-
-                            // Reindirizza i volontari alla pagina della loro sede
-                            window.location.href = `/gestionalegl/sede/sede_template.html?sede=${encodeURIComponent(sedeIscrizione)}`;
-                            // Assicurati di avere una pagina HTML per ogni sede (es: tricarico.html)
-                        } else {
-                            console.error("Dati utente non trovati nel database.");
-                            // Potresti reindirizzare a una pagina di profilo generica o mostrare un errore
-                            window.location.href = '/gestionalegl/profilo.html';
-                        }
+                        console.error("Dati utente non trovati nel database.");
+                        console.log('Reindirizzo a /gestionalegl/profilo.html');
+                        window.location.href = '/gestionalegl/profilo.html';
                     }
 
                 } catch (error) {
