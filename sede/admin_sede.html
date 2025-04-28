@@ -40,7 +40,30 @@
             <label for="codice-fiscale">Codice Fiscale:</label>
             <input type="text" id="codice-fiscale" name="codice-fiscale">
 
-            </form>
+            <label for="nome-responsabile">Nome Responsabile:</label>
+            <input type="text" id="nome-responsabile" name="nome-responsabile">
+
+            <label for="email-sede">Email:</label>
+            <input type="email" id="email-sede" name="email-sede">
+
+            <label for="pec-sede">PEC:</label>
+            <input type="email" id="pec-sede" name="pec-sede">
+
+            <label for="indirizzo-sede">Indirizzo:</label>
+            <input type="text" id="indirizzo-sede" name="indirizzo-sede">
+
+            <label for="citta-sede">Città:</label>
+            <input type="text" id="citta-sede" name="citta-sede">
+
+            <label for="provincia-sede">Provincia:</label>
+            <input type="text" id="provincia-sede" name="provincia-sede">
+
+            <label for="nome-sede-input">Nome Sede:</label>
+            <input type="text" id="nome-sede-input" name="nome-sede-input">
+
+            <label for="posizione-sede">Posizione (Indirizzo):</label>
+            <input type="text" id="posizione-sede" name="posizione-sede">
+
             <button type="submit">Salva Dati Sede</button>
         </form>
     </div>
@@ -53,9 +76,32 @@
             <form id="form-aggiungi-mezzo">
                 <label for="tipologia-mezzo">Tipologia:</label>
                 <input type="text" id="tipologia-mezzo" name="tipologia-mezzo">
-                </form>
+                <label for="modello-mezzo">Modello:</label>
+                <input type="text" id="modello-mezzo" name="modello-mezzo">
+                <label for="id-mezzo">ID:</label>
+                <input type="text" id="id-mezzo" name="id-mezzo">
+                <label for="note-mezzo">Note:</label>
+                <textarea id="note-mezzo" name="note-mezzo"></textarea>
+                <label for="scadenza-revisione-mezzo">Scadenza Revisione:</label>
+                <input type="date" id="scadenza-revisione-mezzo" name="scadenza-revisione-mezzo">
+                <label for="scadenza-assicurazione-mezzo">Scadenza Assicurazione:</label>
+                <input type="date" id="scadenza-assicurazione-mezzo" name="scadenza-assicurazione-mezzo">
+                <label for="stato-mezzo">Stato:</label>
+                <select id="stato-mezzo" name="stato-mezzo">
+                    <option value="Attivo">Attivo</option>
+                    <option value="Fuori Uso">Fuori Uso</option>
+                    <option value="In Manutenzione">In Manutenzione</option>
+                </select>
+                <label for="targa-mezzo">Targa:</label>
+                <input type="text" id="targa-mezzo" name="targa-mezzo">
+                <label for="aib-mezzo">AIB:</label>
+                <select id="aib-mezzo" name="aib-mezzo">
+                    <option value="Si">Sì</option>
+                    <option value="No">No</option>
+                </select>
                 <button type="submit">Aggiungi</button>
                 <button type="button" onclick="nascondiFormNuovoMezzo()">Annulla</button>
+            </form>
         </div>
         <table id="tabella-mezzi">
             <thead>
@@ -83,9 +129,17 @@
             <form id="form-aggiungi-attrezzatura">
                 <label for="tipologia-attrezzatura">Tipologia:</label>
                 <input type="text" id="tipologia-attrezzatura" name="tipologia-attrezzatura">
-                </form>
+                <label for="stato-attrezzatura">Stato:</label>
+                <select id="stato-attrezzatura" name="stato-attrezzatura">
+                    <option value="Attivo">Attivo</option>
+                    <option value="Fuori Uso">Fuori Uso</option>
+                    <option value="In Manutenzione">In Manutenzione</option>
+                </select>
+                <label for="note-attrezzatura">Note:</label>
+                <textarea id="note-attrezzatura" name="note-attrezzatura"></textarea>
                 <button type="submit">Aggiungi</button>
                 <button type="button" onclick="nascondiFormNuovaAttrezzatura()">Annulla</button>
+            </form>
         </div>
         <table id="tabella-attrezzature">
             <thead>
@@ -103,4 +157,105 @@
 
     <div class="sezione" id="elenco-volontari">
         <h2>Elenco Volontari</h2>
-        <table id="tabella-vol
+        <table id="tabella-volontari">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cognome</th>
+                    <th>Email</th>
+                    <th>Codice Fiscale</th>
+                    <th>Contatto</th>
+                    <th>Specializzazioni</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Funzioni JavaScript per mostrare/nascondere i form di aggiunta
+        function mostraFormNuovoMezzo() {
+            document.getElementById('form-nuovo-mezzo').style.display = 'block';
+        }
+
+        function nascondiFormNuovoMezzo() {
+            document.getElementById('form-nuovo-mezzo').style.display = 'none';
+        }
+
+        function mostraFormNuovaAttrezzatura() {
+            document.getElementById('form-nuova-attrezzatura').style.display = 'block';
+        }
+
+        function nascondiFormNuovaAttrezzatura() {
+            document.getElementById('form-nuova-attrezzatura').style.display = 'none';
+        }
+
+        function caricaDatiExcel() {
+            const fileInput = document.getElementById('file-upload');
+            const feedbackDiv = document.getElementById('upload-feedback');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                feedbackDiv.textContent = 'Seleziona un file Excel.';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Ottieni i dati dal foglio "Sede"
+                const sedeSheetName = workbook.SheetNames.find(name => name.toLowerCase() === 'sede');
+                if (!sedeSheetName) {
+                    feedbackDiv.textContent = 'Il foglio "Sede" non è stato trovato nel file.';
+                    return;
+                }
+                const sedeData = XLSX.utils.sheet_to_json(workbook.Sheets[sedeSheetName]);
+                if (sedeData.length > 0) {
+                    // Supponiamo che ci sia solo una riga di dati per la sede
+                    const sedeInfo = sedeData[0];
+                    console.log('Dati Sede da Excel:', sedeInfo);
+                    // QUI: Inserisci la logica per salvare i dati della sede in Firestore
+                    // associandoli all'utente admin loggato.
+                    feedbackDiv.textContent = 'Dati Sede caricati con successo (manca l\'integrazione con Firestore).';
+                } else {
+                    feedbackDiv.textContent = 'Nessun dato trovato nel foglio "Sede".';
+                }
+
+                // Ottieni i dati dal foglio "Mezzi"
+                const mezziSheetName = workbook.SheetNames.find(name => name.toLowerCase() === 'mezzi');
+                if (mezziSheetName) {
+                    const mezziData = XLSX.utils.sheet_to_json(workbook.Sheets[mezziSheetName]);
+                    console.log('Dati Mezzi da Excel:', mezziData);
+                    // QUI: Inserisci la logica per salvare i dati dei mezzi in Firestore
+                    // associandoli all'utente admin loggato.
+                }
+
+                // Ottieni i dati dal foglio "Attrezzature"
+                const attrezzatureSheetName = workbook.SheetNames.find(name => name.toLowerCase() === 'attrezzature');
+                if (attrezzatureSheetName) {
+                    const attrezzatureData = XLSX.utils.sheet_to_json(workbook.Sheets[attrezzatureSheetName]);
+                    console.log('Dati Attrezzature da Excel:', attrezzatureData);
+                    // QUI: Inserisci la logica per salvare i dati delle attrezzature in Firestore
+                    // associandoli all'utente admin loggato.
+                }
+            };
+
+            reader.onerror = function(error) {
+                feedbackDiv.textContent = 'Errore durante la lettura del file.';
+                console.error('Errore FileReader:', error);
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Qui aggiungeremo il codice JavaScript per interagire con Firestore,
+        // caricare i dati e gestire le modifiche (per i form individuali).
+    </script>
+</body>
+</html>
