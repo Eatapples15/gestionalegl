@@ -3,24 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifica Dati Sede</title>
+    <title>GLGestionale - Sede di <span id="sede-nome-title"></span></title>
     <style>
-        body { font-family: sans-serif; margin: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        h2 { margin-bottom: 20px; }
-        input[type="file"] { margin-bottom: 20px; }
-        button { padding: 10px 15px; cursor: pointer; }
-        .success-message { color: green; margin-top: 10px; }
-        .error-message { color: red; margin-top: 10px; }
-        .back-button { margin-top: 20px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc; border-radius: 4px; }
-        .back-button:hover { background-color: #e0e0e0; }
+        body {
+            font-family: sans-serif;
+            margin: 15px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 95%;
+            border-radius: 5px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .header img {
+            max-height: 40px;
+            margin-right: 10px;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .dati-sede, .mezzi, .attrezzature {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 95%;
+        }
+
+        .mezzi table, .attrezzature table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .mezzi th, .mezzi td, .attrezzature th, .attrezzature td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .mezzi th, .attrezzature th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+
+        .dati-sede p strong {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .dati-sede p span {
+            color: #555;
+        }
+
+        .mezzi tbody tr:nth-child(even), .attrezzature tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .mezzi td, .attrezzature td {
+            text-align: center;
+        }
+
+        .dati-sede p span.missing-data {
+            color: #999;
+            font-style: italic;
+            font-size: 0.9em;
+        }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script>
-        // Inserisci qui la tua configurazione Firebase
+</head>
+<body>
+    <div class="header">
+        <a href="/gestionalegl/index.html" style="display: flex; align-items: center;">
+            <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+            <span>Gestionale Gruppo Lucano</span>
+        </a>
+        <a href="/gestionalegl/index.html">Home</a>
+    </div>
+
+    <h1>Sede di <span id="sede-nome-h1"></span></h1>
+
+    <div class="dati-sede">
+        <h2>Dati Sede</h2>
+        <p><strong>Nome:</strong> <span id="sede-nome"></span></p>
+        <p><strong>Indirizzo:</strong> <span id="sede-indirizzo"></span></p>
+        <p><strong>Responsabile:</strong> <span id="sede-responsabile"></span></p>
+        <p><strong>Contatti:</strong> <span id="sede-contatti"></span></p>
+    </div>
+
+    <div class="mezzi">
+        <h2>Mezzi in Dotazione</h2>
+        <table id="mezzi-table">
+            <thead>
+                <tr>
+                    <th>Targa</th>
+                    <th>Modello</th>
+                    <th>Scadenza Revisione</th>
+                    <th>Stato</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="attrezzature">
+        <h2>Attrezzature</h2>
+        <table id="attrezzature-table">
+            <thead>
+                <tr>
+                    <th>Tipologia</th>
+                    <th>Stato</th>
+                    <th>Ultima Manutenzione</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <p><a href="https://docs.google.com/spreadsheets/d/1I904lKDWZ2IQ77RepJQE5o0ouZwT19Lgb3KTUmvmmqc/export?format=xlsx">Scarica Template Excel</a></p>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
             authDomain: "glgest.firebaseapp.com",
@@ -29,186 +156,75 @@
             messagingSenderId: "423155306554",
             appId: "1:423155306554:web:c598640f199e296d276503"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const uploadForm = document.getElementById('uploadForm');
-            const fileInput = document.getElementById('fileInput');
-            const successMessage = document.getElementById('successMessage');
-            const errorMessage = document.getElementById('errorMessage');
-            const backToDashboardButton = document.getElementById('backToDashboard');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const sediCollection = collection(db, 'sedi');
 
-            uploadForm.addEventListener('submit', async (event) => {
-                event.preventDefault();
-                const file = fileInput.files[0];
-                if (file) {
-                    await caricaDatiExcel(file);
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sedeNomeEncoded = urlParams.get('sede');
+            const sedeNome = decodeURIComponent(sedeNomeEncoded);
+
+            console.log("Nome della sede dall'URL (decodificato):", sedeNome);
+
+            if (sedeNome) {
+                const q = query(sediCollection, where("SEDE", "==", sedeNome));
+                const querySnapshot = await getDocs(q);
+
+                console.log("querySnapshot è vuoto:", querySnapshot.empty);
+
+                if (!querySnapshot.empty) {
+                    const sedeData = querySnapshot.docs[0].data();
+                    console.log("Dati della sede trovati:", sedeData);
+
+                    setTimeout(() => {
+                        document.getElementById('sede-nome-title').textContent = sedeData.SEDE;
+                    }, 0);
+                    document.getElementById('sede-nome-h1').textContent = sedeData.SEDE;
+                    document.getElementById('sede-nome').textContent = sedeData.SEDE;
+                    document.getElementById('sede-indirizzo').textContent = sedeData.INDIRIZZO || 'N/A';
+                    document.getElementById('sede-responsabile').textContent = sedeData['NOMINATIVO PRESIDENTE'] || 'N/A';
+                    document.getElementById('sede-contatti').textContent = `${sedeData.EMAIL || 'N/A'}, ${sedeData.PEC || 'N/A'}`;
+
+                    if (sedeData.mezzi && Array.isArray(sedeData.mezzi)) {
+                        const mezziTableBody = document.getElementById('mezzi-table').querySelector('tbody');
+                        sedeData.mezzi.forEach(mezzo => {
+                            const row = mezziTableBody.insertRow();
+                            row.insertCell().textContent = mezzo.targa || 'N/A';
+                            row.insertCell().textContent = mezzo.modello || 'N/A';
+                            row.insertCell().textContent = mezzo.scadenza_revisione || 'N/A';
+                            row.insertCell().textContent = mezzo.stato || 'N/A';
+                        });
+                    } else {
+                        document.getElementById('mezzi-table').style.display = 'none';
+                    }
+
+                    if (sedeData.attrezzature && Array.isArray(sedeData.attrezzature)) {
+                        const attrezzatureTableBody = document.getElementById('attrezzature-table').querySelector('tbody');
+                        sedeData.attrezzature.forEach(attrezzatura => {
+                            const row = attrezzatureTableBody.insertRow();
+                            row.insertCell().textContent = attrezzatura.tipologia || 'N/A';
+                            row.insertCell().textContent = attrezzatura.stato || 'N/A';
+                            row.insertCell().textContent = attrezzatura.ultima_manutenzione || 'N/A';
+                        });
+                    } else {
+                        document.getElementById('attrezzature-table').style.display = 'none';
+                    }
+
                 } else {
-                    errorMessage.textContent = 'Seleziona un file Excel.';
+                    document.querySelector('h1').textContent = 'Sede non trovata';
+                    document.querySelector('.dati-sede').innerHTML = '<p>La sede richiesta non è stata trovata nel database.</p>';
+                    document.querySelector('.mezzi').style.display = 'none';
+                    document.querySelector('.attrezzature').style.display = 'none';
                 }
-            });
-async function caricaDatiExcel(file) {
-            try {
-                const reader = new FileReader();
-
-                reader.onload = async (e) => {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-
-                    // **GESTIONE FOGLIO SEDE**
-                    const sedeSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('sede'));
-                    if (sedeSheetName) {
-                        const sedeSheet = workbook.Sheets[sedeSheetName];
-                        const sedeData = XLSX.utils.sheet_to_json(sedeSheet, { header: 1 });
-                        const headersSede = sedeData[0].map(h => String(h).trim());
-                        const rowsSede = sedeData.slice(1);
-
-                        if (rowsSede.length > 0) {
-                            const sedeDoc = {};
-                            headersSede.forEach((header, index) => {
-                                sedeDoc[header] = rowsSede[0][index];
-                            });
-                            const sedeId = auth.currentUser.uid;
-                            await db.collection('sedi').doc(sedeId).set(sedeDoc, { merge: true });
-                            console.log('Dati sede caricati/aggiornati per UID:', sedeId);
-                        }
-                    }
-
-                    // **GESTIONE FOGLIO MEZZI**
-                    const mezziSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('mezzi'));
-                    if (mezziSheetName) {
-                        const mezziSheet = workbook.Sheets[mezziSheetName];
-                        const mezziData = XLSX.utils.sheet_to_json(mezziSheet); // Ottieni array di oggetti
-
-                        for (const mezzoExcel of mezziData) {
-                            const sedeId = auth.currentUser.uid;
-                            const targa = mezzoExcel['Targa']; // Assumendo che 'Targa' sia univoca
-
-                            if (targa) {
-                                const mezziRef = db.collection('mezzi');
-                                const query = mezziRef.where('sedeId', '==', sedeId).where('Targa', '==', targa);
-                                const snapshot = await query.get();
-
-                                if (snapshot.empty) {
-                                    // Se non esiste un mezzo con questa targa per questa sede, aggiungilo
-                                    mezzoExcel.sedeId = sedeId;
-                                    await db.collection('mezzi').add(mezzoExcel);
-                                    console.log('Mezzo aggiunto:', targa, sedeId);
-                                } else {
-                                    // Se esiste già un mezzo con questa targa per questa sede, aggiornalo
-                                    snapshot.forEach(async doc => {
-                                        await db.collection('mezzi').doc(doc.id).update(mezzoExcel);
-                                        console.log('Mezzo aggiornato:', targa, sedeId);
-                                    });
-                                }
-                            } else {
-                                console.warn('Targa non trovata per un mezzo nel file Excel. Impossibile identificare univocamente.');
-                            }
-                        }
-                        console.log('Dati mezzi caricati/aggiornati per UID:', auth.currentUser.uid);
-                    }
-
-                    // **GESTIONE FOGLIO ATTREZZATURE**
-                    const attrezzatureSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('attrezzature'));
-                    if (attrezzatureSheetName) {
-                        const attrezzatureSheet = workbook.Sheets[attrezzatureSheetName];
-                        const attrezzatureData = XLSX.utils.sheet_to_json(attrezzatureSheet); // Ottieni array di oggetti
-
-                        for (const attrezzaturaExcel of attrezzatureData) {
-                            const sedeId = auth.currentUser.uid;
-                            const tipologia = attrezzaturaExcel['Tipologia'];
-                            const stato = attrezzaturaExcel['Stato'];
-                            const note = attrezzaturaExcel['Note']; // Includi anche Note per l'identificazione
-
-                            if (tipologia && stato && note) {
-                                const attrezzatureRef = db.collection('attrezzature');
-                                const query = attrezzatureRef.where('sedeId', '==', sedeId)
-                                    .where('Tipologia', '==', tipologia)
-                                    .where('Stato', '==', stato)
-                                    .where('Note', '==', note); // Usa una combinazione di campi come identificativo
-
-                                const snapshot = await query.get();
-
-                                if (snapshot.empty) {
-                                    attrezzaturaExcel.sedeId = sedeId;
-                                    await db.collection('attrezzature').add(attrezzaturaExcel);
-                                    console.log('Attrezzatura aggiunta:', tipologia, stato, note, sedeId);
-                                } else {
-                                    snapshot.forEach(async doc => {
-                                        await db.collection('attrezzature').doc(doc.id).update(attrezzaturaExcel);
-                                        console.log('Attrezzatura aggiornata:', tipologia, stato, note, sedeId);
-                                    });
-                                }
-                            } else if (tipologia && stato) {
-                                console.warn('Note non trovate per un\'attrezzatura nel file Excel. Potrebbe non essere identificata univocamente.');
-                                // Potresti decidere di usare solo Tipologia e Stato come fallback, ma attenzione a potenziali duplicati
-                                const attrezzatureRef = db.collection('attrezzature');
-                                const query = attrezzatureRef.where('sedeId', '==', sedeId)
-                                    .where('Tipologia', '==', tipologia)
-                                    .where('Stato', '==', stato);
-                                const snapshot = await query.get();
-
-                                if (snapshot.empty) {
-                                    attrezzaturaExcel.sedeId = sedeId;
-                                    await db.collection('attrezzature').add(attrezzaturaExcel);
-                                    console.log('Attrezzatura aggiunta (senza Note):', tipologia, stato, sedeId);
-                                } else {
-                                    snapshot.forEach(async doc => {
-                                        await db.collection('attrezzature').doc(doc.id).update(attrezzaturaExcel);
-                                        console.log('Attrezzatura aggiornata (senza Note):', tipologia, stato, sedeId);
-                                    });
-                                }
-                            } else {
-                                console.warn('Tipologia o Stato non trovati per un\'attrezzatura nel file Excel. Impossibile identificare univocamente.');
-                            }
-                        }
-                        console.log('Dati attrezzature caricati/aggiornati per UID:', auth.currentUser.uid);
-                    }
-
-                    successMessage.textContent = 'Dati caricati con successo!';
-                    errorMessage.textContent = '';
-
-                };
-
-                reader.onerror = (error) => {
-                    console.error('Errore durante la lettura del file:', error);
-                    errorMessage.textContent = 'Errore durante la lettura del file.';
-                    successMessage.textContent = '';
-                };
-
-                reader.readAsArrayBuffer(file); // Leggi il file come ArrayBuffer
-            } catch (error) {
-                console.error('Errore generale durante il caricamento:', error);
-                errorMessage.textContent = 'Errore generale durante il caricamento dei dati.';
-                successMessage.textContent = '';
+            } else {
+                document.querySelector('h1').textContent = 'Errore: Sede non specificata';
+                document.querySelector('.dati-sede').innerHTML = '<p>Nessuna sede specificata nell\'URL.</p>';
+                document.querySelector('.mezzi').style.display = 'none';
+                document.querySelector('.attrezzature').style.display = 'none';
             }
-    
-
-            backToDashboardButton.addEventListener('click', () => {
-                window.location.href = 'admin_sede.html';
-            });
-
-            auth.onAuthStateChanged(user => {
-                if (!user) {
-                    console.log("Utente non autenticato, reindirizzo al login.");
-                    window.location.href = 'login.html';
-                }
-            });
         });
     </script>
-</head>
-<body>
-    <div class="container">
-        <h2>Modifica Dati Sede</h2>
-        <form id="uploadForm">
-            <input type="file" id="fileInput" accept=".xlsx, .xls" required>
-            <button type="submit">Carica Dati</button>
-        </form>
-        <div id="successMessage" class="success-message"></div>
-        <div id="errorMessage" class="error-message"></div>
-        <button id="backToDashboard" class="back-button">Torna alla Dashboard</button>
-    </div>
 </body>
 </html>
