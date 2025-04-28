@@ -1,4 +1,3 @@
-</html>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -27,7 +26,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
     <script>
         // Inserisci qui la tua configurazione Firebase
-          const firebaseConfig = {
+        const firebaseConfig = {
           apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
           authDomain: "glgest.firebaseapp.com",
           projectId: "glgest",
@@ -35,6 +34,7 @@
           messagingSenderId: "glgest.firebasestorage.app",
           appId: "1:423155306554:web:c598640f199e296d276503"
         };
+
 
         // Inizializza Firebase
         const app = firebase.initializeApp(firebaseConfig);
@@ -49,7 +49,7 @@
     <div class="admin-menu">
         <ul>
             <li><a href="admin_sede.html">Dashboard</a></li>
-            <li><a href="modifica_sede.html">Carica Dati</a></li>
+            <li><a href="upload_dati.html">Carica Dati</a></li>
             <li><a href="#">Gestione Utenti</a></li>
         </ul>
     </div>
@@ -276,12 +276,42 @@
         auth.onAuthStateChanged(async user => {
             if (user && isAdminSede(user)) {
                 console.log("Admin sede loggato, popolando la dashboard.");
-                // **Modifica importante:** Otteniamo l'ID della sede dell'admin (dobbiamo capire come è strutturato il tuo database)
-                // Per ora, ipotizzo che l'ID del documento nella collezione 'sedi' sia UGUALE all'UID dell'admin.
-                const sedeId = user.uid;
-                popolaDashboardSede(sedeId);
-                popolaDashboardMezzi(sedeId);
-                popolaDashboardAttrezzature(sedeId);
+
+                // **RECUPERO DELL'ID DELLA SEDE DELL'ADMIN - STRATEGIE ALTERNATIVE**
+
+                let sedeId;
+
+                // **STRATEGIA 1 (Più comune): L'UID dell'utente corrisponde all'ID del documento 'sedi'**
+                // sedeId = user.uid; // Usa l'UID dell'utente come ID della sede
+
+                // **STRATEGIA 2: L'ID della sede è memorizzato nell'oggetto utente Firebase Auth**
+                // if (user.customClaims && user.customClaims.sedeId) {
+                //     sedeId = user.customClaims.sedeId;
+                // }
+
+                // **STRATEGIA 3: L'ID della sede è memorizzato in una collezione separata (es. 'admin_sedi')**
+                // const adminSediRef = db.collection('admin_sedi').where('uid', '==', user.uid);
+                // const adminSediSnap = await adminSediRef.get();
+                // if (!adminSediSnap.empty) {
+                //     sedeId = adminSediSnap.docs[0].data().sedeId; // Assumi che ci sia solo un record per admin
+                // }
+
+                // **STRATEGIA 4: L'ID della sede è memorizzato in una sottocollezione dell'utente auth**
+                 const userDocRef = db.collection('users').doc(user.uid);
+                 const userDocSnap = await userDocRef.get();
+                 if (userDocSnap.exists) {
+                     sedeId = userDocSnap.data().sedeId;
+                 }
+
+                if (sedeId) {
+                    popolaDashboardSede(sedeId);
+                    popolaDashboardMezzi(sedeId);
+                    popolaDashboardAttrezzature(sedeId);
+                } else {
+                    console.error("Impossibile determinare l'ID della sede per l'admin:", user.uid);
+                    // Gestisci l'errore (es. mostra un messaggio all'utente)
+                }
+
             } else if (user) {
                 console.log("Utente loggato ma non admin, reindirizzo.");
                 window.location.href = 'sede_template.html';
