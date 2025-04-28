@@ -3,324 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Sede - [Nome della Sede]</title>
+    <title>Modifica Dati Sede</title>
     <style>
         body { font-family: sans-serif; margin: 20px; }
-        .sezione { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; }
-        h2 { margin-top: 0; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="email"], input[type="number"], input[type="date"], select, textarea, input[type="file"] {
-            width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; box-sizing: border-box;
-        }
-        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .alert-scadenza { font-weight: bold; color: orange; }
-        .alert-scadenza.imminente { color: red; }
-        #upload-feedback { margin-top: 10px; font-weight: bold; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h2 { margin-bottom: 20px; }
+        input[type="file"] { margin-bottom: 20px; }
+        button { padding: 10px 15px; cursor: pointer; }
+        .success-message { color: green; margin-top: 10px; }
+        .error-message { color: red; margin-top: 10px; }
+        .back-button { margin-top: 20px; background-color: #f4f4f4; color: #333; border: 1px solid #ccc; border-radius: 4px; }
+        .back-button:hover { background-color: #e0e0e0; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         // Inserisci qui la tua configurazione Firebase
-        const firebaseConfig = {
+       const firebaseConfig = {
           apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
           authDomain: "glgest.firebaseapp.com",
           projectId: "glgest",
           storageBucket: "glgest.firebasestorage.app",
-          messagingSenderId: "423155306554",
+          messagingSenderId: "glgest.firebasestorage.app",
           appId: "1:423155306554:web:c598640f199e296d276503"
         };
-
-        // Inizializza Firebase
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadForm = document.getElementById('uploadForm');
+            const fileInput = document.getElementById('fileInput');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            uploadForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const file = fileInput.files[0];
+                if (file) {
+                    await caricaDatiExcel(file);
+                } else {
+                    errorMessage.textContent = 'Seleziona un file Excel.';
+                }
+            });
+
+            async function caricaDatiExcel(file) {
+                // ... (il tuo codice esistente per caricare i dati dall'Excel a Firestore) ...
+                try {
+                    // ... (il tuo codice di caricamento) ...
+                    successMessage.textContent = 'Dati caricati con successo!';
+                    errorMessage.textContent = '';
+                } catch (error) {
+                    console.error('Errore durante il caricamento:', error);
+                    errorMessage.textContent = 'Errore durante il caricamento dei dati.';
+                    successMessage.textContent = '';
+                }
+            }
+
+            const backToDashboardButton = document.getElementById('backToDashboard');
+            backToDashboardButton.addEventListener('click', () => {
+                window.location.href = 'admin_sede.html';
+            });
+        });
     </script>
 </head>
 <body>
-
-    <h1>Gestione Sede - <span id="nome-sede"></span></h1>
-
-    <div class="sezione" id="upload-dati-sede">
-        <h2>Carica Dati da File Excel</h2>
-        <label for="file-upload">Seleziona il file Excel (.xlsx):</label>
-        <input type="file" id="file-upload" accept=".xlsx">
-        <button id="carica-dati-btn">Carica Dati</button>
-        <div id="upload-feedback"></div>
-    </div>
-
-    <div class="sezione" id="dati-sede">
-        <h2>Dati Sede</h2>
-        <form id="form-dati-sede">
-            <label for="codice-fiscale">Codice Fiscale:</label>
-            <input type="text" id="codice-fiscale" name="codice-fiscale">
-
-            <label for="nome-responsabile">Nome Responsabile:</label>
-            <input type="text" id="nome-responsabile" name="nome-responsabile">
-
-            <label for="email-sede">Email:</label>
-            <input type="email" id="email-sede" name="email-sede">
-
-            <label for="pec-sede">PEC:</label>
-            <input type="email" id="pec-sede" name="pec-sede">
-
-            <label for="indirizzo-sede">Indirizzo:</label>
-            <input type="text" id="indirizzo-sede" name="indirizzo-sede">
-
-            <label for="citta-sede">Città:</label>
-            <input type="text" id="citta-sede" name="citta-sede">
-
-            <label for="provincia-sede">Provincia:</label>
-            <input type="text" id="provincia-sede" name="provincia-sede">
-
-            <label for="nome-sede-input">Nome Sede:</label>
-            <input type="text" id="nome-sede-input" name="nome-sede-input">
-
-            <label for="posizione-sede">Posizione (Indirizzo):</label>
-            <input type="text" id="posizione-sede" name="posizione-sede">
-
-            <button type="submit">Salva Dati Sede</button>
+    <div class="container">
+        <h2>Modifica Dati Sede</h2>
+        <form id="uploadForm">
+            <input type="file" id="fileInput" accept=".xlsx, .xls" required>
+            <button type="submit">Carica Dati</button>
         </form>
+        <div id="successMessage" class="success-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+        <button id="backToDashboard" class="back-button">Torna alla Dashboard</button>
     </div>
-
-    <div class="sezione" id="elenco-mezzi">
-        <h2>Elenco Mezzi</h2>
-        <button onclick="mostraFormNuovoMezzo()">Aggiungi Nuovo Mezzo</button>
-        <div id="form-nuovo-mezzo" style="display: none;">
-            <h3>Nuovo Mezzo</h3>
-            <form id="form-aggiungi-mezzo">
-                <label for="tipologia-mezzo">Tipologia:</label>
-                <input type="text" id="tipologia-mezzo" name="tipologia-mezzo">
-                <label for="modello-mezzo">Modello:</label>
-                <input type="text" id="modello-mezzo" name="modello-mezzo">
-                <label for="id-mezzo">ID:</label>
-                <input type="text" id="id-mezzo" name="id-mezzo">
-                <label for="note-mezzo">Note:</label>
-                <textarea id="note-mezzo" name="note-mezzo"></textarea>
-                <label for="scadenza-revisione-mezzo">Scadenza Revisione:</label>
-                <input type="date" id="scadenza-revisione-mezzo" name="scadenza-revisione-mezzo">
-                <label for="scadenza-assicurazione-mezzo">Scadenza Assicurazione:</label>
-                <input type="date" id="scadenza-assicurazione-mezzo" name="scadenza-assicurazione-mezzo">
-                <label for="stato-mezzo">Stato:</label>
-                <select id="stato-mezzo" name="stato-mezzo">
-                    <option value="Attivo">Attivo</option>
-                    <option value="Fuori Uso">Fuori Uso</option>
-                    <option value="In Manutenzione">In Manutenzione</option>
-                </select>
-                <label for="targa-mezzo">Targa:</label>
-                <input type="text" id="targa-mezzo" name="targa-mezzo">
-                <label for="aib-mezzo">AIB:</label>
-                <select id="aib-mezzo" name="aib-mezzo">
-                    <option value="Si">Sì</option>
-                    <option value="No">No</option>
-                </select>
-                <button type="submit">Aggiungi</button>
-                <button type="button" onclick="nascondiFormNuovoMezzo()">Annulla</button>
-            </form>
-        </div>
-        <table id="tabella-mezzi">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tipologia</th>
-                    <th>Modello</th>
-                    <th>Targa</th>
-                    <th>Stato</th>
-                    <th>Scadenza Revisione</th>
-                    <th>Scadenza Assicurazione</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
-
-    <div class="sezione" id="elenco-attrezzature">
-        <h2>Elenco Attrezzature</h2>
-        <button onclick="mostraFormNuovaAttrezzatura()">Aggiungi Nuova Attrezzatura</button>
-        <div id="form-nuova-attrezzatura" style="display: none;">
-            <h3>Nuova Attrezzatura</h3>
-            <form id="form-aggiungi-attrezzatura">
-                <label for="tipologia-attrezzatura">Tipologia:</label>
-                <input type="text" id="tipologia-attrezzatura" name="tipologia-attrezzatura">
-                <label for="stato-attrezzatura">Stato:</label>
-                <select id="stato-attrezzatura" name="stato-attrezzatura">
-                    <option value="Attivo">Attivo</option>
-                    <option value="Fuori Uso">Fuori Uso</option>
-                    <option value="In Manutenzione">In Manutenzione</option>
-                </select>
-                <label for="note-attrezzatura">Note:</label>
-                <textarea id="note-attrezzatura" name="note-attrezzatura"></textarea>
-                <button type="submit">Aggiungi</button>
-                <button type="button" onclick="nascondiFormNuovaAttrezzatura()">Annulla</button>
-            </form>
-        </div>
-        <table id="tabella-attrezzature">
-            <thead>
-                <tr>
-                    <th>Tipologia</th>
-                    <th>Stato</th>
-                    <th>Note</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
-
-    <div class="sezione" id="elenco-volontari">
-        <h2>Elenco Volontari</h2>
-        <table id="tabella-volontari">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Cognome</th>
-                    <th>Email</th>
-                    <th>Codice Fiscale</th>
-                    <th>Contatto</th>
-                    <th>Specializzazioni</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script>
-        const caricaDatiBtn = document.getElementById('carica-dati-btn');
-        caricaDatiBtn.addEventListener('click', caricaDatiExcel);
-
-        function caricaDatiExcel() {
-            const fileInput = document.getElementById('file-upload');
-            const feedbackDiv = document.getElementById('upload-feedback');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                feedbackDiv.textContent = 'Seleziona un file Excel.';
-                return;
-            }
-
-            const reader = new FileReader();
-
-            reader.onload = async function(e) { // Funzione asincrona per usare await
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-
-                // Ottieni l'utente loggato
-                const user = auth.currentUser;
-                if (!user) {
-                    feedbackDiv.textContent = 'Utente non autenticato.';
-                    return;
-                }
-
-                // *** IMPORTANTE: Ottieni l'ID della sede dell'utente loggato ***
-                // Dovrai sostituire questa parte con la tua logica per recuperare l'ID della sede
-                let sedeId = '';
-                // Esempio (potrebbe essere memorizzato nell'oggetto utente o in un'altra collezione):
-                // const userDocRef = db.collection('users').doc(user.uid);
-                // const userDocSnap = await userDocRef.get();
-                // if (userDocSnap.exists) {
-                //     sedeId = userDocSnap.data().sedeId;
-                // } else {
-                //     feedbackDiv.textContent = 'Impossibile recuperare l\'ID della sede dell\'utente.';
-                //     return;
-                // }
-                // *** FINE IMPORTANTE ***
-                // Per ora, uso l'UID dell'utente come ID della sede (solo per test)
-                sedeId = user.uid;
-                console.log("User UID (as Sede ID for now):", sedeId);
-
-
-                if (!sedeId) {
-                    feedbackDiv.textContent = 'ID della sede non disponibile.';
-                    return;
-                }
-
-                // Salva i dati della Sede
-                const sedeSheetName = workbook.SheetNames.find(name => name.toLowerCase() === 'sede');
-                if (sedeSheetName) {
-                    const sedeData = XLSX.utils.sheet_to_json(workbook.Sheets[sedeSheetName]);
-                    if (sedeData.length > 0) {
-                        try {
-                            // Usa l'ID della sede come ID del documento nella collezione 'sedi'
-                            const sedeDocRef = db.collection('sedi').doc(sedeId);
-                            await sedeDocRef.set({ ...sedeData[0] });
-                            feedbackDiv.textContent = 'Dati Sede caricati con successo!';
-                        } catch (error) {
-                            feedbackDiv.textContent = 'Errore durante il salvataggio dei dati della sede.';
-                            console.error('Errore Firestore (Sede):', error);
-                        }
-                    } else {
-                        feedbackDiv.textContent = 'Nessun dato trovato nel foglio "Sede".';
-                    }
-                }
-
-                // Salva i dati dei Mezzi
-                const mezziSheetName = workbook.SheetNames.find(name => name.toLowerCase() === 'mezzi');
-                if (mezziSheetName) {
-                    const mezziData = XLSX.utils.sheet_to_json(workbook.Sheets[mezziSheetName]);
-                    try {
-                        for (const mezzo of mezziData) {
-                            await db.collection('mezzi').add({ ...mezzo, sedeId: sedeId });
-                        }
-                        feedbackDiv.textContent += ' Dati Mezzi caricati con successo!';
-                    } catch (error) {
-                        feedbackDiv.textContent += ' Errore durante il salvataggio dei dati dei mezzi.';
-                        console.error('Errore Firestore (Mezzi):', error);
-                    }
-                }
-
-                // Salva i dati delle Attrezzature
-                const attrezzatureSheetName = workbook.SheetNames.find(name => name.toLowerCase() === 'attrezzature');
-                if (attrezzatureSheetName) {
-                    const attrezzatureData = XLSX.utils.sheet_to_json(workbook.Sheets[attrezzatureSheetName]);
-                    try {
-                        for (const attrezzatura of attrezzatureData) {
-                            await db.collection('attrezzature').add({ ...attrezzatura, sedeId: sedeId });
-                        }
-                        feedbackDiv.textContent += ' Dati Attrezzature caricati con successo!';
-                    } catch (error) {
-                        feedbackDiv.textContent += ' Errore durante il salvataggio dei dati delle attrezzature.';
-                        console.error('Errore Firestore (Attrezzature):', error);
-                    }
-                }
-            };
-
-            reader.onerror = function(error) {
-                feedbackDiv.textContent = 'Errore durante la lettura del file.';
-                console.error('Errore FileReader:', error);
-            };
-
-            reader.readAsArrayBuffer(file);
-        }
-
-        // Funzioni JavaScript per mostrare/nascondere i form di aggiunta
-        function mostraFormNuovoMezzo() {
-            document.getElementById('form-nuovo-mezzo').style.display = 'block';
-        }
-
-        function nascondiFormNuovoMezzo() {
-            document.getElementById('form-nuovo-mezzo').style.display = 'none';
-        }
-
-        function mostraFormNuovaAttrezzatura() {
-            document.getElementById('form-nuova-attrezzatura').style.display = 'block';
-        }
-
-        function nascondiFormNuovaAttrezzatura() {
-            document.getElementById('form-nuova-attrezzatura').style.display = 'none';
-        }
-
-        // Qui potresti aggiungere la logica per popolare i form di modifica
-        // e visualizzare i dati esistenti.
-    </script>
 </body>
 </html>
