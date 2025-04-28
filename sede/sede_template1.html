@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Sede</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .sezione { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; }
+        h2 { margin-top: 0; }
+        /* Stili per la visualizzazione dei dati */
+        #info-sede p { margin-bottom: 5px; }
+        #tabella-mezzi, #tabella-attrezzature { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        #tabella-mezzi th, #tabella-mezzi td,
+        #tabella-attrezzature th, #tabella-attrezzature td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        #tabella-mezzi th, #tabella-attrezzature th { background-color: #f2f2f2; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+    <script>
+        // Inserisci qui la tua configurazione Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+          authDomain: "glgest.firebaseapp.com",
+          projectId: "glgest",
+          storageBucket: "glgest.firebasestorage.app",
+          messagingSenderId: "423155306554",
+          appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        // Inizializza Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+    </script>
+</head>
+<body>
+
+    <h1>Dati Sede - <span id="nome-sede"></span></h1>
+
+    <div class="sezione" id="dati-sede">
+        <h2>Informazioni Sede</h2>
+        <div id="info-sede">
+            <p>Codice Fiscale: <span id="codice-fiscale"></span></p>
+            <p>Nome Responsabile: <span id="nome-responsabile"></span></p>
+            <p>Email: <span id="email-sede"></span></p>
+            <p>PEC: <span id="pec-sede"></span></p>
+            <p>Indirizzo: <span id="indirizzo-sede"></span></p>
+            <p>Città: <span id="citta-sede"></span></p>
+            <p>Provincia: <span id="provincia-sede"></span></p>
+            <p>Nome Sede: <span id="nome-sede-input"></span></p>
+            <p>Posizione: <span id="posizione-sede"></span></p>
+        </div>
+    </div>
+
+    <div class="sezione" id="elenco-mezzi">
+        <h2>Elenco Mezzi</h2>
+        <table id="tabella-mezzi">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipologia</th>
+                    <th>Modello</th>
+                    <th>Targa</th>
+                    <th>Stato</th>
+                    <th>Scadenza Revisione</th>
+                    <th>Scadenza Assicurazione</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <div class="sezione" id="elenco-attrezzature">
+        <h2>Elenco Attrezzature</h2>
+        <table id="tabella-attrezzature">
+            <thead>
+                <tr>
+                    <th>Tipologia</th>
+                    <th>Stato</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Funzione per ottenere l'ID della sede del volontario loggato
+        async function getVolontarioSedeId(userId) {
+            const volontariCollection = db.collection('volontari');
+            const q = volontariCollection.where("uid", "==", userId);
+            const querySnapshot = await q.get();
+            if (!querySnapshot.empty) {
+                return querySnapshot.docs[0].data().sede_iscrizione;
+            }
+            return null;
+        }
+
+        // Funzione per popolare i dati della sede
+        async function popolaDatiSede(sedeId) {
+            const sedeDocRef = db.collection('sedi').doc(sedeId);
+            const sedeDocSnap = await sedeDocRef.get();
+
+            if (sedeDocSnap.exists) {
+                const sedeData = sedeDocSnap.data();
+                document.getElementById('nome-sede').textContent = sedeData['nome-sede-input'] || '';
+                document.getElementById('codice-fiscale').textContent = sedeData['codice-fiscale'] || '';
+                document.getElementById('nome-responsabile').textContent = sedeData['nome-responsabile'] || '';
+                document.getElementById('email-sede').textContent = sedeData['email-sede'] || '';
+                document.getElementById('pec-sede').textContent = sedeData['pec-sede'] || '';
+                document.getElementById('indirizzo-sede').textContent = sedeData['indirizzo-sede'] || '';
+                document.getElementById('citta-sede').textContent = sedeData['citta-sede'] || '';
+                document.getElementById('provincia-sede').textContent = sedeData['provincia-sede'] || '';
+                document.getElementById('nome-sede-input').textContent = sedeData['nome-sede-input'] || '';
+                document.getElementById('posizione-sede').textContent = sedeData['posizione-sede'] || '';
+            } else {
+                console.log("Nessun dato sede trovato per l'ID:", sedeId);
+            }
+        }
+
+        // Funzione per popolare la tabella dei mezzi
+        async function popolaTabellaMezzi(sedeId) {
+            const mezziCollection = db.collection('mezzi');
+            const mezziQuery = mezziCollection.where('sedeId', '==', sedeId);
+            const mezziSnapshot = await mezziQuery.get();
+
+            const tabellaMezziBody = document.getElementById('tabella-mezzi').getElementsByTagName('tbody')[0];
+            tabellaMezziBody.innerHTML = '';
+
+            mezziSnapshot.forEach(doc => {
+                const mezzoData = doc.data();
+                const row = tabellaMezziBody.insertRow();
+                row.insertCell().textContent = mezzoData['id-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['tipologia-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['modello-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['targa-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['stato-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['scadenza-revisione-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['scadenza-assicurazione-mezzo'] || '';
+            });
+        }
+
+        // Funzione per popolare la tabella delle attrezzature
+        async function popolaTabellaAttrezzature(sedeId) {
+            const attrezzatureCollection = db.collection('attrezzature');
+            const attrezzatureQuery = attrezzatureCollection.where('sedeId', '==', sedeId);
+            const attrezzatureSnapshot = await attrezzatureQuery.get();
+
+            const tabellaAttrezzatureBody = document.getElementById('tabella-attrezzature').getElementsByTagName('tbody')[0];
+            tabellaAttrezzatureBody.innerHTML = '';
+
+            attrezzatureSnapshot.forEach(doc => {
+                const attrezzaturaData = doc.data();
+                const row = tabellaAttrezzatureBody.insertRow();
+                row.insertCell().textContent = attrezzaturaData['tipologia-attrezzatura'] || '';
+                row.insertCell().textContent = attrezzaturaData['stato-attrezzatura'] || '';
+                row.insertCell().textContent = attrezzaturaData['note-attrezzatura'] || '';
+            });
+        }
+
+        // Verifica l'autenticazione e popola i dati per la sede del volontario
+        auth.onAuthStateChanged(async user => {
+            if (user) {
+                const volontarioSedeId = await getVolontarioSedeId(user.uid);
+                if (volontarioSedeId) {
+                    console.log("Volontario loggato, ID Sede:", volontarioSedeId);
+                    popolaDatiSede(volontarioSedeId);
+                    popolaTabellaMezzi(volontarioSedeId);
+                    popolaTabellaAttrezzature(volontarioSedeId);
+                } else {
+                    console.log("Impossibile recuperare l'ID della sede per il volontario.");
+                    // Potresti reindirizzare a una pagina di errore o mostrare un messaggio
+                }
+            } else {
+                console.log("Utente non loggato, reindirizzo alla pagina di login.");
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>
