@@ -5,7 +5,8 @@
 </head>
 <body>
     <textarea id="rawData" rows="20" cols="80">
-         {
+[     
+    {
     "NUM.;C.F.;SEDE;PROVINCIA;NOMINATIVO PRESIDENTE;EMAIL ;PEC;": "1;90021360772;ACCETTURA;Matera;Pezzolla Mario;accettura@pcgl.it;prot.civ.accettura@pec.it;"
   }
   {
@@ -266,21 +267,6 @@
     "NUM.;C.F.;SEDE;PROVINCIA;NOMINATIVO PRESIDENTE;EMAIL ;PEC;": ""
   }
 ];
-
-const processedData = rawData.map(item => {
-  const key = Object.keys(item)[0];
-  const values = item[key].split(';');
-  const headers = key.split(';');
-  const obj = {};
-  for (let i = 0; i < headers.length - 1; i++) { // Ignora l'ultimo ";"
-    obj[headers[i].trim()] = values[i] ? values[i].trim() : ''; // Trim e gestisci valori vuoti
-  }
-  return obj;
-}).filter(item => item.SEDE); // Rimuovi eventuali oggetti vuoti
-
-const jsonData = JSON.stringify(processedData, null, 2);
-console.log(jsonData);
-
     </textarea>
     <button onclick="processAndDisplay()">Process Data</button>
     <textarea id="jsonData" rows="20" cols="80"></textarea>
