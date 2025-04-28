@@ -58,7 +58,7 @@
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
 
-                    // **GESTIONE FOGLIO SEDE**
+                   // **GESTIONE FOGLIO SEDE**
                     const sedeSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('sede'));
                     if (sedeSheetName) {
                         const sedeSheet = workbook.Sheets[sedeSheetName];
@@ -72,10 +72,20 @@
                                 sedeDoc[header] = rowsSede[0][index];
                             });
                             const sedeId = auth.currentUser.uid;
-                            await db.collection('sedi').doc(sedeId).set(sedeDoc, { merge: true });
+
+                            // Verifica se 'Posizione' esiste nei dati dell'Excel prima di assegnarlo
+                            if (sedeDoc.hasOwnProperty('Posizione')) {
+                                await db.collection('sedi').doc(sedeId).set(sedeDoc, { merge: true });
+                            } else {
+                                // Se 'Posizione' non esiste, carica gli altri campi
+                                const { Posizione, ...sedeDocWithoutPosizione } = sedeDoc; // Rimuove 'Posizione' se presente come undefined
+                                await db.collection('sedi').doc(sedeId).set(sedeDocWithoutPosizione, { merge: true });
+                                console.warn('Campo "Posizione" non trovato nel foglio Sede.');
+                            }
+
                             console.log('Dati sede caricati/aggiornati per UID:', sedeId);
                         }
-                    }
+                                        }
 
                     // **GESTIONE FOGLIO MEZZI**
                     const mezziSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('mezzi'));
