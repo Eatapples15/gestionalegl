@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSV to JSON Converter</title>
+</head>
+<body>
+    <input type="file" id="csvFile">
+    <button onclick="convertCSVtoJSON()">Converti in JSON</button>
+    <textarea id="jsonOutput" rows="20" cols="80"></textarea>
+
+    <script>
+        function convertCSVtoJSON() {
+            const fileInput = document.getElementById('csvFile');
+            const jsonOutput = document.getElementById('jsonOutput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const csvText = e.target.result;
+                    const lines = csvText.split('\n').map(line => line.trim());
+                    const headers = lines[0].split(',');
+                    const jsonArray = [];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const currentLine = lines[i].split(',');
+                        if (currentLine.length === headers.length) {
+                            const jsonObject = {};
+                            for (let j = 0; j < headers.length; j++) {
+                                jsonObject[headers[j].trim()] = currentLine[j].trim();
+                            }
+                            jsonArray.push(jsonObject);
+                        }
+                    }
+                    jsonOutput.value = JSON.stringify(jsonArray, null, 2);
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Seleziona un file CSV.');
+            }
+        }
+    </script>
+</body>
+</html>
