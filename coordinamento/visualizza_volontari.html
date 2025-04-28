@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLGestionale - Visualizza Volontari</title>
+    <style>
+        /* Aggiungi qui gli stili per la tabella dei volontari */
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // Inizializza Firebase (assicurati di usare la tua configurazione)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (user && user.email === 'coordinamento@pcgl.it') {
+                    await displayVolunteers();
+                } else {
+                    window.location.href = '/gestionalegl/index.html'; // Reindirizza se non è il coordinamento
+                }
+            });
+        });
+
+        async function displayVolunteers() {
+            const volontariCollection = collection(db, 'volontari');
+            const snapshot = await getDocs(volontariCollection);
+            const volunteers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            const table = document.getElementById('volunteers-table');
+            const tbody = table.querySelector('tbody');
+
+            volunteers.forEach(volunteer => {
+                const row = tbody.insertRow();
+                row.insertCell().textContent = volunteer.nome || 'N/A';
+                row.insertCell().textContent = volunteer.cognome || 'N/A';
+                row.insertCell().textContent = volunteer.email || 'N/A';
+                row.insertCell().textContent = volunteer.sede_iscrizione || 'N/A';
+                // Aggiungi altre colonne come telefono, data di nascita, ecc.
+
+                // Esempio di colonna con un link per visualizzare i dettagli del volontario
+                const detailsCell = row.insertCell();
+                const detailsLink = document.createElement('a');
+                detailsLink.href = `/gestionalegl/coordinamento/dettaglio_volontario.html?id=${volunteer.id}`;
+                detailsLink.textContent = 'Dettagli';
+                detailsCell.appendChild(detailsLink);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Elenco Volontari</h1>
+    <table id="volunteers-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Email</th>
+                <th>Sede Iscrizione</th>
+                <th>Dettagli</th>
+                </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</body>
+</html>
