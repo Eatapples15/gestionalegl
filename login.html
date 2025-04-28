@@ -94,7 +94,7 @@
                     const user = userCredential.user;
                     console.log('Utente loggato:', user);
                     // Reindirizza l'utente alla pagina principale o alla pagina desiderata dopo il login
-                    window.location.href = '/'; // Sostituisci '/' con l'URL della tua pagina principale
+                    window.location.href = 'window.location.href = '/gestionalegl/login.html'; 
                 } catch (error) {
                     console.error('Errore durante il login:', error.code, error.message);
                     errorMessage.textContent = getErrorMessage(error.code);
