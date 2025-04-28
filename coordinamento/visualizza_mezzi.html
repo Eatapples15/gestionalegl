@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+ <html lang="it">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizza Mezzi - GLGestionale</title>
+  <style>
+  body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+  .container { max-width: 1000px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+  h1 { color: #28a745; text-align: center; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background-color: #f2f2f2; }
+  .back-link { display: block; margin-top: 20px; color: #007bff; text-decoration: none; }
+  .back-link:hover { text-decoration: underline; }
+  </style>
+  <script type="module">
+  // Inserisci qui l'importazione e l'inizializzazione di Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+  authDomain: "glgest.firebaseapp.com",
+  projectId: "glgest",
+  storageBucket: "glgest.firebasestorage.app",
+  messagingSenderId: "423155306554",
+  appId: "1:423155306554:web:c598640f199e296d276503"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const mezziCollection = collection(db, 'mezzi');
+
+  document.addEventListener('DOMContentLoaded', async () => {
+  onAuthStateChanged(auth, user => {
+  if (!user || user.email !== 'coordinamento@pcgl.it') {
+  window.location.href = '/gestionalegl/index.html'; // Reindirizza se non è coordinamento
+  }
+  });
+
+  await loadMezzi();
+  });
+
+  async function loadMezzi() {
+  const mezziTableBody = document.getElementById('mezzi-table-body');
+  const snapshot = await getDocs(mezziCollection);
+  snapshot.forEach(doc => {
+  const data = doc.data();
+  const row = mezziTableBody.insertRow();
+  row.insertCell().textContent = doc.id; // ID del documento
+  row.insertCell().textContent = data.Tipologia || 'N/A';
+  row.insertCell().textContent = data.Modello || 'N/A';
+  row.insertCell().textContent = data.Targa || 'N/A';
+  row.insertCell().textContent = data.Stato || 'N/A';
+  row.
