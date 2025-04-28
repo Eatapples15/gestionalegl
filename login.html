@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+    <script type="module">
+        // Importa le funzioni necessarie dal Firebase JS SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+        // Le tue credenziali Firebase (CONFIGURAZIONE WEB)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Inizializza Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const errorMessage = document.getElementById('errorMessage');
+
+            loginForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const email = emailInput.value;
+                const password = passwordInput.value;
+
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    console.log('Utente loggato:', user);
+                    // Reindirizza l'utente alla pagina principale o alla pagina desiderata dopo il login
+                    window.location.href = '/'; // Sostituisci '/' con l'URL della tua pagina principale
+                } catch (error) {
+                    console.error('Errore durante il login:', error.code, error.message);
+                    errorMessage.textContent = getErrorMessage(error.code);
+                }
+            });
+
+            function getErrorMessage(errorCode) {
+                switch (errorCode) {
+                    case 'auth/invalid-email':
+                        return 'L\'indirizzo email non è valido.';
+                    case 'auth/user-disabled':
+                        return 'Questo account utente è stato disabilitato.';
+                    case 'auth/user-not-found':
+                        return 'Utente non trovato. Verifica la tua email.';
+                    case 'auth/wrong-password':
+                        return 'Password errata.';
+                    default:
+                        return 'Si è verificato un errore durante il login.';
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Accedi</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Accedi</button>
+            <div id="errorMessage" class="error-message"></div>
+        </form>
+        <p>Non hai un account? <a href="/signup">Registrati</a></p> </div>
+</body>
+</html>
