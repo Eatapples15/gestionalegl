@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLGestionale - Genera Attestato</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 15px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background-color: #28a745; /* Verde coordinamento */
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 95%;
+            border-radius: 5px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        .header a:first-child {
+            margin-left: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .header img {
+            max-height: 40px;
+            margin-right: 10px;
+        }
+
+        h1 {
+            color: #28a745;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input[type="file"],
+        .form-group button {
+            width: calc(100% - 12px);
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .form-group button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background-color: #218838;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+
+        #volontari-list {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        #volontari-list label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #volontari-list input[type="checkbox"] {
+            margin-right: 5px;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
+
+        // Inizializza Firebase (assicurati di usare la tua configurazione)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const corsiFormazioneCollection = collection(db, 'corsi_formazione');
+        const volontariCollection = collection(db, 'volontari');
+        const corsiVolontariCollection = collection(db, 'corsi_volontari');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (!user || user.email !== 'coordinamento@pcgl.it') {
+                    window.location.href = '/gestionalegl/index.html'; // Reindirizza se non è il coordinamento
+                } else {
+                    await populateCorsiDropdown();
+                    await populateVolontariList();
+                }
+            });
+
+            const generaAttestatoForm = document.getElementById('generaAttestatoForm');
+            const messaggioErrore = document.getElementById('messaggioErrore');
+            const messaggioSuccesso = document.getElementById('messaggioSuccesso');
+
+            generaAttestatoForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const corsoId = document.getElementById('corso').value;
+                const attestatoFile = document.getElementById('attestato').files[0];
+                const selectedVolontari = Array.from(document.querySelectorAll('#volontari-list input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.value);
+
+                if (!corsoId || !attestatoFile || selectedVolontari.length === 0) {
+                    messaggioErrore.textContent = 'Seleziona un corso, carica un attestato e scegli almeno un volontario.';
+                    messaggioSuccesso.textContent = '';
+                    return;
+                }
+
+                messaggioErrore.textContent = 'Caricamento e assegnazione degli attestati in corso...';
+                messaggioSuccesso.textContent = '';
+
+                try {
+                    const corsoDoc = await getDocs(query(corsiFormazioneCollection, doc(db, 'corsi_formazione', corsoId)));
+                    const corsoData = corsoDoc.docs[0]?.data();
+                    const corsoTitolo = corsoData?.titolo || 'Corso Sconosciuto';
+
+                    const storageRef = ref(storage, `attestati_corsi/${corsoId}/${attestatoFile.name}`);
+                    const snapshot = await uploadBytes(storageRef, attestatoFile);
+                    const downloadURL = await getDownloadURL(snapshot.ref);
+
+                    await Promise.all(selectedVolontari.map(async (volontarioId) => {
+                        const volontarioRef = doc(db, 'volontari', volontarioId);
+                        // Aggiorna il profilo del volontario con l'URL dell'attestato
+                        await updateDoc(volontarioRef, {
+                            [`attestati.${corsoId}`]: downloadURL // Usa l'ID del corso come chiave
+                        });
+
+                        // Aggiungi anche un record nella sezione dei corsi sostenuti del volontario
+                        await addDoc(corsiVolontariCollection, {
+                            volontario_id: volontarioId,
+                            tipo_corso: corsoTitolo,
+                            organizzatore: 'Coordinamento Gruppo Lucano', // O chi ha erogato il corso
+                            data_corso: new Date(), // Potrebbe essere la data di fine del corso
+                            scadenza: null, // Se applicabile
+                            attestato_url: downloadURL,
+                            corso_id: corsoId, // Riferimento al corso di formazione
+                            rilasciato_da_coordinamento: true
+                        });
+                    }));
+
+                    messaggioSuccesso.textContent = 'Attestati caricati e assegnati con successo!';
+                    messaggioErrore.textContent = '';
+                    generaAttestatoForm.reset();
+                    // Potrebbe essere utile reindirizzare o mostrare un feedback più dettagliato
+                } catch (error) {
+                    console.error("Errore durante il caricamento e l'assegnazione degli attestati:", error);
+                    messaggioErrore.textContent = 'Si è verificato un errore durante il caricamento e l\'assegnazione degli attestati.';
+                    messaggioSuccesso.textContent = '';
+                }
+            });
+        });
+
+        async function populateCorsiDropdown() {
+            const corsiDropdown = document.getElementById('corso');
+            const snapshot = await getDocs(corsiFormazioneCollection);
+            snapshot.forEach(doc => {
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = doc.data().titolo;
+                corsiDropdown.appendChild(option);
+            });
+        }
+
+        async function populateVolontariList() {
+            const volontariListDiv = document.getElementById('volontari-list');
+            const snapshot = await getDocs(volontariCollection);
+            snapshot.forEach(doc => {
+                const volontario = doc.data();
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = doc.id;
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(`${volontario.nome} ${volontario.cognome} (${volontario.sede_iscrizione || 'N/A'})`));
+                volontariListDiv.appendChild(label);
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <a href="/gestionalegl/coordinamento/dashboard_coordinamento.html" style="display: flex; align-items: center;">
+            <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+            <span>Gestionale Gruppo Lucano - Coordinamento</span>
+        </a>
+        <a href="/gestionalegl/coordinamento/dashboard_coordinamento.html">Dashboard</a>
+    </div>
+
+    <div class="container">
+        <h1>Genera e Assegna Attestato</h1>
+
+        <div class="form-container">
+            <form id="generaAttestatoForm">
+                <div class="form-group">
+                    <label for="corso">Seleziona Corso:</label>
+                    <select id="corso" required>
+                        <option value="">-- Seleziona un corso --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="attestato">Carica File Attestato (PDF):</label>
+                    <input type="file" id="attestato" accept="application/pdf" required>
+                </div>
+
+                <div id="volontari-list">
+                    <label>Seleziona Volontari:</label>
+                    </div>
+
+                <div class="form-group">
+                    <button type="submit">Assegna Attestati</button>
+                </div>
+
+                <div id="messaggioErrore" class="error-message"></div>
+                <div id="messaggioSuccesso" class="success-message"></div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
