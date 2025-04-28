@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLGestionale - Crea Nuovo Corso</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 15px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background-color: #28a745; /* Verde coordinamento */
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 95%;
+            border-radius: 5px;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        .header a:first-child {
+            margin-left: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .header img {
+            max-height: 40px;
+            margin-right: 10px;
+        }
+
+        h1 {
+            color: #28a745;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group input[type="date"] {
+            width: calc(100% - 12px);
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .form-group button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .form-group button:hover {
+            background-color: #218838;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // Inizializza Firebase (assicurati di usare la tua configurazione)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const corsiFormazioneCollection = collection(db, 'corsi_formazione');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (!user || user.email !== 'coordinamento@pcgl.it') {
+                    window.location.href = '/gestionalegl/index.html'; // Reindirizza se non è il coordinamento
+                }
+            });
+
+            const creaCorsoForm = document.getElementById('creaCorsoForm');
+            const messaggioErrore = document.getElementById('messaggioErrore');
+            const messaggioSuccesso = document.getElementById('messaggioSuccesso');
+
+            creaCorsoForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const titolo = document.getElementById('titolo').value;
+                const descrizione = document.getElementById('descrizione').value;
+                const dataInizio = document.getElementById('data_inizio').value;
+                const dataFine = document.getElementById('data_fine').value;
+                // Potresti aggiungere altri campi come durata, sede del corso, ecc.
+
+                if (!titolo || !descrizione || !dataInizio) {
+                    messaggioErrore.textContent = 'Compila almeno il titolo, la descrizione e la data di inizio.';
+                    messaggioSuccesso.textContent = '';
+                    return;
+                }
+
+                try {
+                    await addDoc(corsiFormazioneCollection, {
+                        titolo: titolo,
+                        descrizione: descrizione,
+                        data_inizio: new Date(dataInizio),
+                        data_fine: dataFine ? new Date(dataFine) : null,
+                        data_creazione: new Date(),
+                        creato_da: auth.currentUser.uid // Registra chi ha creato il corso
+                        // Aggiungi qui altri campi se necessario
+                    });
+
+                    messaggioSuccesso.textContent = 'Corso creato con successo!';
+                    messaggioErrore.textContent = '';
+                    creaCorsoForm.reset(); // Resetta il form dopo il successo
+                } catch (error) {
+                    console.error("Errore nella creazione del corso:", error);
+                    messaggioErrore.textContent = 'Si è verificato un errore durante la creazione del corso.';
+                    messaggioSuccesso.textContent = '';
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        <a href="/gestionalegl/coordinamento/dashboard_coordinamento.html" style="display: flex; align-items: center;">
+            <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+            <span>Gestionale Gruppo Lucano - Coordinamento</span>
+        </a>
+        <a href="/gestionalegl/coordinamento/dashboard_coordinamento.html">Dashboard</a>
+    </div>
+
+    <div class="container">
+        <h1>Crea Nuovo Corso</h1>
+
+        <div class="form-container">
+            <form id="creaCorsoForm">
+                <div class="form-group">
+                    <label for="titolo">Titolo del Corso:</label>
+                    <input type="text" id="titolo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descrizione">Descrizione:</label>
+                    <textarea id="descrizione" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="data_inizio">Data Inizio:</label>
+                    <input type="date" id="data_inizio" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="data_fine">Data Fine (opzionale):</label>
+                    <input type="date" id="data_fine">
+                </div>
+
+                <div class="form-group">
+                    <button type="submit">Crea Corso</button>
+                </div>
+
+                <div id="messaggioErrore" class="error-message"></div>
+                <div id="messaggioSuccesso" class="success-message"></div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
