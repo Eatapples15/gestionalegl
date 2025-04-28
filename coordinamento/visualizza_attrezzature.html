@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+ <html lang="it">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizza Attrezzature - GLGestionale</title>
+  <style>
+  body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+  .container { max-width: 900px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+  h1 { color: #28a745; text-align: center; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background-color: #f2f2f2; }
+  .back-link { display: block; margin-top: 20px; color: #007bff; text-decoration: none; }
+  .back-link:hover { text-decoration: underline; }
+  </style>
+  <script type="module">
+  // Inserisci qui l'importazione e l'inizializzazione di Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+  authDomain: "glgest.firebaseapp.com",
+  projectId: "glgest",
+  storageBucket: "glgest.firebasestorage.app",
+  messagingSenderId: "423155306554",
+  appId: "1:423155306554:web:c598640f199e296d276503"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const attrezzatureCollection = collection(db, 'attrezzature');
+
+  document.addEventListener('DOMContentLoaded', async () => {
+  onAuthStateChanged(auth, user => {
+  if (!user || user.email !== 'coordinamento@pcgl.it') {
+  window.location.href = '/gestionalegl/index.html'; // Reindirizza se non è coordinamento
+  }
+  });
+
+  await loadAttrezzature();
+  });
+
+  async function loadAttrezzature() {
+  const attrezzatureTableBody = document.getElementById('attrezzature-table-body');
+  const snapshot = await getDocs(attrezzatureCollection);
+  snapshot.forEach(doc => {
+  const data = doc.data();
+  const row = attrezzatureTableBody.insertRow();
+  row.insertCell().textContent = doc.id; // ID del documento
+  row.insertCell().textContent = data.Tipologia || 'N/A';
+  row.insertCell().textContent = data.Stato || 'N/A';
+  row.insertCell().textContent = data.Note || 'N/A';
+  row.insertCell().textContent = data.sedeId || 'N/A'; // Assumendo che ci sia un riferimento alla sede
+  // Aggiungi altre colonne in base ai tuoi dati delle attrezzature
+  });
+  }
+  </script>
+ </head>
+ <body>
+  <div class="container">
+  <h1>Visualizza Attrezzature</h1>
+  <table>
+  <thead>
+  <tr>
+  <th>ID</th>
+  <th>Tipologia</th>
+  <th>Stato</th>
+  <th>Note</th>
+  <th>Sede ID</th>
+  </tr>
+  </thead>
+  <tbody id="attrezzature-table-body">
+  </tbody>
+  </table>
+  <a href="dashboard_coordinamento.html" class="back-link">Torna alla Dashboard</a>
+  </div>
+ </body>
+ </html>
