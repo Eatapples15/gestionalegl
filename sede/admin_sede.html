@@ -1,3 +1,4 @@
+</html>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -26,7 +27,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
     <script>
         // Inserisci qui la tua configurazione Firebase
-        const firebaseConfig = {
+          const firebaseConfig = {
           apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
           authDomain: "glgest.firebaseapp.com",
           projectId: "glgest",
@@ -48,8 +49,9 @@
     <div class="admin-menu">
         <ul>
             <li><a href="admin_sede.html">Dashboard</a></li>
-            <li><a href="modifica_sede.html">Carica Dati</a></li>
-            <li><a href="#">Gestione Utenti</a></li> </ul>
+            <li><a href="upload_dati.html">Carica Dati</a></li>
+            <li><a href="#">Gestione Utenti</a></li>
+        </ul>
     </div>
 
     <div class="sezione" id="dashboard-sede">
@@ -98,8 +100,8 @@
     </div>
 
     <script>
-        // Recupera l'oggetto auth di Firebase
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
         // Array degli indirizzi email degli amministratori di sede
         const adminEmails = [
@@ -210,88 +212,76 @@
         }
 
         // Funzione per popolare la dashboard con i dati della sede
-        async function popolaDashboardSede() {
-            const user = auth.currentUser;
-            if (user) {
-                const sedeId = user.uid; // Assumiamo che l'ID del documento 'sedi' sia l'UID dell'utente admin
+        async function popolaDashboardSede(sedeId) {
+            const sedeDocRef = db.collection('sedi').doc(sedeId);
+            const sedeDocSnap = await sedeDocRef.get();
 
-                const sedeDocRef = db.collection('sedi').doc(sedeId);
-                const sedeDocSnap = await sedeDocRef.get();
-
-                if (sedeDocSnap.exists) {
-                    const sedeData = sedeDocSnap.data();
-                    document.getElementById('dashboard-codice-fiscale').textContent = sedeData['codice-fiscale'] || '';
-                    document.getElementById('dashboard-nome-responsabile').textContent = sedeData['nome-responsabile'] || '';
-                    document.getElementById('dashboard-email-sede').textContent = sedeData['email-sede'] || '';
-                    document.getElementById('dashboard-pec-sede').textContent = sedeData['pec-sede'] || '';
-                    document.getElementById('dashboard-indirizzo-sede').textContent = sedeData['indirizzo-sede'] || '';
-                    document.getElementById('dashboard-citta-sede').textContent = sedeData['citta-sede'] || '';
-                    document.getElementById('dashboard-provincia-sede').textContent = sedeData['provincia-sede'] || '';
-                    document.getElementById('dashboard-nome-sede-input').textContent = sedeData['nome-sede-input'] || '';
-                    document.getElementById('dashboard-posizione-sede').textContent = sedeData['posizione-sede'] || '';
-                } else {
-                    console.log("Nessun dato sede trovato per l'utente:", user.uid);
-                }
+            if (sedeDocSnap.exists) {
+                const sedeData = sedeDocSnap.data();
+                document.getElementById('dashboard-codice-fiscale').textContent = sedeData['codice-fiscale'] || '';
+                document.getElementById('dashboard-nome-responsabile').textContent = sedeData['nome-responsabile'] || '';
+                document.getElementById('dashboard-email-sede').textContent = sedeData['email-sede'] || '';
+                document.getElementById('dashboard-pec-sede').textContent = sedeData['pec-sede'] || '';
+                document.getElementById('dashboard-indirizzo-sede').textContent = sedeData['indirizzo-sede'] || '';
+                document.getElementById('dashboard-citta-sede').textContent = sedeData['citta-sede'] || '';
+                document.getElementById('dashboard-provincia-sede').textContent = sedeData['provincia-sede'] || '';
+                document.getElementById('dashboard-nome-sede-input').textContent = sedeData['nome-sede-input'] || '';
+                document.getElementById('dashboard-posizione-sede').textContent = sedeData['posizione-sede'] || '';
+            } else {
+                console.log("Nessun dato sede trovato per l'ID:", sedeId);
             }
         }
 
         // Funzione per popolare la tabella dei mezzi nella dashboard
-        async function popolaDashboardMezzi() {
-            const user = auth.currentUser;
-            if (user) {
-                const sedeId = user.uid; // Assumiamo che i mezzi siano collegati all'UID dell'utente admin
+        async function popolaDashboardMezzi(sedeId) {
+            const mezziCollection = db.collection('mezzi');
+            const mezziQuery = mezziCollection.where('sedeId', '==', sedeId);
+            const mezziSnapshot = await mezziQuery.get();
 
-                const mezziCollection = db.collection('mezzi');
-                const mezziQuery = mezziCollection.where('sedeId', '==', sedeId);
-                const mezziSnapshot = await mezziQuery.get();
+            const tabellaMezziBody = document.getElementById('dashboard-tabella-mezzi').getElementsByTagName('tbody')[0];
+            tabellaMezziBody.innerHTML = ''; // Pulisci la tabella precedente
 
-                const tabellaMezziBody = document.getElementById('dashboard-tabella-mezzi').getElementsByTagName('tbody')[0];
-                tabellaMezziBody.innerHTML = ''; // Pulisci la tabella precedente
-
-                mezziSnapshot.forEach(doc => {
-                    const mezzoData = doc.data();
-                    const row = tabellaMezziBody.insertRow();
-                    row.insertCell().textContent = mezzoData['id-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['tipologia-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['modello-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['targa-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['stato-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['scadenza-revisione-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['scadenza-assicurazione-mezzo'] || '';
-                });
-            }
+            mezziSnapshot.forEach(doc => {
+                const mezzoData = doc.data();
+                const row = tabellaMezziBody.insertRow();
+                row.insertCell().textContent = mezzoData['id-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['tipologia-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['modello-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['targa-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['stato-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['scadenza-revisione-mezzo'] || '';
+                row.insertCell().textContent = mezzoData['scadenza-assicurazione-mezzo'] || '';
+            });
         }
 
         // Funzione per popolare la tabella delle attrezzature nella dashboard
-        async function popolaDashboardAttrezzature() {
-            const user = auth.currentUser;
-            if (user) {
-                const sedeId = user.uid; // Assumiamo che le attrezzature siano collegate all'UID dell'utente admin
+        async function popolaDashboardAttrezzature(sedeId) {
+            const attrezzatureCollection = db.collection('attrezzature');
+            const attrezzatureQuery = attrezzatureCollection.where('sedeId', '==', sedeId);
+            const attrezzatureSnapshot = await attrezzatureQuery.get();
 
-                const attrezzatureCollection = db.collection('attrezzature');
-                const attrezzatureQuery = attrezzatureCollection.where('sedeId', '==', sedeId);
-                const attrezzatureSnapshot = await attrezzatureQuery.get();
+            const tabellaAttrezzatureBody = document.getElementById('dashboard-tabella-attrezzature').getElementsByTagName('tbody')[0];
+            tabellaAttrezzatureBody.innerHTML = ''; // Pulisci la tabella precedente
 
-                const tabellaAttrezzatureBody = document.getElementById('dashboard-tabella-attrezzature').getElementsByTagName('tbody')[0];
-                tabellaAttrezzatureBody.innerHTML = ''; // Pulisci la tabella precedente
-
-                attrezzatureSnapshot.forEach(doc => {
-                    const attrezzaturaData = doc.data();
-                    const row = tabellaAttrezzatureBody.insertRow();
-                    row.insertCell().textContent = attrezzaturaData['tipologia-attrezzatura'] || '';
-                    row.insertCell().textContent = attrezzaturaData['stato-attrezzatura'] || '';
-                    row.insertCell().textContent = attrezzaturaData['note-attrezzatura'] || '';
-                });
-            }
+            attrezzatureSnapshot.forEach(doc => {
+                const attrezzaturaData = doc.data();
+                const row = tabellaAttrezzatureBody.insertRow();
+                row.insertCell().textContent = attrezzaturaData['tipologia-attrezzatura'] || '';
+                row.insertCell().textContent = attrezzaturaData['stato-attrezzatura'] || '';
+                row.insertCell().textContent = attrezzaturaData['note-attrezzatura'] || '';
+            });
         }
 
         // Verifica l'autenticazione e popola la dashboard
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             if (user && isAdminSede(user)) {
                 console.log("Admin sede loggato, popolando la dashboard.");
-                popolaDashboardSede();
-                popolaDashboardMezzi();
-                popolaDashboardAttrezzature();
+                // **Modifica importante:** Otteniamo l'ID della sede dell'admin (dobbiamo capire come è strutturato il tuo database)
+                // Per ora, ipotizzo che l'ID del documento nella collezione 'sedi' sia UGUALE all'UID dell'admin.
+                const sedeId = user.uid;
+                popolaDashboardSede(sedeId);
+                popolaDashboardMezzi(sedeId);
+                popolaDashboardAttrezzature(sedeId);
             } else if (user) {
                 console.log("Utente loggato ma non admin, reindirizzo.");
                 window.location.href = 'sede_template.html';
@@ -300,27 +290,6 @@
                 window.location.href = 'login.html';
             }
         });
-
-        // Funzioni JavaScript per mostrare/nascondere i form di aggiunta (potrebbero essere usate in altre sezioni)
-        function mostraFormNuovoMezzo() {
-            const form = document.getElementById('form-nuovo-mezzo');
-            if (form) form.style.display = 'block';
-        }
-
-        function nascondiFormNuovoMezzo() {
-            const form = document.getElementById('form-nuovo-mezzo');
-            if (form) form.style.display = 'none';
-        }
-
-        function mostraFormNuovaAttrezzatura() {
-            const form = document.getElementById('form-nuova-attrezzatura');
-            if (form) form.style.display = 'block';
-        }
-
-        function nascondiFormNuovaAttrezzatura() {
-            const form = document.getElementById('form-nuova-attrezzatura');
-            if (form) form.style.display = 'none';
-        }
     </script>
 </body>
 </html>
