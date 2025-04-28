@@ -17,16 +17,17 @@
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         // Inserisci qui la tua configurazione Firebase
-       const firebaseConfig = {
-          apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
-          authDomain: "glgest.firebaseapp.com",
-          projectId: "glgest",
-          storageBucket: "glgest.firebasestorage.app",
-          messagingSenderId: "glgest.firebasestorage.app",
-          appId: "1:423155306554:web:c598640f199e296d276503"
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -37,6 +38,7 @@
             const fileInput = document.getElementById('fileInput');
             const successMessage = document.getElementById('successMessage');
             const errorMessage = document.getElementById('errorMessage');
+            const backToDashboardButton = document.getElementById('backToDashboard');
 
             uploadForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
@@ -49,11 +51,69 @@
             });
 
             async function caricaDatiExcel(file) {
-                // ... (il tuo codice esistente per caricare i dati dall'Excel a Firestore) ...
                 try {
-                    // ... (il tuo codice di caricamento) ...
+                    const workbook = XLSX.readFile(file);
+
+                    // **GESTIONE FOGLIO SEDE**
+                    const sedeSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('sede'));
+                    if (sedeSheetName) {
+                        const sedeSheet = workbook.Sheets[sedeSheetName];
+                        const sedeData = XLSX.utils.sheet_to_json(sedeSheet, { header: 1 });
+                        const headersSede = sedeData[0].map(h => String(h).trim());
+                        const rowsSede = sedeData.slice(1);
+
+                        if (rowsSede.length > 0) {
+                            const sedeDoc = {};
+                            headersSede.forEach((header, index) => {
+                                sedeDoc[header] = rowsSede[0][index];
+                            });
+                            const sedeId = auth.currentUser.uid;
+                            await db.collection('sedi').doc(sedeId).set(sedeDoc, { merge: true });
+                            console.log('Dati sede caricati/aggiornati per UID:', sedeId);
+                        }
+                    }
+
+                    // **GESTIONE FOGLIO MEZZI**
+                    const mezziSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('mezzi'));
+                    if (mezziSheetName) {
+                        const mezziSheet = workbook.Sheets[mezziSheetName];
+                        const mezziData = XLSX.utils.sheet_to_json(mezziSheet, { header: 1 });
+                        const headersMezzi = mezziData[0].map(h => String(h).trim());
+                        const rowsMezzi = mezziData.slice(1);
+
+                        for (const row of rowsMezzi) {
+                            const mezzo = {};
+                            headersMezzi.forEach((header, index) => {
+                                mezzo[header] = row[index];
+                            });
+                            mezzo.sedeId = auth.currentUser.uid;
+                            await db.collection('mezzi').add(mezzo);
+                        }
+                        console.log('Dati mezzi caricati per UID:', auth.currentUser.uid);
+                    }
+
+                    // **GESTIONE FOGLIO ATTREZZATURE**
+                    const attrezzatureSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('attrezzature'));
+                    if (attrezzatureSheetName) {
+                        const attrezzatureSheet = workbook.Sheets[attrezzatureSheetName];
+                        const attrezzatureData = XLSX.utils.sheet_to_json(attrezzatureSheet, { header: 1 });
+                        const headersAttrezzature = attrezzatureData[0].map(h => String(h).trim());
+                        const rowsAttrezzature = attrezzatureData.slice(1);
+
+                        for (const row of rowsAttrezzature) {
+                            const attrezzatura = {};
+                            headersAttrezzature.forEach((header, index) => {
+                                attrezzatura[header] = row[index];
+                            });
+                            attrezzatura.sedeId = auth.currentUser.uid;
+                            await db.collection('attrezzature').add(attrezzatura);
+                        }
+                        console.log('Dati attrezzature caricati per UID:', auth.currentUser.uid);
+                    }
+
                     successMessage.textContent = 'Dati caricati con successo!';
                     errorMessage.textContent = '';
+
                 } catch (error) {
                     console.error('Errore durante il caricamento:', error);
                     errorMessage.textContent = 'Errore durante il caricamento dei dati.';
@@ -61,9 +121,15 @@
                 }
             }
 
-            const backToDashboardButton = document.getElementById('backToDashboard');
             backToDashboardButton.addEventListener('click', () => {
                 window.location.href = 'admin_sede.html';
+            });
+
+            auth.onAuthStateChanged(user => {
+                if (!user) {
+                    console.log("Utente non autenticato, reindirizzo al login.");
+                    window.location.href = 'login.html';
+                }
             });
         });
     </script>
