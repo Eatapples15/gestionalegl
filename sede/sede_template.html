@@ -5,7 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Gestionale Gruppo Lucano</title>
     <style>
-        /* ... (il tuo CSS rimane lo stesso) ... */
+     body {
+    font-family: sans-serif;
+    margin: 15px; /* Ridotto il margine esterno */
+    background-color: #f4f4f4;
+    display: flex; /* Per centrare il contenuto se necessario */
+    flex-direction: column; /* Imposta gli elementi in colonna */
+    align-items: center; /* Centra orizzontalmente gli elementi */
+}
+
+.header {
+    background-color: #333;
+    color: white;
+    padding: 8px 15px; /* Ridotto il padding */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px; /* Ridotto il margine inferiore */
+    width: 95%; /* Imposta una larghezza massima */
+    border-radius: 5px;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+}
+
+.header img {
+    max-height: 40px; /* Ridotta l'altezza del logo */
+    margin-right: 10px; /* Ridotto il margine a destra del logo */
+}
+
+h1, h2, h3 {
+    color: #333;
+    text-align: center; /* Centra i titoli */
+    margin-bottom: 10px; /* Ridotto il margine inferiore dei titoli */
+}
+
+.dati-sede, .mezzi, .attrezzature {
+    background-color: white;
+    padding: 15px; /* Ridotto il padding interno */
+    margin-bottom: 15px; /* Ridotto il margine inferiore */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 95%; /* Imposta una larghezza massima */
+}
+
+.mezzi table, .attrezzature table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px; /* Aggiunge spazio sopra la tabella */
+}
+
+.mezzi th, .mezzi td, .attrezzature th, .attrezzature td {
+    border: 1px solid #ddd;
+    padding: 6px; /* Ridotto il padding nelle celle */
+    text-align: left;
+}
+
+.mezzi th, .attrezzature th {
+    background-color: #f2f2f2;
+    text-align: center; /* Centra le intestazioni delle tabelle */
+}
+
+.dati-sede p strong {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.dati-sede p span {
+    color: #555;
+}
+
+.mezzi tbody tr:nth-child(even), .attrezzature tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alterna il colore delle righe */
+}
+
+.mezzi td, .attrezzature td {
+    text-align: center; /* Centra il testo nelle celle della tabella */
+}
+
+/* Stile per i dati mancanti */
+.dati-sede p span.missing-data {
+    color: #999;
+    font-style: italic;
+    font-size: 0.9em;
+}
     </style>
 </head>
 <body>
