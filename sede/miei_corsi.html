@@ -146,52 +146,98 @@ e<!DOCTYPE html>
         }
     </style>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, signOut, getIdTokenResult } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js"; // Importa getIdTokenResult
+        import { getFirestore, collection, query, where, getDocs, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
-            authDomain: "glgest.firebaseapp.com",
-            projectId: "glgest",
-            storageBucket: "glgest.firebasestorage.app",
-            messagingSenderId: "423155306554",
-            appId: "1:423155306554:web:c598640f199e296d276503"
-        };
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
+        };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-        const newsCollection = collection(db, 'news');
-        const corsiVolontariCollection = collection(db, 'corsi_volontari');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const newsCollection = collection(db, 'news');
+        const corsiVolontariCollection = collection(db, 'corsi_volontari');
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            auth.onAuthStateChanged(async user => {
-                if (user) {
-                    console.log("Volontario loggato, UID:", user.uid);
-                    await caricaNews();
-                    await caricaCorsiVolontario(user.uid);
-                } else {
-                    console.log("Utente non loggato, reindirizzo al login.");
-                    window.location.href = '/gestionalegl/index.html'; // Cambia con la tua pagina di login
+        async function aggiornaLinkDashboardSede() {
+    const user = auth.currentUser;
+    if (user) {
+        try {
+            const tokenResult = await getIdTokenResult(user);
+            const sedeId = tokenResult.claims.sedeId; // Assumi che l'ID della sede sia in un custom claim 'sedeId'
+            const dashboardSedeLink = document.getElementById('dashboard-sede-link'); // Ottieni l'elemento qui
+
+            if (sedeId && dashboardSedeLink) {
+                dashboardSedeLink.href = `/gestionalegl/sede/sede_template.html?sede=${sedeId}`;
+            } else {
+                console.warn("ID della sede non trovato nei custom claims o link non trovato.");
+                if (dashboardSedeLink) {
+                    dashboardSedeLink.removeAttribute('href');
+                    dashboardSedeLink.style.pointerEvents = 'none';
+                    dashboardSedeLink.style.color = '#ccc';
                 }
-            });
+            }
+        } catch (error) {
+            console.error("Errore nell'aggiornamento del link Dashboard Sede:", error);
+        }
+    }
+            }
+        }
 
-            document.getElementById('upload-attestato-form')?.addEventListener('submit', async (event) => {
-                event.preventDefault();
-                const corsoId = event.target.dataset.corsoId;
-                const file = document.getElementById(`attestato-file-${corsoId}`).files[0];
-                if (file) {
-                    await uploadAttestato(corsoId, file);
-                } else {
-                    alert('Seleziona un file da caricare.');
-                }
-            });
-        });
+        document.addEventListener('DOMContentLoaded', async () => {
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    console.log("Volontario loggato, UID:", user.uid);
+                    await aggiornaLinkDashboardSede(); // Chiama la funzione per aggiornare il link
+                    await caricaNews();
+                    await caricaCorsiVolontario(user.uid);
+                } else {
+                    console.log("Utente non loggato, reindirizzo al login.");
+                    window.location.href = '/gestionalegl/index.html'; // Cambia con la tua pagina di login
+                }
+            });
 
-        async function caricaNews() {
+            document.getElementById('upload-attestato-form')?.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const corsoId = event.target.dataset.corsoId;
+                const file = document.getElementById(`attestato-file-${corsoId}`).files[0];
+                if (file) {
+                    await uploadAttestato(corsoId, file);
+                } else {
+                    alert('Seleziona un file da caricare.');
+                }
+            });
+        });
+
+        async function caricaNews() {
+            // La tua logica per caricare le news
+        }
+
+        async function caricaCorsiVolontario(uid) {
+            // La tua logica per caricare i corsi del volontario
+        }
+
+        async function uploadAttestato(corsoId, file) {
+            // La tua logica per l'upload dell'attestato
+        }
+
+        function logout() {
+            signOut(auth).then(() => {
+                window.location.href = '/gestionalegl/index.html'; // Cambia con la tua pagina di login
+            }).catch((error) => {
+                console.error("Errore durante il logout:", error);
+                alert("Errore durante il logout.");
+            });
+        }
+            async function caricaNews() {
             try {
                 const querySnapshot = await getDocs(newsCollection);
                 const newsContainer = document.getElementById('news-list');
@@ -305,7 +351,7 @@ e<!DOCTYPE html>
                 <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
                 <span>Gestionale Gruppo Lucano</span>
             </a>
-            <a href="/gestionalegl/sede_template.html?sede=NomeDellaSede">Dashboard Sede</a>
+            <a href="#" id="dashboard-sede-link">Dashboard Sede</a>
             <a href="/gestionalegl/sede/volontario_profilo.html">Profilo</a>
             <a href="/gestionalegl/sede/miei_corsi.html">I Miei Corsi</a>
         </div>
