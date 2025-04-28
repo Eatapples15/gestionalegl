@@ -3,94 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Gestionale Gruppo Lucano</title>
+    <title>GLGestionale - Sede di <span id="sede-nome-title"></span></title>
     <style>
-     body {
-    font-family: sans-serif;
-    margin: 15px; /* Ridotto il margine esterno */
-    background-color: #f4f4f4;
-    display: flex; /* Per centrare il contenuto se necessario */
-    flex-direction: column; /* Imposta gli elementi in colonna */
-    align-items: center; /* Centra orizzontalmente gli elementi */
-}
+        body {
+            font-family: sans-serif;
+            margin: 15px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.header {
-    background-color: #333;
-    color: white;
-    padding: 8px 15px; /* Ridotto il padding */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px; /* Ridotto il margine inferiore */
-    width: 95%; /* Imposta una larghezza massima */
-    border-radius: 5px;
-}
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 95%;
+            border-radius: 5px;
+        }
 
-.header a {
-    color: white;
-    text-decoration: none;
-}
+        .header a {
+            color: white;
+            text-decoration: none;
+        }
 
-.header img {
-    max-height: 40px; /* Ridotta l'altezza del logo */
-    margin-right: 10px; /* Ridotto il margine a destra del logo */
-}
+        .header img {
+            max-height: 40px;
+            margin-right: 10px;
+        }
 
-h1, h2, h3 {
-    color: #333;
-    text-align: center; /* Centra i titoli */
-    margin-bottom: 10px; /* Ridotto il margine inferiore dei titoli */
-}
+        h1, h2, h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
 
-.dati-sede, .mezzi, .attrezzature {
-    background-color: white;
-    padding: 15px; /* Ridotto il padding interno */
-    margin-bottom: 15px; /* Ridotto il margine inferiore */
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 95%; /* Imposta una larghezza massima */
-}
+        .dati-sede, .mezzi, .attrezzature {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 95%;
+        }
 
-.mezzi table, .attrezzature table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px; /* Aggiunge spazio sopra la tabella */
-}
+        .mezzi table, .attrezzature table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
 
-.mezzi th, .mezzi td, .attrezzature th, .attrezzature td {
-    border: 1px solid #ddd;
-    padding: 6px; /* Ridotto il padding nelle celle */
-    text-align: left;
-}
+        .mezzi th, .mezzi td, .attrezzature th, .attrezzature td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
 
-.mezzi th, .attrezzature th {
-    background-color: #f2f2f2;
-    text-align: center; /* Centra le intestazioni delle tabelle */
-}
+        .mezzi th, .attrezzature th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
 
-.dati-sede p strong {
-    font-weight: bold;
-    margin-right: 5px;
-}
+        .dati-sede p strong {
+            font-weight: bold;
+            margin-right: 5px;
+        }
 
-.dati-sede p span {
-    color: #555;
-}
+        .dati-sede p span {
+            color: #555;
+        }
 
-.mezzi tbody tr:nth-child(even), .attrezzature tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Alterna il colore delle righe */
-}
+        .mezzi tbody tr:nth-child(even), .attrezzature tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-.mezzi td, .attrezzature td {
-    text-align: center; /* Centra il testo nelle celle della tabella */
-}
+        .mezzi td, .attrezzature td {
+            text-align: center;
+        }
 
-/* Stile per i dati mancanti */
-.dati-sede p span.missing-data {
-    color: #999;
-    font-style: italic;
-    font-size: 0.9em;
-}
+        .dati-sede p span.missing-data {
+            color: #999;
+            font-style: italic;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -124,7 +123,7 @@ h1, h2, h3 {
                 </tr>
             </thead>
             <tbody>
-                </tbody>
+            </tbody>
         </table>
     </div>
 
@@ -139,7 +138,7 @@ h1, h2, h3 {
                 </tr>
             </thead>
             <tbody>
-                </tbody>
+            </tbody>
         </table>
     </div>
 
@@ -147,7 +146,6 @@ h1, h2, h3 {
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-        // ... (Configurazione Firebase - assicurati che sia la stessa usata nelle altre pagine) ...
         const firebaseConfig = {
             apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
             authDomain: "glgest.firebaseapp.com",
@@ -162,28 +160,29 @@ h1, h2, h3 {
         const sediCollection = collection(db, 'sedi');
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Ottieni il nome della sede dall'URL
             const urlParams = new URLSearchParams(window.location.search);
             const sedeNomeEncoded = urlParams.get('sede');
             const sedeNome = decodeURIComponent(sedeNomeEncoded);
 
+            console.log("Nome della sede dall'URL (decodificato):", sedeNome);
+
             if (sedeNome) {
-                // Esegui una query per trovare la sede nel database in base al nome
                 const q = query(sediCollection, where("SEDE", "==", sedeNome));
                 const querySnapshot = await getDocs(q);
 
+                console.log("querySnapshot è vuoto:", querySnapshot.empty);
+
                 if (!querySnapshot.empty) {
                     const sedeData = querySnapshot.docs[0].data();
+                    console.log("Dati della sede trovati:", sedeData);
 
-                    // Popola i dati della sede
                     document.getElementById('sede-nome-title').textContent = sedeData.SEDE;
                     document.getElementById('sede-nome-h1').textContent = sedeData.SEDE;
                     document.getElementById('sede-nome').textContent = sedeData.SEDE;
-                    document.getElementById('sede-indirizzo').textContent = sedeData.INDIRIZZO || 'N/A'; // Assumi che tu abbia un campo INDIRIZZO
+                    document.getElementById('sede-indirizzo').textContent = sedeData.INDIRIZZO || 'N/A';
                     document.getElementById('sede-responsabile').textContent = sedeData['NOMINATIVO PRESIDENTE'] || 'N/A';
-                    document.getElementById('sede-contatti').textContent = `${sedeData.EMAIL || 'N/A'}, ${sedeData.PEC || 'N/A'}`; // Combina email e PEC
+                    document.getElementById('sede-contatti').textContent = `${sedeData.EMAIL || 'N/A'}, ${sedeData.PEC || 'N/A'}`;
 
-                    // Popola la tabella dei mezzi (se hai dati sui mezzi nel database)
                     if (sedeData.mezzi && Array.isArray(sedeData.mezzi)) {
                         const mezziTableBody = document.getElementById('mezzi-table').querySelector('tbody');
                         sedeData.mezzi.forEach(mezzo => {
@@ -194,10 +193,9 @@ h1, h2, h3 {
                             row.insertCell().textContent = mezzo.stato || 'N/A';
                         });
                     } else {
-                        document.getElementById('mezzi-table').style.display = 'none'; // Nascondi la tabella se non ci sono mezzi
+                        document.getElementById('mezzi-table').style.display = 'none';
                     }
 
-                    // Popola la tabella delle attrezzature (se hai dati sulle attrezzature nel database)
                     if (sedeData.attrezzature && Array.isArray(sedeData.attrezzature)) {
                         const attrezzatureTableBody = document.getElementById('attrezzature-table').querySelector('tbody');
                         sedeData.attrezzature.forEach(attrezzatura => {
@@ -207,7 +205,7 @@ h1, h2, h3 {
                             row.insertCell().textContent = attrezzatura.ultima_manutenzione || 'N/A';
                         });
                     } else {
-                        document.getElementById('attrezzature-table').style.display = 'none'; // Nascondi la tabella se non ci sono attrezzature
+                        document.getElementById('attrezzature-table').style.display = 'none';
                     }
 
                 } else {
