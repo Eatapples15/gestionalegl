@@ -172,16 +172,19 @@
 
                 console.log("querySnapshot è vuoto:", querySnapshot.empty);
 
-                if (!querySnapshot.empty) {
-                    const sedeData = querySnapshot.docs[0].data();
-                    console.log("Dati della sede trovati:", sedeData);
+               if (!querySnapshot.empty) {
+    const sedeData = querySnapshot.docs[0].data();
+    console.log("Dati della sede trovati:", sedeData);
 
-                    document.getElementById('sede-nome-title').textContent = sedeData.SEDE;
-                    document.getElementById('sede-nome-h1').textContent = sedeData.SEDE;
-                    document.getElementById('sede-nome').textContent = sedeData.SEDE;
-                    document.getElementById('sede-indirizzo').textContent = sedeData.INDIRIZZO || 'N/A';
-                    document.getElementById('sede-responsabile').textContent = sedeData['NOMINATIVO PRESIDENTE'] || 'N/A';
-                    document.getElementById('sede-contatti').textContent = `${sedeData.EMAIL || 'N/A'}, ${sedeData.PEC || 'N/A'}`;
+    setTimeout(() => {
+        document.getElementById('sede-nome-title').textContent = sedeData.SEDE;
+    }, 0);
+    document.getElementById('sede-nome-h1').textContent = sedeData.SEDE;
+    document.getElementById('sede-nome').textContent = sedeData.SEDE;
+    document.getElementById('sede-indirizzo').textContent = sedeData.INDIRIZZO || 'N/A';
+    document.getElementById('sede-responsabile').textContent = sedeData['NOMINATIVO PRESIDENTE'] || 'N/A';
+    document.getElementById('sede-contatti').textContent = `${sedeData.EMAIL || 'N/A'}, ${sedeData.PEC || 'N/A'}`;
+
 
                     if (sedeData.mezzi && Array.isArray(sedeData.mezzi)) {
                         const mezziTableBody = document.getElementById('mezzi-table').querySelector('tbody');
