@@ -89,16 +89,33 @@
                 const email = emailInput.value;
                 const password = passwordInput.value;
 
-                try {
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-                    console.log('Utente loggato:', user);
-                    // Reindirizza l'utente alla pagina principale o alla pagina desiderata dopo il login
-                    window.location.href = 'window.location.href = '/gestionalegl/login.html'; 
-                } catch (error) {
-                    console.error('Errore durante il login:', error.code, error.message);
-                    errorMessage.textContent = getErrorMessage(error.code);
-                }
+               try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log('Utente loggato:', user);
+
+    // Recupera i dati dell'utente dal database (collezione 'volontari')
+    const volontariCollection = collection(db, 'volontari');
+    const q = query(volontariCollection, where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        const sedeIscrizione = userData.sede_iscrizione;
+
+        // Reindirizza l'utente alla pagina della sua sede
+        window.location.href = `/gestionalegl/sede/${encodeURIComponent(sedeIscrizione)}.html`;
+        // Assicurati di avere una pagina HTML per ogni sede (es: tricarico.html)
+    } else {
+        console.error("Dati utente non trovati nel database.");
+        // Potresti reindirizzare a una pagina di profilo generica o mostrare un errore
+        window.location.href = '/gestionalegl/profilo.html';
+    }
+
+} catch (error) {
+    console.error('Errore durante il login:', error.code, error.message);
+    errorMessage.textContent = getErrorMessage(error.code);
+}
             });
 
             function getErrorMessage(errorCode) {
