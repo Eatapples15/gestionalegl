@@ -203,7 +203,7 @@
             'villapiana@pcgl.it'
         ];
 
-      // Funzione per verificare se l'utente è un amministratore di sede
+     // Funzione per verificare se l'utente è un amministratore di sede
         function isAdminSede(user) {
             return user && adminEmails.includes(user.email);
         }
@@ -218,14 +218,14 @@
                     const sedeData = sedeDocSnap.data();
                     console.log("Dati sede recuperati:", sedeData);
                     document.getElementById('dashboard-codice-fiscale').textContent = sedeData['codice-fiscale'] || '';
-                    document.getElementById('dashboard-nome-responsabile').textContent = sedeData['nome-responsabile'] || '';
-                    document.getElementById('dashboard-email-sede').textContent = sedeData['email-sede'] || '';
-                    document.getElementById('dashboard-pec-sede').textContent = sedeData['pec-sede'] || '';
-                    document.getElementById('dashboard-indirizzo-sede').textContent = sedeData['indirizzo-sede'] || '';
-                    document.getElementById('dashboard-citta-sede').textContent = sedeData['citta-sede'] || '';
-                    document.getElementById('dashboard-provincia-sede').textContent = sedeData['provincia-sede'] || '';
-                    document.getElementById('dashboard-nome-sede-input').textContent = sedeData['nome-sede-input'] || '';
-                    document.getElementById('dashboard-posizione-sede').textContent = sedeData['posizione-sede'] || '';
+                    document.getElementById('dashboard-nome-responsabile').textContent = sedeData['Nome responsabile'] || '';
+                    document.getElementById('dashboard-email-sede').textContent = sedeData['Email'] || '';
+                    document.getElementById('dashboard-pec-sede').textContent = sedeData['Pec'] || '';
+                    document.getElementById('dashboard-indirizzo-sede').textContent = sedeData['Indirizzo'] || '';
+                    document.getElementById('dashboard-citta-sede').textContent = sedeData['Città'] || '';
+                    document.getElementById('dashboard-provincia-sede').textContent = sedeData['Provincia'] || '';
+                    document.getElementById('dashboard-nome-sede-input').textContent = sedeData['Nome Sede'] || '';
+                    document.getElementById('dashboard-posizione-sede').textContent = sedeData['Posizione'] || '';
                 } else {
                     console.log("Nessun dato sede trovato per l'ID:", sedeId);
                 }
@@ -253,8 +253,8 @@
                     row.insertCell().textContent = mezzoData['modello-mezzo'] || '';
                     row.insertCell().textContent = mezzoData['targa-mezzo'] || '';
                     row.insertCell().textContent = mezzoData['stato-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['scadenza-revisione-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['scadenza-assicurazione-mezzo'] || '';
+                    row.insertCell().textContent = mezzoData['Scadenza Revisione'] || '';
+                    row.insertCell().textContent = mezzoData['Scadenza assicurazione'] || '';
                 });
             } catch (error) {
                 console.error("Errore nel recupero dati mezzi:", error);
@@ -275,9 +275,9 @@
                     const attrezzaturaData = doc.data();
                     console.log("Dati attrezzatura:", attrezzaturaData);
                     const row = tabellaAttrezzatureBody.insertRow();
-                    row.insertCell().textContent = attrezzaturaData['tipologia-attrezzatura'] || '';
-                    row.insertCell().textContent = attrezzaturaData['stato-attrezzatura'] || '';
-                    row.insertCell().textContent = attrezzaturaData['note-attrezzatura'] || '';
+                    row.insertCell().textContent = attrezzaturaData['Tipologia'] || '';
+                    row.insertCell().textContent = attrezzaturaData['Stato'] || '';
+                    row.insertCell().textContent = attrezzaturaData['Note'] || '';
                 });
             } catch (error) {
                 console.error("Errore nel recupero dati attrezzature:", error);
@@ -318,7 +318,7 @@
                 // try {
                 //     const userDocSnap = await userDocRef.get();
                 //     if (userDocSnap.exists && userDocSnap.data().sedeId) {
-                //         sedeId = userDocSnap.data().sedeId;
+               //         sedeId = userDocSnap.data().sedeId;
                 //         console.log("Tentativo di recupero sedeId con strategia 4:", sedeId);
                 //     }
                 // } catch (error) {
