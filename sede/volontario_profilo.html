@@ -26,11 +26,15 @@
             border-radius: 5px;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
         .header a {
             color: white;
             text-decoration: none;
             margin-left: 15px;
-            margin-right: 15px;
         }
 
         .header a:first-child {
@@ -52,65 +56,90 @@
 
         .profilo-container {
             background-color: white;
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 95%;
-            max-width: 600px;
+            max-width: 600px; /* Limita la larghezza del contenuto */
         }
 
-        .profilo-info p {
-            margin-bottom: 10px;
-        }
-
-        .profilo-info strong {
+        .profilo-info p strong {
             font-weight: bold;
             margin-right: 5px;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="email"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
+        .profilo-actions button {
             padding: 10px 15px;
-            background-color: #333;
+            margin-top: 10px;
+            cursor: pointer;
+            background-color: #5cb85c;
             color: white;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 5px;
             font-size: 1em;
         }
 
-        button:hover {
-            background-color: #555;
+        .profilo-actions button:hover {
+            background-color: #4cae4c;
         }
 
-        .tesserino-button {
+        /* Stili per il form di modifica (potrebbe essere in un'altra sezione) */
+        .modifica-profilo form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modifica-profilo label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .modifica-profilo input[type="text"],
+        .modifica-profilo input[type="email"] {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modifica-profilo button[type="submit"] {
+            padding: 10px 15px;
+            margin-top: 15px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .modifica-profilo button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .tesserino-digitale-container {
             margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
             text-align: center;
+        }
+
+        .tesserino-digitale-container h3 {
+            margin-top: 0;
+        }
+
+        #qrcode-container {
+            margin-top: 10px;
         }
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import QRCode from 'qrcode'; // Assicurati di aver incluso la libreria qrcode (es. tramite CDN o npm)
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
@@ -125,50 +154,202 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            onAuthStateChanged(auth, async (user) => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            auth.onAuthStateChanged(async user => {
                 if (user) {
-                    console.log("Utente loggato:", user.uid);
-                    await fetchUserProfile(user.uid);
+                    console.log("Volontario loggato, UID:", user.uid);
+                    await caricaProfilo(user);
                 } else {
                     console.log("Utente non loggato, reindirizzo al login.");
-                    window.location.href = '/gestionalegl/login.html';
+                    window.location.href = '/gestionalegl/index.html'; // Cambia con la tua pagina di login
                 }
             });
 
-            const profileForm = document.getElementById('profileForm');
-            if (profileForm) {
-                profileForm.addEventListener('submit', handleProfileUpdate);
-            }
+            document.getElementById('modifica-profilo-form')?.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                await salvaProfilo();
+            });
+
+            document.getElementById('tesserino-button')?.addEventListener('click', () => {
+                mostraTesserino();
+            });
         });
 
-        async function fetchUserProfile(uid) {
-            const userDocRef = doc(db, 'users', uid);
-            const userDocSnap = await getDoc(userDocRef);
+        async function caricaProfilo(user) {
+            try {
+                const userRef = doc(db, 'users', user.uid); // Assumi che i dati del volontario siano nella collezione 'users'
+                const docSnap = await getDoc(userRef);
 
-            if (userDocSnap.exists()) {
-                const userData = userDocSnap.data();
-                document.getElementById('nome').value = userData.nome || '';
-                document.getElementById('cognome').value = userData.cognome || '';
-                document.getElementById('email').value = userData.email || '';
-                document.getElementById('telefono').value = userData.telefono || '';
-                // Aggiungi qui altri campi del profilo
-            } else {
-                console.log("Nessun profilo utente trovato.");
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    document.getElementById('nome')?.textContent = userData.nome || 'Non specificato';
+                    document.getElementById('cognome')?.textContent = userData.cognome || 'Non specificato';
+                    document.getElementById('email')?.textContent = userData.email || 'Non specificato';
+                    document.getElementById('telefono')?.value = userData.telefono || '';
+                    document.getElementById('indirizzo')?.value = userData.indirizzo || '';
+                    // Carica altri campi del profilo
+                } else {
+                    document.querySelector('.profilo-info').innerHTML = '<p>Profilo non trovato.</p>';
+                }
+            } catch (error) {
+                console.error("Errore nel caricamento del profilo:", error);
+                document.querySelector('.profilo-info').innerHTML = '<p>Errore nel caricamento del profilo.</p>';
             }
         }
 
-        async function handleProfileUpdate(event) {
-            event.preventDefault();
-            const uid = auth.currentUser.uid;
-            const nome = document.getElementById('nome').value;
-            const cognome = document.getElementById('cognome').value;
-            const telefono = document.getElementById('telefono').value;
-            // Recupera qui altri campi del profilo
+        async function salvaProfilo() {
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    const telefono = document.getElementById('telefono').value;
+                    const indirizzo = document.getElementById('indirizzo').value;
 
-            const userDocRef = doc(db, 'users', uid);
-            try {
-                await updateDoc(userDocRef, {
-                    nome: nome,
-                    cognome: cognome,
-                    telefono: telefono
+                    const userRef = doc(db, 'users', user.uid);
+                    await updateDoc(userRef, {
+                        telefono: telefono,
+                        indirizzo: indirizzo,
+                        // Aggiungi altri campi da salvare
+                    });
+                    alert('Profilo salvato con successo!');
+                    await caricaProfilo(user); // Ricarica i dati aggiornati
+                } catch (error) {
+                    console.error("Errore nel salvataggio del profilo:", error);
+                    alert('Errore nel salvataggio del profilo.');
+                }
+            }
+        }
+
+        async function mostraTesserino() {
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    const userRef = doc(db, 'users', user.uid);
+                    const docSnap = await getDoc(userRef);
+
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        const nome = userData.nome || 'Non specificato';
+                        const cognome = userData.cognome || 'Non specificato';
+
+                        // Recupera la sede di riferimento (potrebbe essere nei custom claims o nel documento utente)
+                        const tokenResult = await user.getIdTokenResult();
+                        const sedeId = tokenResult.claims.sedeId || userData.sedeId || 'Non specificata';
+                        const sedeRef = doc(db, 'sedi', sedeId);
+                        const sedeSnap = await getDoc(sedeRef);
+                        const nomeSede = sedeSnap.exists() ? sedeSnap.data().SEDE || sedeSnap.data()['Nome Sede'] || 'Non specificata' : 'Non specificata';
+
+                        const tesserinoData = {
+                            nome: nome,
+                            cognome: cognome,
+                            sede: nomeSede,
+                            uid: user.uid // Puoi includere l'UID nel QR code
+                        };
+
+                        const tesserinoContainer = document.createElement('div');
+                        tesserinoContainer.classList.add('tesserino-digitale-container');
+
+                        const titolo = document.createElement('h3');
+                        titolo.textContent = 'Tesserino Volontario';
+                        tesserinoContainer.appendChild(titolo);
+
+                        const nomeParagrafo = document.createElement('p');
+                        nomeParagrafo.innerHTML = `<strong>Nome:</strong> ${nome}`;
+                        tesserinoContainer.appendChild(nomeParagrafo);
+
+                        const cognomeParagrafo = document.createElement('p');
+                        cognomeParagrafo.innerHTML = `<strong>Cognome:</strong> ${cognome}`;
+                        tesserinoContainer.appendChild(cognomeParagrafo);
+
+                        const sedeParagrafo = document.createElement('p');
+                        sedeParagrafo.innerHTML = `<strong>Sede:</strong> ${nomeSede}`;
+                        tesserinoContainer.appendChild(sedeParagrafo);
+
+                        const qrcodeContainer = document.createElement('div');
+                        qrcodeContainer.id = 'qrcode-container';
+                        tesserinoContainer.appendChild(qrcodeContainer);
+
+                        // Genera il codice QR
+                        QRCode.toCanvas(document.createElement('canvas'), JSON.stringify(tesserinoData), { errorCorrectionLevel: 'H' }, function (error, canvas) {
+                            if (error) {
+                                console.error(error);
+                                qrcodeContainer.textContent = 'Errore nella generazione del QR code.';
+                            } else {
+                                qrcodeContainer.appendChild(canvas);
+                            }
+                        });
+
+                        // Aggiungi un pulsante di stampa
+                        const stampaButton = document.createElement('button');
+                        stampaButton.textContent = 'Stampa Tesserino';
+                        stampaButton.onclick = () => window.print();
+                        tesserinoContainer.appendChild(stampaButton);
+
+                        document.body.appendChild(tesserinoContainer);
+
+                        // Rimuovi il tesserino dopo un po' o quando si clicca un pulsante di chiusura
+                        setTimeout(() => {
+                            document.body.removeChild(tesserinoContainer);
+                        }, 10000); // Mostra per 10 secondi
+                    } else {
+                        alert('Dati del profilo non trovati per generare il tesserino.');
+                    }
+                } catch (error) {
+                    console.error("Errore nella visualizzazione del tesserino:", error);
+                    alert('Errore nella visualizzazione del tesserino.');
+                }
+            }
+        }
+
+        function logout() {
+            signOut(auth).then(() => {
+                window.location.href = '/gestionalegl/index.html'; // Reindirizza alla homepage o login
+            }).catch((error) => {
+                console.error('Errore durante il logout:', error);
+                alert('Errore durante il logout.');
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="/gestionalegl/index.html" style="display: flex; align-items: center;">
+                <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+                <span>Gestionale Gruppo Lucano</span>
+            </a>
+            <a href="/gestionalegl/sede_template.html?sede=NomeDellaSede">Dashboard Sede</a>
+            <a href="/gestionalegl/volontario_profilo.html">Profilo</a>
+            <a href="/gestionalegl/miei_corsi.html">I Miei Corsi</a>
+        </div>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <div class="profilo-container">
+        <h1>Profilo Volontario</h1>
+        <div class="profilo-info">
+            <p><strong>Nome:</strong> <span id="nome"></span></p>
+            <p><strong>Cognome:</strong> <span id="cognome"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+            </div>
+
+        <div class="modifica-profilo">
+            <h2>Modifica Profilo</h2>
+            <form id="modifica-profilo-form">
+                <label for="telefono">Telefono:</label>
+                <input type="text" id="telefono" name="telefono">
+
+                <label for="indirizzo">Indirizzo:</label>
+                <input type="text" id="indirizzo" name="indirizzo">
+
+                <button type="submit">Salva Modifiche</button>
+            </form>
+        </div>
+
+        <div class="profilo-actions">
+            <button id="tesserino-button">Tesserino Digitale</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/qrcode.min.js"></script>
+</body>
+</html>
