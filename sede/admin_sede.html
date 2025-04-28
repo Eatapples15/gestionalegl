@@ -35,7 +35,6 @@
           appId: "1:423155306554:web:c598640f199e296d276503"
         };
 
-
         // Inizializza Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -100,8 +99,9 @@
     </div>
 
     <script>
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        // **RIMOSSE le dichiarazioni duplicate di auth e db**
+        // const auth = firebase.auth();
+        // const db = firebase.firestore();
 
         // Array degli indirizzi email degli amministratori di sede
         const adminEmails = [
@@ -277,12 +277,10 @@
             if (user && isAdminSede(user)) {
                 console.log("Admin sede loggato, popolando la dashboard.");
 
-                // **RECUPERO DELL'ID DELLA SEDE DELL'ADMIN - STRATEGIE ALTERNATIVE**
-
                 let sedeId;
 
                 // **STRATEGIA 1 (Più comune): L'UID dell'utente corrisponde all'ID del documento 'sedi'**
-                // sedeId = user.uid; // Usa l'UID dell'utente come ID della sede
+                sedeId = user.uid; // Usa l'UID dell'utente come ID della sede
 
                 // **STRATEGIA 2: L'ID della sede è memorizzato nell'oggetto utente Firebase Auth**
                 // if (user.customClaims && user.customClaims.sedeId) {
@@ -297,11 +295,11 @@
                 // }
 
                 // **STRATEGIA 4: L'ID della sede è memorizzato in una sottocollezione dell'utente auth**
-                 const userDocRef = db.collection('users').doc(user.uid);
-                 const userDocSnap = await userDocRef.get();
-                 if (userDocSnap.exists) {
-                     sedeId = userDocSnap.data().sedeId;
-                 }
+                // const userDocRef = db.collection('users').doc(user.uid);
+                // const userDocSnap = await userDocRef.get();
+                // if (userDocSnap.exists) {
+                //     sedeId = userDocSnap.data().sedeId;
+                // }
 
                 if (sedeId) {
                     popolaDashboardSede(sedeId);
