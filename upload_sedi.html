@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carica Dati Sedi su Firebase</title>
+    <script type="module">
+      // Importa le funzioni necessarie dal Firebase JS SDK
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+      import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+      // Le tue credenziali Firebase (CONFIGURAZIONE WEB)
+      const firebaseConfig = {
+        apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+        authDomain: "glgest.firebaseapp.com",
+        projectId: "glgest",
+        storageBucket: "glgest.firebasestorage.app",
+        messagingSenderId: "423155306554",
+        appId: "1:423155306554:web:c598640f199e296d276503"
+      };
+
+      // Inizializza Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const sediCollection = collection(db, 'sedi'); // Nome della collezione in Firestore
+
+      async function uploadSedi(jsonData) {
+        for (const sede of jsonData) {
+          try {
+            const docRef = await addDoc(sediCollection, sede);
+            console.log("Document written with ID: ", docRef.id, sede.SEDE);
+          } catch (e) {
+            console.error("Error adding document: ", e, sede.SEDE);
+          }
+        }
+        alert('Caricamento completato!');
+      }
+
+      document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            try {
+              const jsonData = JSON.parse(e.target.result);
+              await uploadSedi(jsonData);
+            } catch (error) {
+              console.error("Errore nella lettura o parsing del file JSON:", error);
+              alert("Errore nella lettura o parsing del file JSON.");
+            }
+          };
+          reader.readAsText(file);
+        } else {
+          alert('Seleziona un file JSON.');
+        }
+      });
+    </script>
+</head>
+<body>
+    <h1>Carica File Sedi su Firebase</h1>
+    <form id="uploadForm">
+        <input type="file" id="fileInput" accept=".json">
+        <button type="submit">Carica Dati</button>
+    </form>
+</body>
+</html>
