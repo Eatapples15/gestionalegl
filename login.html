@@ -95,6 +95,10 @@
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
                     console.log('Utente loggato:', user);
+                     if (email === 'coordinamento@pcgl.it') {
+                        // Reindirizza alla dashboard del coordinamento
+                        window.location.href = '/gestionalegl/coordinamento/dashboard_coordinamento.html';
+                    } else {
 
                     // Array degli indirizzi email degli amministratori di sede
                     const adminEmails = [
