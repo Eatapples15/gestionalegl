@@ -50,76 +50,105 @@
                 }
             });
 
-            async function caricaDatiExcel(file) {
-                try {
-                    const workbook = XLSX.readFile(file);
+          async function caricaDatiExcel(file) {
+            try {
+                const workbook = XLSX.readFile(file);
 
-                    // **GESTIONE FOGLIO SEDE**
-                    const sedeSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('sede'));
-                    if (sedeSheetName) {
-                        const sedeSheet = workbook.Sheets[sedeSheetName];
-                        const sedeData = XLSX.utils.sheet_to_json(sedeSheet, { header: 1 });
-                        const headersSede = sedeData[0].map(h => String(h).trim());
-                        const rowsSede = sedeData.slice(1);
+                // **GESTIONE FOGLIO SEDE**
+                const sedeSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('sede'));
+                if (sedeSheetName) {
+                    const sedeSheet = workbook.Sheets[sedeSheetName];
+                    const sedeData = XLSX.utils.sheet_to_json(sedeSheet, { header: 1 });
+                    const headersSede = sedeData[0].map(h => String(h).trim());
+                    const rowsSede = sedeData.slice(1);
 
-                        if (rowsSede.length > 0) {
-                            const sedeDoc = {};
-                            headersSede.forEach((header, index) => {
-                                sedeDoc[header] = rowsSede[0][index];
-                            });
-                            const sedeId = auth.currentUser.uid;
-                            await db.collection('sedi').doc(sedeId).set(sedeDoc, { merge: true });
-                            console.log('Dati sede caricati/aggiornati per UID:', sedeId);
-                        }
+                    if (rowsSede.length > 0) {
+                        const sedeDoc = {};
+                        headersSede.forEach((header, index) => {
+                            sedeDoc[header] = rowsSede[0][index];
+                        });
+                        const sedeId = auth.currentUser.uid;
+                        await db.collection('sedi').doc(sedeId).set(sedeDoc, { merge: true });
+                        console.log('Dati sede caricati/aggiornati per UID:', sedeId);
                     }
-
-                    // **GESTIONE FOGLIO MEZZI**
-                    const mezziSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('mezzi'));
-                    if (mezziSheetName) {
-                        const mezziSheet = workbook.Sheets[mezziSheetName];
-                        const mezziData = XLSX.utils.sheet_to_json(mezziSheet, { header: 1 });
-                        const headersMezzi = mezziData[0].map(h => String(h).trim());
-                        const rowsMezzi = mezziData.slice(1);
-
-                        for (const row of rowsMezzi) {
-                            const mezzo = {};
-                            headersMezzi.forEach((header, index) => {
-                                mezzo[header] = row[index];
-                            });
-                            mezzo.sedeId = auth.currentUser.uid;
-                            await db.collection('mezzi').add(mezzo);
-                        }
-                        console.log('Dati mezzi caricati per UID:', auth.currentUser.uid);
-                    }
-
-                    // **GESTIONE FOGLIO ATTREZZATURE**
-                    const attrezzatureSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('attrezzature'));
-                    if (attrezzatureSheetName) {
-                        const attrezzatureSheet = workbook.Sheets[attrezzatureSheetName];
-                        const attrezzatureData = XLSX.utils.sheet_to_json(attrezzatureSheet, { header: 1 });
-                        const headersAttrezzature = attrezzatureData[0].map(h => String(h).trim());
-                        const rowsAttrezzature = attrezzatureData.slice(1);
-
-                        for (const row of rowsAttrezzature) {
-                            const attrezzatura = {};
-                            headersAttrezzature.forEach((header, index) => {
-                                attrezzatura[header] = row[index];
-                            });
-                            attrezzatura.sedeId = auth.currentUser.uid;
-                            await db.collection('attrezzature').add(attrezzatura);
-                        }
-                        console.log('Dati attrezzature caricati per UID:', auth.currentUser.uid);
-                    }
-
-                    successMessage.textContent = 'Dati caricati con successo!';
-                    errorMessage.textContent = '';
-
-                } catch (error) {
-                    console.error('Errore durante il caricamento:', error);
-                    errorMessage.textContent = 'Errore durante il caricamento dei dati.';
-                    successMessage.textContent = '';
                 }
+
+                // **GESTIONE FOGLIO MEZZI**
+                const mezziSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('mezzi'));
+                if (mezziSheetName) {
+                    const mezziSheet = workbook.Sheets[mezziSheetName];
+                    const mezziData = XLSX.utils.sheet_to_json(mezziSheet); // Ottieni array di oggetti
+
+                    for (const mezzoExcel of mezziData) {
+                        const sedeId = auth.currentUser.uid;
+                        const targa = mezzoExcel['Targa']; // Assumendo che 'Targa' sia univoca
+
+                        if (targa) {
+                            const mezziRef = db.collection('mezzi');
+                            const query = mezziRef.where('sedeId', '==', sedeId).where('Targa', '==', targa);
+                            const snapshot = await query.get();
+
+                            if (snapshot.empty) {
+                                // Se non esiste un mezzo con questa targa per questa sede, aggiungilo
+                                mezzoExcel.sedeId = sedeId;
+                                await db.collection('mezzi').add(mezzoExcel);
+                                console.log('Mezzo aggiunto:', targa, sedeId);
+                            } else {
+                                // Se esiste già un mezzo con questa targa per questa sede, aggiornalo
+                                snapshot.forEach(async doc => {
+                                    await db.collection('mezzi').doc(doc.id).update(mezzoExcel);
+                                    console.log('Mezzo aggiornato:', targa, sedeId);
+                                });
+                            }
+                        } else {
+                            console.warn('Targa non trovata per un mezzo nel file Excel. Impossibile identificare univocamente.');
+                        }
+                    }
+                    console.log('Dati mezzi caricati/aggiornati per UID:', auth.currentUser.uid);
+                }
+
+                // **GESTIONE FOGLIO ATTREZZATURE**
+                const attrezzatureSheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('attrezzature'));
+                if (attrezzatureSheetName) {
+                    const attrezzatureSheet = workbook.Sheets[attrezzatureSheetName];
+                    const attrezzatureData = XLSX.utils.sheet_to_json(attrezzatureSheet); // Ottieni array di oggetti
+
+                    for (const attrezzaturaExcel of attrezzatureData) {
+                        const sedeId = auth.currentUser.uid;
+                        const tipologia = attrezzaturaExcel['Tipologia']; // Assumendo che 'Tipologia' possa essere usata come identificativo (potrebbe essere necessario un approccio diverso)
+                        const stato = attrezzaturaExcel['Stato'];
+
+                        if (tipologia && stato) {
+                            const attrezzatureRef = db.collection('attrezzature');
+                            const query = attrezzatureRef.where('sedeId', '==', sedeId).where('Tipologia', '==', tipologia).where('Stato', '==', stato); // Potrebbe essere necessario un identificativo migliore
+                            const snapshot = await query.get();
+
+                            if (snapshot.empty) {
+                                attrezzaturaExcel.sedeId = sedeId;
+                                await db.collection('attrezzature').add(attrezzaturaExcel);
+                                console.log('Attrezzatura aggiunta:', tipologia, stato, sedeId);
+                            } else {
+                                snapshot.forEach(async doc => {
+                                    await db.collection('attrezzature').doc(doc.id).update(attrezzaturaExcel);
+                                    console.log('Attrezzatura aggiornata:', tipologia, stato, sedeId);
+                                });
+                            }
+                        } else {
+                            console.warn('Tipologia o Stato non trovati per un\'attrezzatura nel file Excel. Impossibile identificare univocamente.');
+                        }
+                    }
+                    console.log('Dati attrezzature caricati/aggiornati per UID:', auth.currentUser.uid);
+                }
+
+                successMessage.textContent = 'Dati caricati con successo!';
+                errorMessage.textContent = '';
+
+            } catch (error) {
+                console.error('Errore durante il caricamento:', error);
+                errorMessage.textContent = 'Errore durante il caricamento dei dati.';
+                successMessage.textContent = '';
             }
+        }
 
             backToDashboardButton.addEventListener('click', () => {
                 window.location.href = 'admin_sede.html';
