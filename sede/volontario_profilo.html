@@ -35,6 +35,7 @@
             color: white;
             text-decoration: none;
             margin-left: 15px;
+            margin-right: 15px;
         }
 
         .header a:first-child {
@@ -61,85 +62,107 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 95%;
-            max-width: 600px; /* Limita la larghezza del contenuto */
+            max-width: 700px; /* Aumenta la larghezza massima */
         }
 
-        .profilo-info p strong {
-            font-weight: bold;
-            margin-right: 5px;
+        .sottosezione {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
         }
 
-        .profilo-actions button {
-            padding: 10px 15px;
-            margin-top: 10px;
-            cursor: pointer;
-            background-color: #5cb85c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
+        .sottosezione h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: left;
         }
 
-        .profilo-actions button:hover {
-            background-color: #4cae4c;
-        }
-
-        /* Stili per il form di modifica (potrebbe essere in un'altra sezione) */
-        .modifica-profilo form {
+        .form-group {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
-        .modifica-profilo label {
-            margin-top: 10px;
+        .form-group label {
+            flex: 0 0 150px;
             font-weight: bold;
+            margin-right: 10px;
+            text-align: left;
         }
 
-        .modifica-profilo input[type="text"],
-        .modifica-profilo input[type="email"] {
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group input[type="email"],
+        .form-group input[type="number"],
+        .form-group select {
+            flex: 1 1 200px;
             padding: 8px;
-            margin-top: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
 
-        .modifica-profilo button[type="submit"] {
-            padding: 10px 15px;
-            margin-top: 15px;
+        .form-group .view-data {
+            flex: 1 1 200px;
+            padding: 8px;
+        }
+
+        .form-group .edit-icon {
             cursor: pointer;
-            background-color: #007bff;
-            color: white;
+            margin-left: 5px;
+            color: #007bff;
+        }
+
+        .form-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .form-actions button, .form-actions a {
+            padding: 10px 15px;
+            margin-left: 10px;
+            cursor: pointer;
             border: none;
             border-radius: 5px;
             font-size: 1em;
+            text-decoration: none;
         }
 
-        .modifica-profilo button[type="submit"]:hover {
+        .form-actions button.save {
+            background-color: #5cb85c;
+            color: white;
+        }
+
+        .form-actions button.save:hover {
+            background-color: #4cae4c;
+        }
+
+        .form-actions a.download {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .form-actions a.download:hover {
             background-color: #0056b3;
         }
 
-        .tesserino-digitale-container {
+        .privacy-info {
             margin-top: 20px;
-            border: 1px solid #ccc;
             padding: 15px;
-            border-radius: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             background-color: #f9f9f9;
-            text-align: center;
         }
 
-        .tesserino-digitale-container h3 {
-            margin-top: 0;
-        }
-
-        #qrcode-container {
-            margin-top: 10px;
+        .privacy-info h3 {
+            text-align: left;
         }
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
-        import QRCode from 'qrcode'; // Assicurati di aver incluso la libreria qrcode (es. tramite CDN o npm)
+        import { FontAwesomeIcon } from 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js'; // Potrebbe essere necessario un setup diverso
 
         const firebaseConfig = {
             apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
@@ -155,45 +178,79 @@
         const db = getFirestore(app);
 
         document.addEventListener('DOMContentLoaded', async () => {
-            auth.onAuthStateChanged(async user => {
+            onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     console.log("Volontario loggato, UID:", user.uid);
                     await caricaProfilo(user);
+                    setupEditIcons();
                 } else {
                     console.log("Utente non loggato, reindirizzo al login.");
-                    window.location.href = '/gestionalegl/index.html'; // Cambia con la tua pagina di login
+                    window.location.href = '/gestionalegl/login.html';
                 }
             });
 
-            document.getElementById('modifica-profilo-form')?.addEventListener('submit', async (event) => {
-                event.preventDefault();
-                await salvaProfilo();
-            });
-
-            document.getElementById('tesserino-button')?.addEventListener('click', () => {
-                mostraTesserino();
-            });
+            const saveButton = document.querySelector('.form-actions button.save');
+            if (saveButton) {
+                saveButton.addEventListener('click', salvaProfilo);
+            }
         });
 
         async function caricaProfilo(user) {
             try {
-                const userRef = doc(db, 'users', user.uid); // Assumi che i dati del volontario siano nella collezione 'users'
+                const userRef = doc(db, 'volontari', user.uid); // Assumi che i dati siano in una collezione 'volontari'
                 const docSnap = await getDoc(userRef);
 
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
-                    document.getElementById('nome')?.textContent = userData.nome || 'Non specificato';
-                    document.getElementById('cognome')?.textContent = userData.cognome || 'Non specificato';
-                    document.getElementById('email')?.textContent = userData.email || 'Non specificato';
-                    document.getElementById('telefono')?.value = userData.telefono || '';
-                    document.getElementById('indirizzo')?.value = userData.indirizzo || '';
-                    // Carica altri campi del profilo
+                    // Popola i campi del form con i dati recuperati
+                    document.getElementById('nome').value = userData.nome || '';
+                    document.getElementById('cognome').value = userData.cognome || '';
+                    document.getElementById('nato_a').value = userData.nato_a || '';
+                    document.getElementById('provincia_nascita').value = userData.provincia_nascita || '';
+                    document.getElementById('data_nascita').value = userData.data_nascita ? new Date(userData.data_nascita.seconds * 1000).toISOString().split('T')[0] : '';
+                    document.getElementById('codice_fiscale').value = userData.codice_fiscale || '';
+                    document.getElementById('residente_a').value = userData.residente_a || '';
+                    document.getElementById('provincia_residenza').value = userData.provincia_residenza || '';
+                    document.getElementById('cap').value = userData.cap || '';
+                    document.getElementById('indirizzo').value = userData.indirizzo || '';
+                    document.getElementById('cellulare').value = userData.cellulare || '';
+                    document.getElementById('fisso').value = userData.fisso || '';
+                    document.getElementById('email').value = userData.email || '';
+                    document.getElementById('pec').value = userData.pec || '';
+                    document.getElementById('carta_identita_n').value = userData.carta_identita_n || '';
+                    document.getElementById('anno_scadenza_ci').value = userData.anno_scadenza_ci || '';
+                    // document.getElementById('carica_ci').value = userData.carica_ci || ''; // Gestire l'upload in modo diverso
+                    document.getElementById('passaporto_n').value = userData.passaporto_n || '';
+                    document.getElementById('anno_scadenza_passaporto').value = userData.anno_scadenza_passaporto || '';
+                    document.getElementById('patente_n').value = userData.patente_n || '';
+                    document.getElementById('anno_scadenza_patente').value = userData.anno_scadenza_patente || '';
+                    document.getElementById('categoria_patente').value = userData.categoria_patente || '';
+                    document.getElementById('cap_abilitazione').value = userData.cap_abilitazione || '';
+                    document.getElementById('corsi').value = userData.corsi || '';
+                    document.getElementById('brevetti').value = userData.brevetti || '';
+                    document.getElementById('titolo_studio').value = userData.titolo_studio || '';
+                    document.getElementById('specifica_titolo').value = userData.specifica_titolo || '';
+                    document.getElementById('professione').value = userData.professione || '';
+                    document.getElementById('condizione_lavorativa').value = userData.condizione_lavorativa || '';
+                    document.getElementById('specifica_condizione').value = userData.specifica_condizione || '';
+                    document.getElementById('denominazione_dl').value = userData.denominazione_dl || '';
+                    document.getElementById('indirizzo_dl').value = userData.indirizzo_dl || '';
+                    document.getElementById('citta_dl').value = userData.citta_dl || '';
+                    document.getElementById('provincia_dl').value = userData.provincia_dl || '';
+                    document.getElementById('cap_dl').value = userData.cap_dl || '';
+                    document.getElementById('email_dl').value = userData.email_dl || '';
+                    document.getElementById('pec_dl').value = userData.pec_dl || '';
+                    document.getElementById('gruppo_sanguigno').value = userData.gruppo_sanguigno || '';
+                    document.getElementById('rh').value = userData.rh || '';
+                    document.getElementById('taglia_vestiario').value = userData.taglia_vestiario || '';
+                    document.getElementById('numero_calzature').value = userData.numero_calzature || '';
+                    // Gestire l'informativa privacy (checkbox)
                 } else {
-                    document.querySelector('.profilo-info').innerHTML = '<p>Profilo non trovato.</p>';
+                    document.querySelector('.profilo-container').innerHTML = '<p>Profilo non trovato.</p>';
                 }
             } catch (error) {
                 console.error("Errore nel caricamento del profilo:", error);
-                document.querySelector('.profilo-info').innerHTML = '<p>Errore nel caricamento del profilo.</p>';
+                document.querySelector('.profilo-container').innerHTML = '<p>Errore nel caricamento del profilo.</p>';
             }
         }
 
@@ -201,14 +258,50 @@
             const user = auth.currentUser;
             if (user) {
                 try {
-                    const telefono = document.getElementById('telefono').value;
-                    const indirizzo = document.getElementById('indirizzo').value;
-
-                    const userRef = doc(db, 'users', user.uid);
+                    const userRef = doc(db, 'volontari', user.uid);
                     await updateDoc(userRef, {
-                        telefono: telefono,
-                        indirizzo: indirizzo,
-                        // Aggiungi altri campi da salvare
+                        nome: document.getElementById('nome').value,
+                        cognome: document.getElementById('cognome').value,
+                        nato_a: document.getElementById('nato_a').value,
+                        provincia_nascita: document.getElementById('provincia_nascita').value,
+                        data_nascita: document.getElementById('data_nascita').value,
+                        codice_fiscale: document.getElementById('codice_fiscale').value,
+                        residente_a: document.getElementById('residente_a').value,
+                        provincia_residenza: document.getElementById('provincia_residenza').value,
+                        cap: document.getElementById('cap').value,
+                        indirizzo: document.getElementById('indirizzo').value,
+                        cellulare: document.getElementById('cellulare').value,
+                        fisso: document.getElementById('fisso').value,
+                        email: document.getElementById('email').value,
+                        pec: document.getElementById('pec').value,
+                        carta_identita_n: document.getElementById('carta_identita_n').value,
+                        anno_scadenza_ci: document.getElementById('anno_scadenza_ci').value,
+                        // carica_ci: document.getElementById('carica_ci').value, // Gestire l'upload in modo diverso
+                        passaporto_n: document.getElementById('passaporto_n').value,
+                        anno_scadenza_passaporto: document.getElementById('anno_scadenza_passaporto').value,
+                        patente_n: document.getElementById('patente_n').value,
+                        anno_scadenza_patente: document.getElementById('anno_scadenza_patente').value,
+                        categoria_patente: document.getElementById('categoria_patente').value,
+                        cap_abilitazione: document.getElementById('cap_abilitazione').value,
+                        corsi: document.getElementById('corsi').value,
+                        brevetti: document.getElementById('brevetti').value,
+                        titolo_studio: document.getElementById('titolo_studio').value,
+                        specifica_titolo: document.getElementById('specifica_titolo').value,
+                        professione: document.getElementById('professione').value,
+                        condizione_lavorativa: document.getElementById('condizione_lavorativa').value,
+                        specifica_condizione: document.getElementById('specifica_condizione').value,
+                        denominazione_dl: document.getElementById('denominazione_dl').value,
+                        indirizzo_dl: document.getElementById('indirizzo_dl').value,
+                        citta_dl: document.getElementById('citta_dl').value,
+                        provincia_dl: document.getElementById('provincia_dl').value,
+                        cap_dl: document.getElementById('cap_dl').value,
+                        email_dl: document.getElementById('email_dl').value,
+                        pec_dl: document.getElementById('pec_dl').value,
+                        gruppo_sanguigno: document.getElementById('gruppo_sanguigno').value,
+                        rh: document.getElementById('rh').value,
+                        taglia_vestiario: document.getElementById('taglia_vestiario').value,
+                        numero_calzature: document.getElementById('numero_calzature').value,
+                        // informativa_privacy: document.getElementById('informativa_privacy').checked,
                     });
                     alert('Profilo salvato con successo!');
                     await caricaProfilo(user); // Ricarica i dati aggiornati
@@ -219,137 +312,318 @@
             }
         }
 
-        async function mostraTesserino() {
-            const user = auth.currentUser;
-            if (user) {
-                try {
-                    const userRef = doc(db, 'users', user.uid);
-                    const docSnap = await getDoc(userRef);
+        function setupEditIcons() {
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach(group => {
+                const input = group.querySelector('input, select');
+                const labelText = group.querySelector('label')?.textContent.trim();
+                if (input && labelText) {
+                    const editIcon = document.createElement('span');
+                    editIcon.classList.add('edit-icon');
+                    editIcon.innerHTML = '<i class="fas fa-pen"></i>'; // Usa l'icona Font Awesome
+                    group.appendChild(editIcon);
 
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        const nome = userData.nome || 'Non specificato';
-                        const cognome = userData.cognome || 'Non specificato';
+                    const viewData = document.createElement('span');
+                    viewData.classList.add('view-data');
+                    viewData.textContent = input.value || 'Non specificato';
+                    group.insertBefore(viewData, input);
+                    input.style.display = 'none'; // Inizialmente nascondi l'input
 
-                        // Recupera la sede di riferimento (potrebbe essere nei custom claims o nel documento utente)
-                        const tokenResult = await user.getIdTokenResult();
-                        const sedeId = tokenResult.claims.sedeId || userData.sedeId || 'Non specificata';
-                        const sedeRef = doc(db, 'sedi', sedeId);
-                        const sedeSnap = await getDoc(sedeRef);
-                        const nomeSede = sedeSnap.exists() ? sedeSnap.data().SEDE || sedeSnap.data()['Nome Sede'] || 'Non specificata' : 'Non specificata';
+                    editIcon.addEventListener('click', () => {
+                        viewData.style.display = 'none';
+                        input.style.display = 'block';
+                        input.focus();
+                    });
 
-                        const tesserinoData = {
-                            nome: nome,
-                            cognome: cognome,
-                            sede: nomeSede,
-                            uid: user.uid // Puoi includere l'UID nel QR code
-                        };
-
-                        const tesserinoContainer = document.createElement('div');
-                        tesserinoContainer.classList.add('tesserino-digitale-container');
-
-                        const titolo = document.createElement('h3');
-                        titolo.textContent = 'Tesserino Volontario';
-                        tesserinoContainer.appendChild(titolo);
-
-                        const nomeParagrafo = document.createElement('p');
-                        nomeParagrafo.innerHTML = `<strong>Nome:</strong> ${nome}`;
-                        tesserinoContainer.appendChild(nomeParagrafo);
-
-                        const cognomeParagrafo = document.createElement('p');
-                        cognomeParagrafo.innerHTML = `<strong>Cognome:</strong> ${cognome}`;
-                        tesserinoContainer.appendChild(cognomeParagrafo);
-
-                        const sedeParagrafo = document.createElement('p');
-                        sedeParagrafo.innerHTML = `<strong>Sede:</strong> ${nomeSede}`;
-                        tesserinoContainer.appendChild(sedeParagrafo);
-
-                        const qrcodeContainer = document.createElement('div');
-                        qrcodeContainer.id = 'qrcode-container';
-                        tesserinoContainer.appendChild(qrcodeContainer);
-
-                        // Genera il codice QR
-                        QRCode.toCanvas(document.createElement('canvas'), JSON.stringify(tesserinoData), { errorCorrectionLevel: 'H' }, function (error, canvas) {
-                            if (error) {
-                                console.error(error);
-                                qrcodeContainer.textContent = 'Errore nella generazione del QR code.';
-                            } else {
-                                qrcodeContainer.appendChild(canvas);
-                            }
-                        });
-
-                        // Aggiungi un pulsante di stampa
-                        const stampaButton = document.createElement('button');
-                        stampaButton.textContent = 'Stampa Tesserino';
-                        stampaButton.onclick = () => window.print();
-                        tesserinoContainer.appendChild(stampaButton);
-
-                        document.body.appendChild(tesserinoContainer);
-
-                        // Rimuovi il tesserino dopo un po' o quando si clicca un pulsante di chiusura
-                        setTimeout(() => {
-                            document.body.removeChild(tesserinoContainer);
-                        }, 10000); // Mostra per 10 secondi
-                    } else {
-                        alert('Dati del profilo non trovati per generare il tesserino.');
-                    }
-                } catch (error) {
-                    console.error("Errore nella visualizzazione del tesserino:", error);
-                    alert('Errore nella visualizzazione del tesserino.');
+                    input.addEventListener('blur', () => {
+                       viewData.textContent = input.value || 'Non specificato';
+                        input.style.display = 'none';
+                        viewData.style.display = 'block';
+                    });
                 }
-            }
+            });
         }
 
         function logout() {
             signOut(auth).then(() => {
-                window.location.href = '/gestionalegl/index.html'; // Reindirizza alla homepage o login
+                window.location.href = '/gestionalegl/login.html';
             }).catch((error) => {
-                console.error('Errore durante il logout:', error);
-                alert('Errore durante il logout.');
+                console.error("Errore durante il logout:", error);
+                alert("Errore durante il logout.");
             });
         }
     </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <div class="header">
-        <div class="header-left">
-            <a href="/gestionalegl/index.html" style="display: flex; align-items: center;">
-                <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
-                <span>Gestionale Gruppo Lucano</span>
-            </a>
-            <a href="/gestionalegl/sede_template.html?sede=NomeDellaSede">Dashboard Sede</a>
-            <a href="/gestionalegl/volontario_profilo.html">Profilo</a>
-            <a href="/gestionalegl/miei_corsi.html">I Miei Corsi</a>
-        </div>
+        <a href="/gestionalegl/index.html" style="display: flex; align-items: center;">
+            <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+            <span>Gestionale Gruppo Lucano</span>
+        </a>
+        <a href="/gestionalegl/index.html">Home</a>
+        <a href="/sede/sede_template.html?sede=NomeDellaSede">Dashboard Sede</a>
+        <a href="#">Profilo</a>
+        <a href="/sede/miei_corsi.html">I Miei Corsi</a>
         <a href="#" onclick="logout()">Logout</a>
     </div>
 
     <div class="profilo-container">
         <h1>Profilo Volontario</h1>
-        <div class="profilo-info">
-            <p><strong>Nome:</strong> <span id="nome"></span></p>
-            <p><strong>Cognome:</strong> <span id="cognome"></span></p>
-            <p><strong>Email:</strong> <span id="email"></span></p>
+
+        <div class="sottosezione">
+            <h3>Dati Anagrafici</h3>
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome">
             </div>
-
-        <div class="modifica-profilo">
-            <h2>Modifica Profilo</h2>
-            <form id="modifica-profilo-form">
-                <label for="telefono">Telefono:</label>
-                <input type="text" id="telefono" name="telefono">
-
-                <label for="indirizzo">Indirizzo:</label>
-                <input type="text" id="indirizzo" name="indirizzo">
-
-                <button type="submit">Salva Modifiche</button>
-            </form>
+            <div class="form-group">
+                <label for="cognome">Cognome:</label>
+                <input type="text" id="cognome">
+            </div>
+            <div class="form-group">
+                <label for="nato_a">Nato a:</label>
+                <input type="text" id="nato_a">
+            </div>
+            <div class="form-group">
+                <label for="provincia_nascita">Provincia:</label>
+                <input type="text" id="provincia_nascita">
+            </div>
+            <div class="form-group">
+                <label for="data_nascita">Data di nascita:</label>
+                <input type="date" id="data_nascita">
+            </div>
+            <div class="form-group">
+                <label for="codice_fiscale">Codice Fiscale:</label>
+                <input type="text" id="codice_fiscale">
+            </div>
         </div>
 
-        <div class="profilo-actions">
-            <button id="tesserino-button">Tesserino Digitale</button>
+        <div class="sottosezione">
+            <h3>Residenza</h3>
+            <div class="form-group">
+                <label for="residente_a">Residente a:</label>
+                <input type="text" id="residente_a">
+            </div>
+            <div class="form-group">
+                <label for="provincia_residenza">Provincia:</label>
+                <input type="text" id="provincia_residenza">
+            </div>
+            <div class="form-group">
+                <label for="cap">CAP:</label>
+                <input type="text" id="cap">
+            </div>
+            <div class="form-group">
+                <label for="indirizzo">Indirizzo:</label>
+                <input type="text" id="indirizzo">
+            </div>
+            <div class="form-group">
+                <label for="cellulare">N. Cellulare:</label>
+                <input type="text" id="cellulare">
+            </div>
+            <div class="form-group">
+                <label for="fisso">N. Fisso:</label>
+                <input type="text" id="fisso">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email">
+            </div>
+            <div class="form-group">
+                <label for="pec">PEC:</label>
+                <input type="email" id="pec">
+            </div>
+        </div>
+
+        <div class="sottosezione">
+            <h3>Documenti</h3>
+            <div class="form-group">
+                <label for="carta_identita_n">Carta d'identità N.:</label>
+                <input type="text" id="carta_identita_n">
+            </div>
+            <div class="form-group">
+                <label for="anno_scadenza_ci">Anno Scadenza:</label>
+                <input type="number" id="anno_scadenza_ci">
+            </div>
+            <div class="form-group">
+                <label for="carica_ci">Carica Carta d'Identità:</label>
+                <input type="file" id="carica_ci">
+            </div>
+            <div class="form-group">
+                <label for="passaporto_n">Passaporto N.:</label>
+                <input type="text" id="passaporto_n">
+            </div>
+            <div class="form-group">
+                <label for="anno_scadenza_passaporto">Anno Scadenza:</label>
+                <input type="number" id="anno_scadenza_passaporto">
+            </div>
+            <div class="form-group">
+                <label for="patente_n">Patente N.:</label>
+                <input type="text" id="patente_n">
+            </div>
+            <div class="form-group">
+                <label for="anno_scadenza_patente">Anno Scadenza:</label>
+                <input type="number" id="anno_scadenza_patente">
+            </div>
+            <div class="form-group">
+                <label for="categoria_patente">Categoria:</label>
+                <select id="categoria_patente">
+                    <option value="">Seleziona</option>
+                    <option value="A1">A1</option>
+                    <option value="A2">A2</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="B96">B96</option>
+                    <option value="BE">BE</option>
+                    <option value="C1">C1</option>
+                    <option value="C1E">C1E</option>
+                    <option value="C">C</option>
+                    <option value="CE">CE</option>
+                    <option value="D1">D1</option>
+                    <option value="D1E">D1E</option>
+                    <option value="DE">DE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cap_abilitazione">CAP:</label>
+                <select id="cap_abilitazione">
+                    <option value="">Seleziona</option>
+                    <option value="KA">KA</option>
+                    <option value="KB">KB</option>
+                    <option value="CQC Persone">CQC Persone</option>
+                    <option value="CQC Merci">CQC Merci</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="sottosezione">
+            <h3>Specializzazioni</h3>
+            <div class="form-group">
+                <label for="corsi">Corsi:</label>
+                <input type="text" id="corsi">
+            </div>
+            <div class="form-group">
+                <label for="brevetti">Brevetti:</label>
+                <input type="text" id="brevetti">
+            </div>
+        </div>
+
+        <div class="sottosezione">
+            <h3>Titolo di Studio</h3>
+            <div class="form-group">
+                <label for="titolo_studio">Titolo di Studio:</label>
+                <select id="titolo_studio">
+                    <option value="Nessuno">Nessuno</option>
+                    <option value="Inferiore">Inferiore</option>
+                    <option value="Media">Media</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Laurea">Laurea</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="specifica_titolo">Specificare:</label>
+                <input type="text" id="specifica_titolo">
+            </div>
+        </div>
+
+        <div class="sottosezione">
+            <h3>Professione</h3>
+            <div class="form-group">
+                <label for="professione">Professione:</label>
+                <input type="text" id="professione">
+            </div>
+            <div class="form-group">
+                <label for="condizione_lavorativa">Condizione Lavorativa:</label>
+                <select id="condizione_lavorativa">
+                    <option value="">Seleziona</option>
+                    <option value="Dipendente">Dipendente</option>
+                    <option value="Pensionato">Pensionato</option>
+                    <option value="Studente">Studente</option>
+                    <option value="Autonomo">Autonomo</option>
+                    <option value="Altro">Altro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="specifica_condizione">Specificare:</label>
+                <input type="text" id="specifica_condizione">
+            </div>
+        </div>
+
+        <div class="sottosezione">
+            <h3>Dati DL</h3>
+            <div class="form-group">
+                <label for="denominazione_dl">Denominazione Azienda/Ente:</label>
+                <input type="text" id="denominazione_dl">
+            </div>
+            <div class="form-group">
+                <label for="indirizzo_dl">Indirizzo:</label>
+                <input type="text" id="indirizzo_dl">
+            </div>
+            <div class="form-group">
+                <label for="citta_dl">Città:</label>
+                <input type="text" id="citta_dl">
+            </div>
+            <div class="form-group">
+                <label for="provincia_dl">Provincia:</label>
+                <input type="text" id="provincia_dl">
+            </div>
+            <div class="form-group">
+                <label for="cap_dl">CAP:</label>
+                <input type="text" id="cap_dl">
+            </div>
+            <div class="form-group">
+                <label for="email_dl">Email:</label>
+                <input type="email" id="email_dl">
+            </div>
+            <div class="form-group">
+                <label for="pec_dl">PEC:</label>
+                <input type="email" id="pec_dl">
+            </div>
+        </div>
+
+        <div class="sottosezione">
+            <h3>Gruppo Sanguigno e Taglie</h3>
+            <div class="form-group">
+                <label for="gruppo_sanguigno">Gruppo Sanguigno:</label>
+                <select id="gruppo_sanguigno">
+                    <option value="">Seleziona</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="AB">AB</option>
+                    <option value="0">0</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="rh">Rh:</label>
+                <select id="rh">
+                    <option value="">Seleziona</option>
+                    <option value="+">+</option>
+                    <option value="-">-</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="taglia_vestiario">Taglia Vestiario:</label>
+                <input type="text" id="taglia_vestiario">
+            </div>
+            <div class="form-group">
+                <label for="numero_calzature">Numero Calzature:</label>
+                <input type="number" id="numero_calzature">
+            </div>
+        </div>
+
+        <div class="sottosezione privacy-info">
+            <h3>Informativa Privacy</h3>
+            <p>Testo dell'informativa sulla privacy da inserire qui...</p>
+            <div class="form-group">
+                <input type="checkbox" id="informativa_privacy" name="informativa_privacy">
+                <label for="informativa_privacy" style="font-weight: normal; flex-basis: auto;">Ho letto e accetto l'informativa sulla privacy.</label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="#" class="download">Scarica il modulo</a>
+            <button type="button" class="save">Salva</button>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/qrcode.min.js"></script>
 </body>
 </html>
