@@ -211,21 +211,30 @@
             });
             populateCorsiTable(corsi);
         }
-
-        function populateCorsiTable(corsi) {
+function populateCorsiTable(corsi) {
             const corsiTableBody = document.getElementById('corsi-volontario-table')?.querySelector('tbody');
             if (corsiTableBody) {
-                corsiTableBody.innerHTML = '';
-                corsi.forEach(corso => {
+                corsiTableBody.innerHTML = ''; // Pulisci la tabella
+
+                // Dati fittizi per il test
+                const corsiFittizi = [
+                    { tipo_corso: 'Corso Base Volontari', organizzatore: 'Gruppo Lucano', data_corso: new Date('2024-05-15'), scadenza: new Date('2027-05-15'), attestato_url: 'https://example.com/attestato_base.pdf' },
+                    { tipo_corso: 'Corso Antincendio - Rischio Basso', organizzatore: 'FormaSicura Srl', data_corso: new Date('2024-06-20'), scadenza: new Date('2026-06-20'), attestato_url: 'https://example.com/attestato_antincendio.pdf' },
+                    { tipo_corso: 'BLS (Basic Life Support)', organizzatore: 'ARES 118', data_corso: new Date('2024-07-10'), scadenza: new Date('2026-07-10'), attestato_url: 'https://example.com/attestato_bls.pdf' },
+                    { tipo_corso: 'Corso di Aggiornamento Volontari', organizzatore: 'Gruppo Lucano', data_corso: new Date('2025-01-20'), scadenza: new Date('2028-01-20'), attestato_url: null }, // Nessun attestato
+                    { tipo_corso: 'Corso di Primo Soccorso', organizzatore: 'Croce Rossa Italiana', data_corso: new Date('2025-03-05'), scadenza: null, attestato_url: 'https://example.com/attestato_primo_soccorso.pdf' } // Nessuna scadenza
+                ];
+
+                corsiFittizi.forEach(corso => {
                     const row = corsiTableBody.insertRow();
                     const tipoCell = row.insertCell();
                     tipoCell.textContent = corso.tipo_corso || 'N/A';
                     const organizzatoreCell = row.insertCell();
                     organizzatoreCell.textContent = corso.organizzatore || 'N/A';
                     const dataCell = row.insertCell();
-                    dataCell.textContent = corso.data_corso ? new Date(corso.data_corso.seconds * 1000).toLocaleDateString() : 'N/A';
+                    dataCell.textContent = corso.data_corso ? corso.data_corso.toLocaleDateString() : 'N/A';
                     const scadenzaCell = row.insertCell();
-                    scadenzaCell.textContent = corso.scadenza ? new Date(corso.scadenza.seconds * 1000).toLocaleDateString() : 'N/A';
+                    scadenzaCell.textContent = corso.scadenza ? corso.scadenza.toLocaleDateString() : 'N/A';
                     const attestatoCell = row.insertCell();
                     if (corso.attestato_url) {
                         const downloadButton = document.createElement('button');
@@ -235,6 +244,47 @@
                     } else {
                         attestatoCell.textContent = 'Nessun attestato caricato';
                     }
+                });
+            }
+        }
+
+        async function caricaCorsiVolontario(uid) {
+            // Per visualizzare i dati fittizi, chiama direttamente populateCorsiTable senza
+            // fare la query al database.
+            populateCorsiTable([]);
+            //
+            // Quando vuoi visualizzare i dati reali, riattiva questo codice e commenta la riga sopra:
+            // const q = query(corsiVolontariCollection, where("volontario_id", "==", uid));
+            // const querySnapshot = await getDocs(q);
+            // const corsi = [];
+            // querySnapshot.forEach(doc => {
+            //     corsi.push({ id: doc.id, ...doc.data() });
+            // });
+            // populateCorsiTable(corsi);
+        }
+       // function populateCorsiTable(corsi) {
+         //   const corsiTableBody = document.getElementById('corsi-volontario-table')?.querySelector('tbody');
+           // if (corsiTableBody) {
+             //   corsiTableBody.innerHTML = '';
+               // corsi.forEach(corso => {
+                 //   const row = corsiTableBody.insertRow();
+                   // const tipoCell = row.insertCell();
+                    // tipoCell.textContent = corso.tipo_corso || 'N/A';
+                    // const organizzatoreCell = row.insertCell();
+                    // organizzatoreCell.textContent = corso.organizzatore || 'N/A';
+                    // const dataCell = row.insertCell();
+                    // dataCell.textContent = corso.data_corso ? new Date(corso.data_corso.seconds * 1000).toLocaleDateString() : 'N/A';
+                    // const scadenzaCell = row.insertCell();
+                    // scadenzaCell.textContent = corso.scadenza ? new Date(corso.scadenza.seconds * 1000).toLocaleDateString() : 'N/A';
+                    // const attestatoCell = row.insertCell();
+                    // if (corso.attestato_url) {
+                      //  const downloadButton = document.createElement('button');
+                        // downloadButton.textContent = 'Scarica Attestato';
+                        // downloadButton.addEventListener('click', () => window.open(corso.attestato_url, '_blank'));
+                        // attestatoCell.appendChild(downloadButton);
+                    // } else {
+                       // attestatoCell.textContent = 'Nessun attestato caricato';
+                    //}
                 });
             }
         }
