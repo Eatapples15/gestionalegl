@@ -3,103 +3,36 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GLGestionale - Sede di <span id="sede-nome-title"></span></title>
+  <title>Modifica Sede - GLGestionale</title>
   <style>
   body {
   font-family: sans-serif;
-  margin: 15px;
+  margin: 20px;
   background-color: #f4f4f4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   }
 
-  .header {
-  background-color: #333;
-  color: white;
-  padding: 8px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  width: 95%;
-  border-radius: 5px;
+  .container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
-  .header a {
-  color: white;
-  text-decoration: none;
-  }
-
-  .header img {
-  max-height: 40px;
-  margin-right: 10px;
-  }
-
-  h1, h2, h3 {
+  h1, h2 {
   color: #333;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   }
 
-  .dati-sede, .mezzi, .attrezzature {
-  background-color: white;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 95%;
-  }
-
-  .mezzi table, .attrezzature table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  }
-
-  .mezzi th, .mezzi td, .attrezzature th, .attrezzature td {
-  border: 1px solid #ddd;
-  padding: 6px;
-  text-align: left;
-  }
-
-  .mezzi th, .attrezzature th {
-  background-color: #f2f2f2;
-  text-align: center;
-  }
-
-  .dati-sede p strong {
-  font-weight: bold;
-  margin-right: 5px;
-  }
-
-  .dati-sede p span {
-  color: #555;
-  }
-
-  .mezzi tbody tr:nth-child(even), .attrezzature tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
-  }
-
-  .mezzi td, .attrezzature td {
-  text-align: center;
-  }
-
-  .dati-sede p span.missing-data {
-  color: #999;
-  font-style: italic;
-  font-size: 0.9em;
-  }
-
-  /* Style for the upload form */
   .upload-form {
-  margin-top: 20px;
-  background-color: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 95%;
+  margin-bottom: 20px;
   text-align: center;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
   }
 
   .upload-form input[type="file"] {
@@ -107,80 +40,80 @@
   }
 
   .upload-form button {
-  padding: 8px 15px;
+  padding: 10px 20px;
   background-color: #007BFF;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
   }
 
   .upload-form button:hover {
   background-color: #0056b3;
   }
+
+  .data-display {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  }
+
+  .data-display h3 {
+  margin-top: 0;
+  color: #555;
+  }
+
+  table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  }
+
+  th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  }
+
+  th {
+  background-color: #f2f2f2;
+  }
+
+  p a {
+  color: #007BFF;
+  text-decoration: none;
+  }
+
+  p a:hover {
+  text-decoration: underline;
+  }
   </style>
  </head>
  <body>
-  <div class="header">
-  <a href="/gestionalegl/index.html" style="display: flex; align-items: center;">
-  <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
-  <span>Gestionale Gruppo Lucano</span>
-  </a>
-  <a href="/gestionalegl/index.html">Home</a>
-  </div>
-
-  <h1>Sede di <span id="sede-nome-h1"></span></h1>
-
-  <div class="dati-sede">
-  <h2>Dati Sede</h2>
-  <p><strong>Nome:</strong> <span id="sede-nome"></span></p>
-  <p><strong>Indirizzo:</strong> <span id="sede-indirizzo"></span></p>
-  <p><strong>Responsabile:</strong> <span id="sede-responsabile"></span></p>
-  <p><strong>Contatti:</strong> <span id="sede-contatti"></span></p>
-  </div>
-
-  <div class="mezzi">
-  <h2>Mezzi in Dotazione</h2>
-  <table id="mezzi-table">
-  <thead>
-  <tr>
-  <th>Targa</th>
-  <th>Modello</th>
-  <th>Scadenza Revisione</th>
-  <th>Stato</th>
-  </tr>
-  </thead>
-  <tbody>
-  </tbody>
-  </table>
-  </div>
-
-  <div class="attrezzature">
-  <h2>Attrezzature</h2>
-  <table id="attrezzature-table">
-  <thead>
-  <tr>
-  <th>Tipologia</th>
-  <th>Stato</th>
-  <th>Ultima Manutenzione</th>
-  </tr>
-  </thead>
-  <tbody>
-  </tbody>
-  </table>
-  </div>
-
-  <p><a href="https://docs.google.com/spreadsheets/d/1I904lKDWZ2IQ77RepJQE5o0ouZwT19Lgb3KTUmvmmqc/export?format=xlsx">Scarica Template Excel</a></p>
+  <div class="container">
+  <h1>Modifica Dati Sede</h1>
 
   <div class="upload-form">
   <h2>Carica Dati da Excel</h2>
+  <p><a href="https://docs.google.com/spreadsheets/d/1I904lKDWZ2IQ77RepJQE5o0ouZwT19Lgb3KTUmvmmqc/export?format=xlsx">Scarica Template Excel</a></p>
   <input type="file" id="excel-file-input" accept=".xlsx, .xls">
   <button onclick="uploadExcelData()">Carica Dati</button>
   </div>
 
+  <div class="data-display">
+  <h2>Dati Attuali (Potrebbe non riflettere l'upload immediato)</h2>
+  <div id="sede-details"></div>
+  <div id="mezzi-details"></div>
+  <div id="attrezzature-details"></div>
+  </div>
+  </div>
+
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-  import { getFirestore, collection, query, where, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+  import { getFirestore, collection, doc, getDocs, setDoc, query, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
   import * as XLSX from 'https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs';
 
   const firebaseConfig = {
@@ -196,56 +129,57 @@
   const db = getFirestore(app);
   const sediCollection = collection(db, 'sedi');
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  // Ottieni l'ID della sede dall'URL (presumendo che sia passato come parametro)
   const urlParams = new URLSearchParams(window.location.search);
-  const sedeNomeEncoded = urlParams.get('sede');
-  const sedeNome = decodeURIComponent(sedeNomeEncoded);
+  const sedeId = urlParams.get('id'); // Assicurati che l'ID sia passato correttamente nell'URL
 
-  console.log("Nome della sede dall'URL (decodificato):", sedeNome);
-
-  if (sedeNome) {
-  const q = query(sediCollection, where("SEDE", "==", sedeNome));
-  const querySnapshot = await getDocs(q);
-
-  console.log("querySnapshot è vuoto:", querySnapshot.empty);
-
-  if (!querySnapshot.empty) {
-  const sedeDoc = querySnapshot.docs[0];
-  const sedeData = sedeDoc.data();
-  console.log("Dati della sede trovati:", sedeData);
-
-  setTimeout(() => {
-  document.getElementById('sede-nome-title').textContent = sedeData.SEDE;
-  }, 0);
-  document.getElementById('sede-nome-h1').textContent = sedeData.SEDE;
-  document.getElementById('sede-nome').textContent = sedeData.SEDE;
-  document.getElementById('sede-indirizzo').textContent = sedeData.INDIRIZZO || 'N/A';
-  document.getElementById('sede-responsabile').textContent = sedeData['NOMINATIVO PRESIDENTE'] || 'N/A';
-  document.getElementById('sede-contatti').textContent = `${sedeData.EMAIL || 'N/A'}, ${sedeData.PEC || 'N/A'}`;
-
-  if (sedeData.mezzi && Array.isArray(sedeData.mezzi)) {
-  const mezziTableBody = document.getElementById('mezzi-table').querySelector('tbody');
-  sedeData.mezzi.forEach(mezzo => {
-  const row = mezziTableBody.insertRow();
-  row.insertCell().textContent = mezzo.targa || 'N/A';
-  row.insertCell().textContent = mezzo.modello || 'N/A';
-  row.insertCell().textContent = mezzo.scadenza_revisione || 'N/A';
-  row.insertCell().textContent = mezzo.stato || 'N/A';
-  });
-  } else {
-  document.getElementById('mezzi-table').style.display = 'none';
+  async function loadSedeData(sedeId) {
+  if (!sedeId) {
+  document.getElementById('sede-details').innerHTML = '<p>ID Sede non specificato nell\'URL.</p>';
+  return;
   }
 
-  if (sedeData.attrezzature && Array.isArray(sedeData.attrezzature)) {
-  const attrezzatureTableBody = document.getElementById('attrezzature-table').querySelector('tbody');
-  sedeData.attrezzature.forEach(attrezzatura => {
-  const row = attrezzatureTableBody.insertRow();
-  row.insertCell().textContent = attrezzatura.tipologia || 'N/A';
-  row.insertCell().textContent = attrezzatura.stato || 'N/A';
-  row.insertCell().textContent = attrezzatura.ultima_manutenzione || 'N/A';
+  const sedeDocRef = doc(db, 'sedi', sedeId);
+  const sedeSnapshot = await getDoc(sedeDocRef);
+
+  if (sedeSnapshot.exists()) {
+  const sedeData = sedeSnapshot.data();
+  let sedeHTML = '<h3>Dettagli Sede</h3><table>';
+  for (const key in sedeData) {
+  if (key !== 'mezzi' && key !== 'attrezzature') {
+  sedeHTML += `<tr><th><span class="math-inline">\{key\}</th\><td\></span>{sedeData[key] || 'N/A'}</td></tr>`;
+  }
+  }
+  sedeHTML += '</table>';
+  document.getElementById('sede-details').innerHTML = sedeHTML;
+
+  if (sedeData.mezzi && sedeData.mezzi.length > 0) {
+  let mezziHTML = '<h3>Mezzi</h3><table><thead><tr><th>Targa</th><th>Modello</th><th>Scadenza Revisione</th><th>Stato</th></tr></thead><tbody>';
+  sedeData.mezzi.forEach(mezzo => {
+  mezziHTML += `<tr><td><span class="math-inline">\{mezzo\.targa \|\| 'N/A'\}</td\><td\></span>{mezzo.modello || 'N/A'}</td><td><span class="math-inline">\{mezzo\.scadenza\_revisione \|\| 'N/A'\}</td\><td\></span>{mezzo.stato || 'N/A'}</td></tr>`;
   });
+  mezziHTML += '</tbody></table>';
+  document.getElementById('mezzi-details').innerHTML = mezziHTML;
   } else {
-  document.getElementById('attrezzature-table').style.display = 'none';
+  document.getElementById('mezzi-details').innerHTML = '<p>Nessun mezzo disponibile.</p>';
+  }
+
+  if (sedeData.attrezzature && sedeData.attrezzature.length > 0) {
+  let attrezzatureHTML = '<h3>Attrezzature</h3><table><thead><tr><th>Tipologia</th><th>Stato</th><th>Ultima Manutenzione</th></tr></thead><tbody>';
+  sedeData.attrezzature.forEach(attrezzatura => {
+  attrezzatureHTML += `<tr><td><span class="math-inline">\{attrezzatura\.tipologia \|\| 'N/A'\}</td\><td\></span>{attrezzatura.stato || 'N/A'}</td><td>${attrezzatura.ultima_manutenzione || 'N/A'}</td></tr>`;
+  });
+  attrezzatureHTML += '</tbody></table>';
+  document.getElementById('attrezzature-details').innerHTML = attrezzatureHTML;
+  } else {
+  document.getElementById('attrezzature-details').innerHTML = '<p>Nessuna attrezzatura disponibile.</p>';
+  }
+
+  } else {
+  document.getElementById('sede-details').innerHTML = '<p>Sede non trovata.</p>';
+  document.getElementById('mezzi-details').innerHTML = '';
+  document.getElementById('attrezzature-details').innerHTML = '';
+  }
   }
 
   window.uploadExcelData = async () => {
@@ -257,6 +191,11 @@
   return;
   }
 
+  if (!sedeId) {
+  alert('ID della sede non disponibile. Impossibile caricare i dati.');
+  return;
+  }
+
   const reader = new FileReader();
   reader.onload = async (e) => {
   const data = new Uint8Array(e.target.result);
@@ -265,26 +204,23 @@
   const worksheet = workbook.Sheets[sheetName];
   const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-  // Assuming the first row is the header
   const headers = jsonData[0];
   const excelData = jsonData.slice(1).map(row => {
   const rowData = {};
   headers.forEach((header, index) => {
-  rowData[header] = row[index] || ''; // Handle missing values
+  rowData[header] = row[index] || '';
   });
   return rowData;
   });
 
   console.log("Dati Excel:", excelData);
 
-  // Update Firebase data
   try {
-  await setDoc(doc(db, "sedi", sedeDoc.id), {
-  ...sedeData, // Keep existing data
-  ...processExcelData(excelData) // Add or overwrite with Excel data
-  });
+  const processedData = processExcelData(excelData);
+  const sedeDocRef = doc(db, 'sedi', sedeId);
+  await setDoc(sedeDocRef, processedData, { merge: true }); // Merge per non sovrascrivere altri campi
   alert('Dati caricati e aggiornati con successo!');
-  window.location.reload(); // Refresh the page to show updated data
+  loadSedeData(sedeId); // Ricarica i dati per visualizzare le modifiche
   } catch (error) {
   console.error("Errore durante l'upload dei dati a Firebase:", error);
   alert('Errore durante l\'upload dei dati. Controlla la console per i dettagli.');
@@ -295,73 +231,56 @@
 
   function processExcelData(excelData) {
   const processedData = {};
-  // Assuming Excel has columns for sede data, mezzi, and attrezzature
-  // Adjust these keys based on your actual Excel structure
-  const sedeKeys = ['SEDE', 'INDIRIZZO', 'NOMINATIVO PRESIDENTE', 'EMAIL', 'PEC'];
-  const mezziKeys = ['targa', 'modello', 'scadenza_revisione', 'stato'];
-  const attrezzatureKeys = ['tipologia', 'stato', 'ultima_manutenzione'];
-
-  // Process Sede Data
-  sedeKeys.forEach(key => {
-  const excelKey = key.toUpperCase().replace(/ /g, '_'); // Excel keys are uppercase and underscore
-  const found = excelData.find(item => item[excelKey] !== undefined);
-  if (found) {
-  processedData[key] = found[excelKey];
-  }
-  });
-
-  // Process Mezzi Data
   const mezzi = [];
-  excelData.forEach(item => {
-  const mezzo = {};
-  let hasMezzoData = false;
-  mezziKeys.forEach(key => {
-  const excelKey = key.charAt(0).toUpperCase() + key.slice(1);
-  if (item[excelKey] !== undefined) {
-  mezzo[key] = item[excelKey];
-  hasMezzoData = true;
-  }
-  });
-  if (hasMezzoData) {
-  mezzi.push(mezzo);
-  }
-  });
-  processedData.mezzi = mezzi;
-
-  // Process Attrezzature Data
   const attrezzature = [];
-  excelData.forEach(item => {
-  const attrezzatura = {};
-  let hasAttrezzaturaData = false;
-  attrezzatureKeys.forEach(key => {
-  const excelKey = key.charAt(0).toUpperCase() + key.slice(1);
-  if (item[excelKey] !== undefined) {
-  attrezzatura[key] = item[excelKey];
-  hasAttrezzaturaData = true;
+
+  excelData.forEach(row => {
+  // Tentativo di identificare la sezione in base alle intestazioni (da adattare al tuo template)
+  if (row['SEDE'] || row['INDIRIZZO'] || row['NOMINATIVO PRESIDENTE']) {
+  processedData['SEDE'] = row['SEDE'];
+  processedData['INDIRIZZO'] = row['INDIRIZZO'];
+  processedData['NOMINATIVO PRESIDENTE'] = row['NOMINATIVO PRESIDENTE'];
+  processedData['EMAIL'] = row['EMAIL'];
+  processedData['PEC'] = row['PEC'];
+  } else if (row['TARGA'] || row['MODELLO'] || row['SCADENZA REVISIONE']) {
+  mezzi.push({
+  targa: row['TARGA'],
+  modello: row['MODELLO'],
+  scadenza_revisione: row['SCADENZA REVISIONE'],
+  stato: row['STATO']
+  });
+  } else if (row['TIPOLOGIA'] || row['STATO (ATTREZZATURA)'] || row['ULTIMA MANUTENZIONE']) {
+  attrezzature.push({
+  tipologia: row['TIPOLOGIA'],
+  stato: row['STATO (ATTREZZATURA)'],
+  ultima_manutenzione: row['ULTIMA MANUTENZIONE']
+  });
   }
   });
-  if (hasAttrezzaturaData) {
-  attrezzature.push(attrezzatura);
+
+  if (mezzi.length > 0) {
+  processedData.mezzi = mezzi;
   }
-  });
+  if (attrezzature.length > 0) {
   processedData.attrezzature = attrezzature;
+  }
 
   return processedData;
   }
 
-  } else {
-  document.querySelector('h1').textContent = 'Sede non trovata';
-  document.querySelector('.dati-sede').innerHTML = '<p>La sede richiesta non è stata trovata nel database.</p>';
-  document.querySelector('.mezzi').style.display = 'none';
-  document.querySelector('.attrezzature').style.display = 'none';
+  async function getDoc(docRef) {
+  try {
+  return await docRef.get();
+  } catch (error) {
+  console.error("Errore durante la lettura del documento:", error);
+  return null;
   }
-  } else {
-  document.querySelector('h1').textContent = 'Errore: Sede non specificata';
-  document.querySelector('.dati-sede').innerHTML = '<p>Nessuna sede specificata nell\'URL.</p>';
-  document.querySelector('.mezzi').style.display = 'none';
-  document.querySelector('.attrezzature').style.display = 'none';
   }
-  });
+
+  // Carica i dati della sede all'avvio se l'ID è presente
+  if (sedeId) {
+  loadSedeData(sedeId);
+  }
   </script>
  </body>
  </html>
