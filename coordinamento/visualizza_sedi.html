@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+ <html lang="it">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizza Sedi - GLGestionale</title>
+  <style>
+  body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+  .container { max-width: 900px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+  h1 { color: #28a745; text-align: center; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background-color: #f2f2f2; }
+  .back-link { display: block; margin-top: 20px; color: #007bff; text-decoration: none; }
+  .back-link:hover { text-decoration: underline; }
+  </style>
+  <script type="module">
+  // Inserisci qui l'importazione e l'inizializzazione di Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+  authDomain: "glgest.firebaseapp.com",
+  projectId: "glgest",
+  storageBucket: "glgest.firebasestorage.app",
+  messagingSenderId: "423155306554",
+  appId: "1:423155306554:web:c598640f199e296d276503"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const sediCollection = collection(db, 'sedi');
+
+  document.addEventListener('DOMContentLoaded', async () => {
+  onAuthStateChanged(auth, user => {
+  if (!user || user.email !== 'coordinamento@pcgl.it') {
+  window.location.href = '/gestionalegl/index.html'; // Reindirizza se non è coordinamento
+  }
+  });
+
+  await loadSedi();
+  });
+
+  async function loadSedi() {
+  const sediTableBody = document.getElementById('sedi-table-body');
+  const snapshot = await getDocs(sediCollection);
+  snapshot.forEach(doc => {
+  const data = doc.data();
+  const row = sediTableBody.insertRow();
+  row.insertCell().textContent = doc.id; // ID del documento
+  row.insertCell().textContent = data.SEDE || 'N/A';
+  row.insertCell().textContent = data.Indirizzo || 'N/A';
+  row.insertCell().textContent = data.Città || 'N/A';
+  row.insertCell().textContent = data.Provincia || 'N/A';
+  row.insertCell().textContent = data['Nome responsabile'] || 'N/A';
+  row.insertCell().textContent = data.Email || 'N/A';
+  // Aggiungi altre colonne in base ai tuoi dati delle sedi
+  });
+  }
+  </script>
+ </head>
+ <body>
+  <div class="container">
+  <h1>Visualizza Sedi</h1>
+  <table>
+  <thead>
+  <tr>
+  <th>ID</th>
+  <th>Nome Sede</th>
+  <th>Indirizzo</th>
+  <th>Città</th>
+  <th>Provincia</th>
+  <th>Responsabile</th>
+  <th>Email</th>
+  </tr>
+  </thead>
+  <tbody id="sedi-table-body">
+  </tbody>
+  </table>
+  <a href="dashboard_coordinamento.html" class="back-link">Torna alla Dashboard</a>
+  </div>
+ </body>
+ </html>
