@@ -290,20 +290,23 @@ console.log(jsonData);
       const rawDataElement = document.getElementById('rawData');
       const jsonDataElement = document.getElementById('jsonData');
 
-      function processAndDisplay() {
-        const rawData = JSON.parse(rawDataElement.value);
-        const processedData = rawData.map(item => {
-          const key = Object.keys(item)[0];
-          const values = item[key].split(';');
-          const headers = key.split(';');
-          const obj = {};
-          for (let i = 0; i < headers.length - 1; i++) {
-            obj[headers[i].trim()] = values[i] ? values[i].trim() : '';
-          }
-          return obj;
-        }).filter(item => item.SEDE);
-        jsonDataElement.value = JSON.stringify(processedData, null, 2);
-      }
+function processAndDisplay() {
+  alert("La funzione è stata chiamata!");
+  const rawDataElement = document.getElementById('rawData');
+  const jsonDataElement = document.getElementById('jsonData');
+  const rawData = JSON.parse(rawDataElement.value);
+  const processedData = rawData.map(item => {
+    const key = Object.keys(item)[0];
+    const values = item[key].split(';');
+    const headers = key.split(';');
+    const obj = {};
+    for (let i = 0; i < headers.length - 1; i++) {
+      obj[headers[i].trim()] = values[i] ? values[i].trim() : '';
+    }
+    return obj;
+  }).filter(item => item.SEDE);
+  jsonDataElement.value = JSON.stringify(processedData, null, 2);
+}
     </script>
 </body>
 </html>
