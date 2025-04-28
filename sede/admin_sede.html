@@ -1,363 +1,318 @@
 <!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Sede - Dashboard</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; }
-        .sezione { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; }
-        h2 { margin-top: 0; }
-        /* Stili per la dashboard */
-        #dashboard-sede h3 { margin-top: 0; }
-        #info-sede p { margin-bottom: 5px; }
-        #dashboard-tabella-mezzi, #dashboard-tabella-attrezzature { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        #dashboard-tabella-mezzi th, #dashboard-tabella-mezzi td,
-        #dashboard-tabella-attrezzature th, #dashboard-tabella-attrezzature td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        #dashboard-tabella-mezzi th, #dashboard-tabella-attrezzature th { background-color: #f2f2f2; }
-        /* Stili per il menu */
-        .admin-menu { margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; }
-        .admin-menu ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 10px; }
-        .admin-menu ul li a { text-decoration: none; color: #007bff; }
-        .admin-menu ul li a:hover { text-decoration: underline; }
-    </style>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
-    <script>
-        // Inserisci qui la tua configurazione Firebase
-        const firebaseConfig = {
-          apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
-          authDomain: "glgest.firebaseapp.com",
-          projectId: "glgest",
-          storageBucket: "glgest.firebasestorage.app",
-          messagingSenderId: "glgest.firebasestorage.app",
-          appId: "1:423155306554:web:c598640f199e296d276503"
-        };
+ <html lang="it">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestione Sede - Dashboard</title>
+  <style>
+  body { font-family: sans-serif; margin: 20px; }
+  .sezione { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; }
+  h2 { margin-top: 0; }
+  /* Stili per la dashboard */
+  #dashboard-sede h3 { margin-top: 0; }
+  #info-sede p { margin-bottom: 5px; }
+  #dashboard-tabella-mezzi, #dashboard-tabella-attrezzature { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  #dashboard-tabella-mezzi th, #dashboard-tabella-mezzi td,
+  #dashboard-tabella-attrezzature th, #dashboard-tabella-attrezzature td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  #dashboard-tabella-mezzi th, #dashboard-tabella-attrezzature th { background-color: #f2f2f2; }
+  /* Stili per il menu */
+  .admin-menu { margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; }
+  .admin-menu ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 10px; }
+  .admin-menu ul li a { text-decoration: none; color: #007bff; }
+  .admin-menu ul li a:hover { text-decoration: underline; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script>
+  // Inserisci qui la tua configurazione Firebase
+  const firebaseConfig = {
+  apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+  authDomain: "glgest.firebaseapp.com",
+  projectId: "glgest",
+  storageBucket: "glgest.firebasestorage.app",
+  messagingSenderId: "423155306554",
+  appId: "1:423155306554:web:c598640f199e296d276503"
+  };
 
-        // Inizializza Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-    </script>
-</head>
-<body>
+  // Inizializza Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+  </script>
+ </head>
+ <body>
 
-    <h1>Gestione Sede - Dashboard</h1>
+  <h1>Gestione Sede - Dashboard</h1>
 
-    <div class="admin-menu">
-        <ul>
-            <li><a href="admin_sede.html">Dashboard</a></li>
-            <li><a href="modifica_sede.html">Carica Dati</a></li>
-            <li><a href="#">Gestione Utenti</a></li>
-        </ul>
-    </div>
+  <div class="admin-menu">
+  <ul>
+  <li><a href="admin_sede.html">Dashboard</a></li>
+  <li><a href="modifica_sede.html">Carica Dati</a></li>
+  <li><a href="#">Gestione Utenti</a></li>
+  </ul>
+  </div>
 
-    <div class="sezione" id="dashboard-sede">
-        <h2>Informazioni Sede</h2>
-        <div id="info-sede">
-            <p>Codice Fiscale: <span id="dashboard-codice-fiscale"></span></p>
-            <p>Nome Responsabile: <span id="dashboard-nome-responsabile"></span></p>
-            <p>Email: <span id="dashboard-email-sede"></span></p>
-            <p>PEC: <span id="dashboard-pec-sede"></span></p>
-            <p>Indirizzo: <span id="dashboard-indirizzo-sede"></span></p>
-            <p>Città: <span id="dashboard-citta-sede"></span></p>
-            <p>Provincia: <span id="dashboard-provincia-sede"></span></p>
-            <p>Nome Sede: <span id="dashboard-nome-sede-input"></span></p>
-            <p>Posizione: <span id="dashboard-posizione-sede"></span></p>
-        </div>
+  <div class="sezione" id="dashboard-sede">
+  <h2>Informazioni Sede</h2>
+  <div id="info-sede">
+  <p>Codice Fiscale: <span id="dashboard-codice-fiscale"></span></p>
+  <p>Nome Responsabile: <span id="dashboard-nome-responsabile"></span></p>
+  <p>Email: <span id="dashboard-email-sede"></span></p>
+  <p>PEC: <span id="dashboard-pec-sede"></span></p>
+  <p>Indirizzo: <span id="dashboard-indirizzo-sede"></span></p>
+  <p>Città: <span id="dashboard-citta-sede"></span></p>
+  <p>Provincia: <span id="dashboard-provincia-sede"></span></p>
+  <p>Nome Sede: <span id="dashboard-nome-sede-input"></span></p>
+  <p>Posizione: <span id="dashboard-posizione-sede"></span></p>
+  </div>
 
-        <h2>Elenco Mezzi</h2>
-        <table id="dashboard-tabella-mezzi">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tipologia</th>
-                    <th>Modello</th>
-                    <th>Targa</th>
-                    <th>Stato</th>
-                    <th>Scadenza Revisione</th>
-                    <th>Scadenza Assicurazione</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
+  <h2>Elenco Mezzi</h2>
+  <table id="dashboard-tabella-mezzi">
+  <thead>
+  <tr>
+  <th>ID</th>
+  <th>Tipologia</th>
+  <th>Modello</th>
+  <th>Targa</th>
+  <th>Stato</th>
+  <th>Scadenza Revisione</th>
+  <th>Scadenza Assicurazione</th>
+  </tr>
+  </thead>
+  <tbody>
+  </tbody>
+  </table>
 
-        <h2>Elenco Attrezzature</h2>
-        <table id="dashboard-tabella-attrezzature">
-            <thead>
-                <tr>
-                    <th>Tipologia</th>
-                    <th>Stato</th>
-                    <th>Note</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
+  <h2>Elenco Attrezzature</h2>
+  <table id="dashboard-tabella-attrezzature">
+  <thead>
+  <tr>
+  <th>Tipologia</th>
+  <th>Stato</th>
+  <th>Note</th>
+  </tr>
+  </thead>
+  <tbody>
+  </tbody>
+  </table>
+  </div>
 
-    <script>
-        // **RIMOSSE le dichiarazioni duplicate di auth e db**
-        // const auth = firebase.auth();
-        // const db = firebase.firestore();
+  <script>
+  // Array degli indirizzi email degli amministratori di sede
+  const adminEmails = [
+  'accettura@pcgl.it',
+  'acerenza@pcgl.it',
+  'aliano@pcgl.it',
+  'armento@pcgl.it',
+  'atriano@pcgl.it',
+  'balvano@pcgl.it',
+  'banzi@pcgl.it',
+  'baragiano@pcgl.it',
+  'barile@pcgl.it',
+  'bella@pcgl.it',
+  'brienza@pcgl.it',
+  'brindisi_montagna@pcgl.it',
+  'calciano@pcgl.it',
+  'camarda@pcgl.it',
+  'campomaggiore@pcgl.it',
+  'cancellara@pcgl.it',
+  'carbone@pcgl.it',
+  'castelgrande@pcgl.it',
+  'castelluccio_inferiore@pcgl.it',
+  'castelluccio_superiore@pcgl.it',
+  'castelmezzano@pcgl.it',
+  'castelsaraceno@pcgl.it',
+  'cella@pcgl.it',
+  'cerchiara@pcgl.it',
+  'chiaromonte@pcgl.it',
+  'corleto_perticara@pcgl.it',
+  'episcopia@pcgl.it',
+  'fardella@pcgl.it',
+  'forenza@pcgl.it',
+  'francavilla@pcgl.it',
+  'gallicchio@pcgl.it',
+  'genzano@pcgl.it',
+  'ginestra@pcgl.it',
+  'grassano@pcgl.it',
+  'grottole@pcgl.it',
+  'guardia_perticara@pcgl.it',
+  'lagonegro@pcgl.it',
+  'latronico@pcgl.it',
+  'lauria@pcgl.it',
+  'lavello@pcgl.it',
+  'maratea@pcgl.it',
+  'marsico_nuovo@pcgl.it',
+  'marsicovetere@pcgl.it',
+  'maschito@pcgl.it',
+  'matera@pcgl.it',
+  'melito@pcgl.it',
+  'miglionico@pcgl.it',
+  'missanello@pcgl.it',
+  'moliterno@pcgl.it',
+  'montalbano@pcgl.it',
+  'montemilone@pcgl.it',
+  'montemurro@pcgl.it',
+  'muro_lucano@pcgl.it',
+  'nemoli@pcgl.it',
+  'noepoli@pcgl.it',
+  'oppido_lucano@pcgl.it',
+  'palazzo@pcgl.it',
+  'paterno@pcgl.it',
+  'pescopagano@pcgl.it',
+  'picerno@pcgl.it',
+  'pietragalla@pcgl.it',
+  'pietrapertosa@pcgl.it',
+  'pignola@pcgl.it',
+  'potenza@pcgl.it',
+  'rapolla@pcgl.it',
+  'rapone@pcgl.it',
+  'rionero@pcgl.it',
+  'ripacandida@pcgl.it',
+  'rivello@pcgl.it',
+  'roccanova@pcgl.it',
+  'rotonda@pcgl.it',
+  'rustico@pcgl.it',
+  'san_chirico_nuovo@pcgl.it',
+  'san_chirico_rapano@pcgl.it',
+  'san_costantino_albanese@pcgl.it',
+  'san_felice@pcgl.it',
+  'san_martino_d_agri@pcgl.it',
+  'san_paolo_albanese@pcgl.it',
+  'san_severino@pcgl.it',
+  'sant_angelo_le_fratte@pcgl.it',
+  'satriano@pcgl.it',
+  'saviano@pcgl.it',
+  'scanzano@pcgl.it',
+  'senise@pcgl.it',
+  'spinoso@pcgl.it',
+  'stigliano@pcgl.it',
+  'tolve@pcgl.it',
+  'tramutola@pcgl.it',
+  'trecchina@pcgl.it',
+  'tricarico@pcgl.it',
+  'varano@pcgl.it',
+  'venosa@pcgl.it',
+  'vietri@pcgl.it',
+  'viggianello@pcgl.it',
+  'viggiano@pcgl.it',
+  'villapiana@pcgl.it'
+  ];
 
-        // Array degli indirizzi email degli amministratori di sede
-        const adminEmails = [
-            'accettura@pcgl.it',
-            'acerenza@pcgl.it',
-            'aliano@pcgl.it',
-            'armento@pcgl.it',
-            'atriano@pcgl.it',
-            'balvano@pcgl.it',
-            'banzi@pcgl.it',
-            'baragiano@pcgl.it',
-            'barile@pcgl.it',
-            'bella@pcgl.it',
-            'brienza@pcgl.it',
-            'brindisi_montagna@pcgl.it',
-            'calciano@pcgl.it',
-            'camarda@pcgl.it',
-            'campomaggiore@pcgl.it',
-            'cancellara@pcgl.it',
-            'carbone@pcgl.it',
-            'castelgrande@pcgl.it',
-            'castelluccio_inferiore@pcgl.it',
-            'castelluccio_superiore@pcgl.it',
-            'castelmezzano@pcgl.it',
-            'castelsaraceno@pcgl.it',
-            'cella@pcgl.it',
-            'cerchiara@pcgl.it',
-            'chiaromonte@pcgl.it',
-            'corleto_perticara@pcgl.it',
-            'episcopia@pcgl.it',
-            'fardella@pcgl.it',
-            'forenza@pcgl.it',
-            'francavilla@pcgl.it',
-            'gallicchio@pcgl.it',
-            'genzano@pcgl.it',
-            'ginestra@pcgl.it',
-            'grassano@pcgl.it',
-            'grottole@pcgl.it',
-            'guardia_perticara@pcgl.it',
-            'lagonegro@pcgl.it',
-            'latronico@pcgl.it',
-            'lauria@pcgl.it',
-            'lavello@pcgl.it',
-            'maratea@pcgl.it',
-            'marsico_nuovo@pcgl.it',
-            'marsicovetere@pcgl.it',
-            'maschito@pcgl.it',
-            'matera@pcgl.it',
-            'melito@pcgl.it',
-            'miglionico@pcgl.it',
-            'missanello@pcgl.it',
-            'moliterno@pcgl.it',
-            'montalbano@pcgl.it',
-            'montemilone@pcgl.it',
-            'montemurro@pcgl.it',
-            'muro_lucano@pcgl.it',
-            'nemoli@pcgl.it',
-            'noepoli@pcgl.it',
-            'oppido_lucano@pcgl.it',
-            'palazzo@pcgl.it',
-            'paterno@pcgl.it',
-            'pescopagano@pcgl.it',
-            'picerno@pcgl.it',
-            'pietragalla@pcgl.it',
-            'pietrapertosa@pcgl.it',
-            'pignola@pcgl.it',
-            'potenza@pcgl.it',
-            'rapolla@pcgl.it',
-            'rapone@pcgl.it',
-            'rionero@pcgl.it',
-            'ripacandida@pcgl.it',
-            'rivello@pcgl.it',
-            'roccanova@pcgl.it',
-            'rotonda@pcgl.it',
-            'rustico@pcgl.it',
-            'san_chirico_nuovo@pcgl.it',
-            'san_chirico_rapano@pcgl.it',
-            'san_costantino_albanese@pcgl.it',
-            'san_felice@pcgl.it',
-            'san_martino_d_agri@pcgl.it',
-            'san_paolo_albanese@pcgl.it',
-            'san_severino@pcgl.it',
-            'sant_angelo_le_fratte@pcgl.it',
-            'satriano@pcgl.it',
-            'saviano@pcgl.it',
-            'scanzano@pcgl.it',
-            'senise@pcgl.it',
-            'spinoso@pcgl.it',
-            'stigliano@pcgl.it',
-            'tolve@pcgl.it',
-            'tramutola@pcgl.it',
-            'trecchina@pcgl.it',
-            'tricarico@pcgl.it',
-            'varano@pcgl.it',
-            'venosa@pcgl.it',
-            'vietri@pcgl.it',
-            'viggianello@pcgl.it',
-            'viggiano@pcgl.it',
-            'villapiana@pcgl.it'
-        ];
+  // Funzione per verificare se l'utente è un amministratore di sede
+  function isAdminSede(user) {
+  return user && adminEmails.includes(user.email);
+  }
 
-     // Funzione per verificare se l'utente è un amministratore di sede
-        function isAdminSede(user) {
-            return user && adminEmails.includes(user.email);
-        }
+  // Funzione per popolare la dashboard con i dati della sede
+  async function popolaDashboardSede(sedeId) {
+  console.log("popolaDashboardSede chiamata con sedeId:", sedeId);
+  const sedeDocRef = db.collection('sedi').doc(sedeId);
+  try {
+  const sedeDocSnap = await sedeDocRef.get();
+  if (sedeDocSnap.exists) {
+  const sedeData = sedeDocSnap.data();
+  console.log("Dati sede recuperati:", sedeData);
+  document.getElementById('dashboard-codice-fiscale').textContent = sedeData['codice-fiscale'] || '';
+  document.getElementById('dashboard-nome-responsabile').textContent = sedeData['Nome responsabile'] || '';
+  document.getElementById('dashboard-email-sede').textContent = sedeData['Email'] || '';
+  document.getElementById('dashboard-pec-sede').textContent = sedeData['Pec'] || '';
+  document.getElementById('dashboard-indirizzo-sede').textContent = sedeData['Indirizzo'] || '';
+  document.getElementById('dashboard-citta-sede').textContent = sedeData['Città'] || '';
+  document.getElementById('dashboard-provincia-sede').textContent = sedeData['Provincia'] || '';
+  document.getElementById('dashboard-nome-sede-input').textContent = sedeData['SEDE'] || ''; // **MODIFICATO: Usa 'SEDE'**
+  document.getElementById('dashboard-posizione-sede').textContent = sedeData['Posizione'] || '';
+  } else {
+  console.log("Nessun dato sede trovato per l'ID:", sedeId);
+  }
+  } catch (error) {
+  console.error("Errore nel recupero dati sede:", error);
+  }
+  }
 
-        // Funzione per popolare la dashboard con i dati della sede
-        async function popolaDashboardSede(sedeId) {
-            console.log("popolaDashboardSede chiamata con sedeId:", sedeId);
-            const sedeDocRef = db.collection('sedi').doc(sedeId);
-            try {
-                const sedeDocSnap = await sedeDocRef.get();
-                if (sedeDocSnap.exists) {
-                    const sedeData = sedeDocSnap.data();
-                    console.log("Dati sede recuperati:", sedeData);
-                    document.getElementById('dashboard-codice-fiscale').textContent = sedeData['codice-fiscale'] || '';
-                    document.getElementById('dashboard-nome-responsabile').textContent = sedeData['Nome responsabile'] || '';
-                    document.getElementById('dashboard-email-sede').textContent = sedeData['Email'] || '';
-                    document.getElementById('dashboard-pec-sede').textContent = sedeData['Pec'] || '';
-                    document.getElementById('dashboard-indirizzo-sede').textContent = sedeData['Indirizzo'] || '';
-                    document.getElementById('dashboard-citta-sede').textContent = sedeData['Città'] || '';
-                    document.getElementById('dashboard-provincia-sede').textContent = sedeData['Provincia'] || '';
-                    document.getElementById('dashboard-nome-sede-input').textContent = sedeData['Nome Sede'] || '';
-                    document.getElementById('dashboard-posizione-sede').textContent = sedeData['Posizione'] || '';
-                } else {
-                    console.log("Nessun dato sede trovato per l'ID:", sedeId);
-                }
-            } catch (error) {
-                console.error("Errore nel recupero dati sede:", error);
-            }
-        }
+  // Funzione per popolare la tabella dei mezzi nella dashboard
+  async function popolaDashboardMezzi(sedeId) {
+  console.log("popolaDashboardMezzi chiamata con sedeId:", sedeId);
+  const mezziCollection = db.collection('mezzi');
+  const mezziQuery = mezziCollection.where('sedeId', '==', sedeId);
+  try {
+  const mezziSnapshot = await mezziQuery.get();
+  const tabellaMezziBody = document.getElementById('dashboard-tabella-mezzi').getElementsByTagName('tbody')[0];
+  tabellaMezziBody.innerHTML = ''; // Pulisci la tabella precedente
+  console.log("Numero di mezzi trovati:", mezziSnapshot.size);
+  mezziSnapshot.forEach(doc => {
+  const mezzoData = doc.data();
+  console.log("Dati mezzo:", mezzoData);
+  const row = tabellaMezziBody.insertRow();
+  row.insertCell().textContent = mezzoData['Id'] || '';
+  row.insertCell().textContent = mezzoData['Tipologia'] || '';
+  row.insertCell().textContent = mezzoData['Modello'] || '';
+  row.insertCell().textContent = mezzoData['Targa'] || '';
+  row.insertCell().textContent = mezzoData['Stato'] || '';
 
-       // Funzione per popolare la tabella dei mezzi nella dashboard
-        async function popolaDashboardMezzi(sedeId) {
-            console.log("popolaDashboardMezzi chiamata con sedeId:", sedeId);
-            const mezziCollection = db.collection('mezzi');
-            const mezziQuery = mezziCollection.where('sedeId', '==', sedeId);
-            try {
-                const mezziSnapshot = await mezziQuery.get();
-                const tabellaMezziBody = document.getElementById('dashboard-tabella-mezzi').getElementsByTagName('tbody')[0];
-                tabellaMezziBody.innerHTML = ''; // Pulisci la tabella precedente
-                console.log("Numero di mezzi trovati:", mezziSnapshot.size);
-                mezziSnapshot.forEach(doc => {
-                    const mezzoData = doc.data();
-                    console.log("Dati mezzo:", mezzoData);
-                    const row = tabellaMezziBody.insertRow();
-                    row.insertCell().textContent = mezzoData['Id'] || '';             // Corrisponde a "Id" nell'Excel
-                    row.insertCell().textContent = mezzoData['Tipologia'] || '';      // Corrisponde a "Tipologia"
-                    row.insertCell().textContent = mezzoData['Modello'] || '';        // Corrisponde a "Modello"
-                    row.insertCell().textContent = mezzoData['Targa'] || '';          // Corrisponde a "Targa"
-                    row.insertCell().textContent = mezzoData['Stato'] || '';          // Corrisponde a "Stato"
+  const scadenzaRevisioneTimestamp = mezzoData['Scadenza Revisione'];
+  const scadenzaRevisioneDate = scadenzaRevisioneTimestamp ? new Date(scadenzaRevisioneTimestamp) : null;
+  row.insertCell().textContent = scadenzaRevisioneDate ? formatDate(scadenzaRevisioneDate) : '';
 
-                    // Converti la scadenza revisione in formato data (GG/MM/AAAA)
-                    const scadenzaRevisioneTimestamp = mezzoData['Scadenza Revisione'];
-                    const scadenzaRevisioneDate = scadenzaRevisioneTimestamp ? new Date(scadenzaRevisioneTimestamp) : null;
-                    row.insertCell().textContent = scadenzaRevisioneDate ? formatDate(scadenzaRevisioneDate) : '';
+  const scadenzaAssicurazioneTimestamp = mezzoData['Scadenza assicurazione'];
+  const scadenzaAssicurazioneDate = scadenzaAssicurazioneTimestamp ? new Date(scadenzaAssicurazioneTimestamp) : null;
+  row.insertCell().textContent = scadenzaAssicurazioneDate ? formatDate(scadenzaAssicurazioneDate) : '';
+  });
+  } catch (error) {
+  console.error("Errore nel recupero dati mezzi:", error);
+  }
+  }
 
-                    // Converti la scadenza assicurazione in formato data (GG/MM/AAAA)
-                    const scadenzaAssicurazioneTimestamp = mezzoData['Scadenza assicurazione'];
-                    const scadenzaAssicurazioneDate = scadenzaAssicurazioneTimestamp ? new Date(scadenzaAssicurazioneTimestamp) : null;
-                    row.insertCell().textContent = scadenzaAssicurazioneDate ? formatDate(scadenzaAssicurazioneDate) : '';
-                });
-            } catch (error) {
-                console.error("Errore nel recupero dati mezzi:", error);
-            }
-        }
+  // Funzione per formattare la data come GG/MM/AAAA
+  function formatDate(date) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Mese è 0-indexed
+  const year = date.getFullYear();
+  return `<span class="math-inline">\{day\}/</span>{month}/${year}`;
+  }
 
-        // Funzione per formattare la data come GG/MM/AAAA
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0'); // Mese è 0-indexed
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
+  // Funzione per popolare la tabella delle attrezzature nella dashboard
+  async function popolaDashboardAttrezzature(sedeId) {
+  console.log("popolaDashboardAttrezzature chiamata con sedeId:", sedeId);
+  const attrezzatureCollection = db.collection('attrezzature');
+  const attrezzatureQuery = attrezzatureCollection.where('sedeId', '==', sedeId);
+  try {
+  const attrezzatureSnapshot = await attrezzatureQuery.get();
+  const tabellaAttrezzatureBody = document.getElementById('dashboard-tabella-attrezzature').getElementsByTagName('tbody')[0];
+  tabellaAttrezzatureBody.innerHTML = ''; // Pulisci la tabella precedente
+  console.log("Numero di attrezzature trovate:", attrezzatureSnapshot.size);
+  attrezzatureSnapshot.forEach(doc => {
+  const attrezzaturaData = doc.data();
+  console.log("Dati attrezzatura:", attrezzaturaData);
+  const row = tabellaAttrezzatureBody.insertRow();
+  row.insertCell().textContent = attrezzaturaData['Tipologia'] || '';
+  row.insertCell().textContent = attrezzaturaData['Stato'] || '';
+  row.insertCell().textContent = attrezzaturaData['Note'] || '';
+  });
+  } catch (error) {
+  console.error("Errore nel recupero dati attrezzature:", error);
+  }
+  }
 
-       // Funzione per popolare la tabella delle attrezzature nella dashboard
-        async function popolaDashboardAttrezzature(sedeId) {
-            console.log("popolaDashboardAttrezzature chiamata con sedeId:", sedeId);
-            const attrezzatureCollection = db.collection('attrezzature');
-            const attrezzatureQuery = attrezzatureCollection.where('sedeId', '==', sedeId);
-            try {
-                const attrezzatureSnapshot = await attrezzatureQuery.get();
-                const tabellaAttrezzatureBody = document.getElementById('dashboard-tabella-attrezzature').getElementsByTagName('tbody')[0];
-                tabellaAttrezzatureBody.innerHTML = ''; // Pulisci la tabella precedente
-                console.log("Numero di attrezzature trovate:", attrezzatureSnapshot.size);
-                attrezzatureSnapshot.forEach(doc => {
-                    const attrezzaturaData = doc.data();
-                    console.log("Dati attrezzatura:", attrezzaturaData);
-                    const row = tabellaAttrezzatureBody.insertRow();
-                    row.insertCell().textContent = attrezzaturaData['Tipologia'] || ''; // Corrisponde a "Tipologia"
-                    row.insertCell().textContent = attrezzaturaData['Stato'] || '';     // Corrisponde a "Stato"
-                    row.insertCell().textContent = attrezzaturaData['Note'] || '';      // Corrisponde a "Note"
-                });
-            } catch (error) {
-                console.error("Errore nel recupero dati attrezzature:", error);
-            }
-        }
+  // Verifica l'autenticazione e popola la dashboard
+  auth.onAuthStateChanged(async user => {
+  if (user && isAdminSede(user)) {
+  console.log("Admin sede loggato, UID:", user.uid);
 
-        // Verifica l'autenticazione e popola la dashboard
-        auth.onAuthStateChanged(async user => {
-            if (user && isAdminSede(user)) {
-                console.log("Admin sede loggato, UID:", user.uid);
+  let sedeId;
 
-                let sedeId;
+  // **STRATEGIA 1 (Più comune): L'UID dell'utente corrisponde all'ID del documento 'sedi'**
+  sedeId = user.uid; // Usa l'UID dell'utente come ID della sede
+  console.log("Tentativo di recupero sedeId con strategia 1:", sedeId);
 
-                // **STRATEGIA 1 (Più comune): L'UID dell'utente corrisponde all'ID del documento 'sedi'**
-                sedeId = user.uid; // Usa l'UID dell'utente come ID della sede
-                console.log("Tentativo di recupero sedeId con strategia 1:", sedeId);
+  // **STRATEGIA 2: L'ID della sede è memorizzato nell'oggetto utente Firebase Auth (custom claims)**
+  // if (user.customClaims && user.customClaims.sedeId) {
+  //  sedeId = user.customClaims.sedeId;
+  //  console.log("Tentativo di recupero sedeId con strategia 2:", sedeId);
+  // }
 
-                // **STRATEGIA 2: L'ID della sede è memorizzato nell'oggetto utente Firebase Auth (custom claims)**
-                // if (user.customClaims && user.customClaims.sedeId) {
-                //     sedeId = user.customClaims.sedeId;
-                //     console.log("Tentativo di recupero sedeId con strategia 2:", sedeId);
-                // }
-
-                // **STRATEGIA 3: L'ID della sede è memorizzato in una collezione separata (es. 'admin_sedi')**
-                // const adminSediRef = db.collection('admin_sedi').where('uid', '==', user.uid);
-                // try {
-                //     const adminSediSnap = await adminSediRef.get();
-                //     if (!adminSediSnap.empty) {
-                //         sedeId = adminSediSnap.docs[0].data().sedeId; // Assumi che ci sia solo un record per admin
-                //         console.log("Tentativo di recupero sedeId con strategia 3:", sedeId);
-                //     }
-                // } catch (error) {
-                //     console.error("Errore nel recupero admin_sedi:", error);
-                // }
-
-                // **STRATEGIA 4: L'ID della sede è memorizzato in un campo nel documento utente (nella collezione 'users' se esiste)**
-                // const userDocRef = db.collection('users').doc(user.uid);
-                // try {
-                //     const userDocSnap = await userDocRef.get();
-                //     if (userDocSnap.exists && userDocSnap.data().sedeId) {
-               //         sedeId = userDocSnap.data().sedeId;
-                //         console.log("Tentativo di recupero sedeId con strategia 4:", sedeId);
-                //     }
-                // } catch (error) {
-                //     console.error("Errore nel recupero dati utente:", error);
-                // }
-
-                if (sedeId) {
-                    popolaDashboardSede(sedeId);
-                    popolaDashboardMezzi(sedeId);
-                    popolaDashboardAttrezzature(sedeId);
-                } else {
-                    console.error("Impossibile determinare l'ID della sede per l'admin:", user.uid);
-                    // Gestisci l'errore (es. mostra un messaggio all'utente)
-                }
-
-            } else if (user) {
-                console.log("Utente loggato ma non admin, reindirizzo.");
-                window.location.href = 'sede_template.html';
-            } else {
-                console.log("Utente non loggato, reindirizzo alla pagina di login.");
-                window.location.href = 'login.html';
-            }
-        });
-    </script>
-</body>
-</html>
+  // **STRATEGIA 3: L'ID della sede è memorizzato in una collezione separata (es. 'admin_sedi')**
+  // const adminSediRef = db.collection('admin_sedi').where('uid', '==', user.uid);
+  // try {
+  //  const adminSediSnap = await adminSediRef.get();
+  //  if (!adminSediSnap
