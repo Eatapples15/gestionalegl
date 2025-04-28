@@ -106,7 +106,7 @@
         const sedeIscrizione = userData.sede_iscrizione;
 
         // Reindirizza l'utente alla pagina della sua sede
-        window.location.href = `/gestionalegl/sede/${encodeURIComponent(sedeIscrizione)}.html`;
+       window.location.href = `/gestionalegl/sede/sede_template.html?sede=${encodeURIComponent(sedeIscrizione)}`;
         // Assicurati di avere una pagina HTML per ogni sede (es: tricarico.html)
     } else {
         console.error("Dati utente non trovati nel database.");
