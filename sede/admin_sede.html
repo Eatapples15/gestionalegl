@@ -234,7 +234,7 @@
             }
         }
 
-        // Funzione per popolare la tabella dei mezzi nella dashboard
+       // Funzione per popolare la tabella dei mezzi nella dashboard
         async function popolaDashboardMezzi(sedeId) {
             console.log("popolaDashboardMezzi chiamata con sedeId:", sedeId);
             const mezziCollection = db.collection('mezzi');
@@ -248,20 +248,36 @@
                     const mezzoData = doc.data();
                     console.log("Dati mezzo:", mezzoData);
                     const row = tabellaMezziBody.insertRow();
-                    row.insertCell().textContent = mezzoData['id-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['tipologia-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['modello-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['targa-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['stato-mezzo'] || '';
-                    row.insertCell().textContent = mezzoData['Scadenza Revisione'] || '';
-                    row.insertCell().textContent = mezzoData['Scadenza assicurazione'] || '';
+                    row.insertCell().textContent = mezzoData['Id'] || '';             // Corrisponde a "Id" nell'Excel
+                    row.insertCell().textContent = mezzoData['Tipologia'] || '';      // Corrisponde a "Tipologia"
+                    row.insertCell().textContent = mezzoData['Modello'] || '';        // Corrisponde a "Modello"
+                    row.insertCell().textContent = mezzoData['Targa'] || '';          // Corrisponde a "Targa"
+                    row.insertCell().textContent = mezzoData['Stato'] || '';          // Corrisponde a "Stato"
+
+                    // Converti la scadenza revisione in formato data (GG/MM/AAAA)
+                    const scadenzaRevisioneTimestamp = mezzoData['Scadenza Revisione'];
+                    const scadenzaRevisioneDate = scadenzaRevisioneTimestamp ? new Date(scadenzaRevisioneTimestamp) : null;
+                    row.insertCell().textContent = scadenzaRevisioneDate ? formatDate(scadenzaRevisioneDate) : '';
+
+                    // Converti la scadenza assicurazione in formato data (GG/MM/AAAA)
+                    const scadenzaAssicurazioneTimestamp = mezzoData['Scadenza assicurazione'];
+                    const scadenzaAssicurazioneDate = scadenzaAssicurazioneTimestamp ? new Date(scadenzaAssicurazioneTimestamp) : null;
+                    row.insertCell().textContent = scadenzaAssicurazioneDate ? formatDate(scadenzaAssicurazioneDate) : '';
                 });
             } catch (error) {
                 console.error("Errore nel recupero dati mezzi:", error);
             }
         }
 
-        // Funzione per popolare la tabella delle attrezzature nella dashboard
+        // Funzione per formattare la data come GG/MM/AAAA
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Mese è 0-indexed
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+       // Funzione per popolare la tabella delle attrezzature nella dashboard
         async function popolaDashboardAttrezzature(sedeId) {
             console.log("popolaDashboardAttrezzature chiamata con sedeId:", sedeId);
             const attrezzatureCollection = db.collection('attrezzature');
@@ -275,9 +291,9 @@
                     const attrezzaturaData = doc.data();
                     console.log("Dati attrezzatura:", attrezzaturaData);
                     const row = tabellaAttrezzatureBody.insertRow();
-                    row.insertCell().textContent = attrezzaturaData['Tipologia'] || '';
-                    row.insertCell().textContent = attrezzaturaData['Stato'] || '';
-                    row.insertCell().textContent = attrezzaturaData['Note'] || '';
+                    row.insertCell().textContent = attrezzaturaData['Tipologia'] || ''; // Corrisponde a "Tipologia"
+                    row.insertCell().textContent = attrezzaturaData['Stato'] || '';     // Corrisponde a "Stato"
+                    row.insertCell().textContent = attrezzaturaData['Note'] || '';      // Corrisponde a "Note"
                 });
             } catch (error) {
                 console.error("Errore nel recupero dati attrezzature:", error);
