@@ -19,38 +19,30 @@
             color: white;
             width: 200px;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centra il logo orizzontalmente */
         }
 
-        .sidebar h1 { /* Modificato h2 in h1 per il logo */
+        .sidebar h1 {
             margin-top: 0;
             margin-bottom: 20px;
-        }
-
-        .sidebar img {
-            max-width: 100%; /* Adatta il logo alla larghezza del sidebar */
-            height: auto;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar li {
-            margin-bottom: 10px;
         }
 
         .sidebar a {
             color: white;
             text-decoration: none;
-            display: block;
-            padding: 8px 0;
         }
 
         .sidebar a:hover {
             text-decoration: underline;
+        }
+
+        .sidebar img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 0; /* Rimosso il margine inferiore dal logo */
         }
 
         .content {
@@ -58,8 +50,40 @@
             padding: 20px;
         }
 
-        h2 { /* Era h1, ora è h2 per il titolo della sezione principale */
+        h2 {
             color: #333;
+            margin-top: 0; /* Sposta l'h2 in alto nel content */
+        }
+
+        .login-accredita {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px; /* Spazio tra i pulsanti */
+        }
+
+        .login-accredita a {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .login-accredita a:hover {
+            background-color: #0056b3;
+        }
+
+        .news-link {
+            margin-top: 20px;
+        }
+
+        .news-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .news-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -70,17 +94,21 @@
                 <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
             </a>
         </h1>
-        <ul>
-            <li><a href="home.html">Home</a></li>
-            <li><a href="volontario.html">Volontario</a></li>
-            <li><a href="sede.html">Sede Tricarico</a></li>
-            <li><a href="coordinamento.html">Coordinamento</a></li>
-        </ul>
-    </div>
+        </div>
 
     <div class="content">
         <h2>Benvenuto nel Gestionale Gruppo Lucano</h2>
-        <p>Questa è la pagina iniziale del gestionale. Utilizza il menu laterale per navigare tra le sezioni.</p>
+        <p>Questa è la pagina iniziale del gestionale.</p>
+
+        <div class="login-accredita">
+            <a href="login.html">Login</a>
+            <a href="signup.html">Accreditati</a>
+        </div>
+
+        <div class="news-link">
+            <p>Ultime notizie dal coordinamento:</p>
+            <a href="http://pcgl.info" target="_blank">Visita il sito pcgl.info</a>
+        </div>
     </div>
 </body>
 </html>
