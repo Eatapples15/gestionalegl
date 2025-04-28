@@ -21,6 +21,25 @@
         .alert-scadenza.imminente { color: red; }
         #upload-feedback { margin-top: 10px; font-weight: bold; }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+    <script>
+        // Inserisci qui la tua configurazione Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+          authDomain: "glgest.firebaseapp.com",
+          projectId: "glgest",
+          storageBucket: "glgest.firebasestorage.app",
+          messagingSenderId: "423155306554",
+          appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        // Inizializza Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+    </script>
 </head>
 <body>
 
@@ -30,7 +49,7 @@
         <h2>Carica Dati da File Excel</h2>
         <label for="file-upload">Seleziona il file Excel (.xlsx):</label>
         <input type="file" id="file-upload" accept=".xlsx">
-        <button onclick="caricaDatiExcel()">Carica Dati</button>
+        <button id="carica-dati-btn">Carica Dati</button>
         <div id="upload-feedback"></div>
     </div>
 
@@ -175,14 +194,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script type="module">
-        import { getFirestore, collection, addDoc, setDoc, doc } from 'firebase/firestore';
-        import { getAuth } from 'firebase/auth';
-        import { app } from './firebaseConfig.js'; // Assicurati che il percorso al tuo file di configurazione sia corretto
-
-        // Ottieni l'istanza del database
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+    <script>
+        const caricaDatiBtn = document.getElementById('carica-dati-btn');
+        caricaDatiBtn.addEventListener('click', caricaDatiExcel);
 
         function caricaDatiExcel() {
             const fileInput = document.getElementById('file-upload');
@@ -211,9 +225,9 @@
                 // Dovrai sostituire questa parte con la tua logica per recuperare l'ID della sede
                 let sedeId = '';
                 // Esempio (potrebbe essere memorizzato nell'oggetto utente o in un'altra collezione):
-                // const userDocRef = doc(db, 'users', user.uid);
-                // const userDocSnap = await getDoc(userDocRef);
-                // if (userDocSnap.exists()) {
+                // const userDocRef = db.collection('users').doc(user.uid);
+                // const userDocSnap = await userDocRef.get();
+                // if (userDocSnap.exists) {
                 //     sedeId = userDocSnap.data().sedeId;
                 // } else {
                 //     feedbackDiv.textContent = 'Impossibile recuperare l\'ID della sede dell\'utente.';
@@ -237,8 +251,8 @@
                     if (sedeData.length > 0) {
                         try {
                             // Usa l'ID della sede come ID del documento nella collezione 'sedi'
-                            const sedeDocRef = doc(db, 'sedi', sedeId);
-                            await setDoc(sedeDocRef, { ...sedeData[0] });
+                            const sedeDocRef = db.collection('sedi').doc(sedeId);
+                            await sedeDocRef.set({ ...sedeData[0] });
                             feedbackDiv.textContent = 'Dati Sede caricati con successo!';
                         } catch (error) {
                             feedbackDiv.textContent = 'Errore durante il salvataggio dei dati della sede.';
@@ -255,7 +269,7 @@
                     const mezziData = XLSX.utils.sheet_to_json(workbook.Sheets[mezziSheetName]);
                     try {
                         for (const mezzo of mezziData) {
-                            await addDoc(collection(db, 'mezzi'), { ...mezzo, sedeId: sedeId });
+                            await db.collection('mezzi').add({ ...mezzo, sedeId: sedeId });
                         }
                         feedbackDiv.textContent += ' Dati Mezzi caricati con successo!';
                     } catch (error) {
@@ -270,7 +284,7 @@
                     const attrezzatureData = XLSX.utils.sheet_to_json(workbook.Sheets[attrezzatureSheetName]);
                     try {
                         for (const attrezzatura of attrezzatureData) {
-                            await addDoc(collection(db, 'attrezzature'), { ...attrezzatura, sedeId: sedeId });
+                            await db.collection('attrezzature').add({ ...attrezzatura, sedeId: sedeId });
                         }
                         feedbackDiv.textContent += ' Dati Attrezzature caricati con successo!';
                     } catch (error) {
