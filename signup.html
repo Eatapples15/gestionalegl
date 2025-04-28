@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registrazione Volontario</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .signup-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1e7e34;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const volontariCollection = collection(db, 'volontari'); // Nome della collezione per i volontari
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const signupForm = document.getElementById('signupForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            signupForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                errorMessage.textContent = ''; // Resetta il messaggio di errore
+                successMessage.textContent = ''; // Resetta il messaggio di successo
+
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                if (password !== confirmPassword) {
+                    errorMessage.textContent = 'Le password non corrispondono.';
+                    return;
+                }
+
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    console.log('Volontario registrato:', user);
+
+                    // Salva ulteriori informazioni sul volontario nel database (Firestore)
+                    await addDoc(volontariCollection, {
+                        uid: user.uid,
+                        email: email,
+                        // Aggiungi qui altri campi che vuoi salvare per il volontario
+                        sede_iscrizione: document.getElementById('sedeVolontario').value // Recupera la sede selezionata
+                    });
+
+                    successMessage.textContent = 'Registrazione completata con successo! Sarai reindirizzato alla pagina di login.';
+                    setTimeout(() => {
+                        window.location.href = '/login'; // Reindirizza alla pagina di login
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Errore durante la registrazione:', error.code, error.message);
+                    errorMessage.textContent = getErrorMessage(error.code);
+                }
+            });
+
+            function getErrorMessage(errorCode) {
+                switch (errorCode) {
+                    case 'auth/email-already-in-use':
+                        return 'L\'indirizzo email è già in uso.';
+                    case 'auth/invalid-email':
+                        return 'L\'indirizzo email non è valido.';
+                    case 'auth/weak-password':
+                        return 'La password è troppo debole (almeno 6 caratteri).';
+                    default:
+                        return 'Si è verificato un errore durante la registrazione.';
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Registrazione Volontario</h2>
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Conferma Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sedeVolontario">Sede di Volontariato:</label>
+                <select id="sedeVolontario" name="sedeVolontario">
+                    <option value="">Seleziona una sede</option>
+                    </select>
+            </div>
+
+            <button type="submit">Registrati</button>
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+        </form>
+        <p>Hai già un account? <a href="/login">Accedi</a></p>
+    </div>
+
+    <script type="module">
+        // Script per popolare la select delle sedi (lo stesso che abbiamo usato prima)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+           apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const sediCollection = collection(db, 'sedi');
+
+        async function popolaSedi() {
+            const selectElement = document.getElementById('sedeVolontario');
+
+            try {
+                const querySnapshot = await getDocs(sediCollection);
+                querySnapshot.forEach((doc) => {
+                    const sedeData = doc.data();
+                    if (sedeData.SEDE && sedeData.PROVINCIA) {
+                        const option = document.createElement('option');
+                        option.value = sedeData.SEDE;
+                        option.textContent = `${sedeData.SEDE} (${sedeData.PROVINCIA})`;
+                        selectElement.appendChild(option);
+                    }
+                });
+            } catch (error) {
+                console.error("Errore nel recupero delle sedi da Firebase:", error);
+                alert("Si è verificato un errore nel caricamento delle sedi.");
+            }
+        }
+
+        popolaSedi();
+    </script>
+</body>
+</html>
