@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dettagli Sede</title>
+    </head>
+<body>
+    <div id="sede-container">
+        <h1></h1>
+        <p>Email: <span></span></p>
+        <p>Presidente: <span></span></p>
+        </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // ... (Configurazione Firebase) ...
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const sediCollection = collection(db, 'sedi');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const pathSegments = window.location.pathname.split('/');
+            const sedeNomeEncoded = pathSegments[pathSegments.length - 1].replace('.html', '');
+            const sedeNome = decodeURIComponent(sedeNomeEncoded);
+
+            // Trova la sede nel database in base al nome (o un altro ID univoco)
+            const sedeDocRef = query(sediCollection, where("SEDE", "==", sedeNome)); // Assumendo che il nome della sede sia univoco
+            const querySnapshot = await getDocs(sedeDocRef);
+
+            if (!querySnapshot.empty) {
+                const sedeData = querySnapshot.docs[0].data();
+                document.querySelector('h1').textContent = sedeData.SEDE;
+                document.querySelector('#sede-container p span').textContent = sedeData.EMAIL;
+                // Popola altri campi
+            } else {
+                document.querySelector('#sede-container').innerHTML = '<p>Sede non trovata.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
