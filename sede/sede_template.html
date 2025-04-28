@@ -1,40 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>Dettagli Sede</title>
-    </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sede di <span id="sede-nome-title"></span> - Gestionale Gruppo Lucano</title>
+    <style>
+        /* ... (il tuo CSS rimane lo stesso) ... */
+    </style>
+</head>
 <body>
-    <div id="sede-container">
-        <h1></h1>
-        <p>Email: <span></span></p>
-        <p>Presidente: <span></span></p>
-        </div>
+    <div class="header">
+        <a href="/gestionalegl/index.html" style="display: flex; align-items: center;">
+            <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+            <span>Gestionale Gruppo Lucano</span>
+        </a>
+        <a href="/gestionalegl/index.html">Home</a>
+    </div>
+
+    <h1>Sede di <span id="sede-nome-h1"></span></h1>
+
+    <div class="dati-sede">
+        <h2>Dati Sede</h2>
+        <p><strong>Nome:</strong> <span id="sede-nome"></span></p>
+        <p><strong>Indirizzo:</strong> <span id="sede-indirizzo"></span></p>
+        <p><strong>Responsabile:</strong> <span id="sede-responsabile"></span></p>
+        <p><strong>Contatti:</strong> <span id="sede-contatti"></span></p>
+    </div>
+
+    <div class="mezzi">
+        <h2>Mezzi in Dotazione</h2>
+        <table id="mezzi-table">
+            <thead>
+                <tr>
+                    <th>Targa</th>
+                    <th>Modello</th>
+                    <th>Scadenza Revisione</th>
+                    <th>Stato</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <div class="attrezzature">
+        <h2>Attrezzature</h2>
+        <table id="attrezzature-table">
+            <thead>
+                <tr>
+                    <th>Tipologia</th>
+                    <th>Stato</th>
+                    <th>Ultima Manutenzione</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-        // ... (Configurazione Firebase) ...
+        // ... (Configurazione Firebase - assicurati che sia la stessa usata nelle altre pagine) ...
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const sediCollection = collection(db, 'sedi');
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const pathSegments = window.location.pathname.split('/');
-            const sedeNomeEncoded = pathSegments[pathSegments.length - 1].replace('.html', '');
+            // Ottieni il nome della sede dall'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const sedeNomeEncoded = urlParams.get('sede');
             const sedeNome = decodeURIComponent(sedeNomeEncoded);
 
-            // Trova la sede nel database in base al nome (o un altro ID univoco)
-            const sedeDocRef = query(sediCollection, where("SEDE", "==", sedeNome)); // Assumendo che il nome della sede sia univoco
-            const querySnapshot = await getDocs(sedeDocRef);
+            if (sedeNome) {
+                // Esegui una query per trovare la sede nel database in base al nome
+                const q = query(sediCollection, where("SEDE", "==", sedeNome));
+                const querySnapshot = await getDocs(q);
 
-            if (!querySnapshot.empty) {
-                const sedeData = querySnapshot.docs[0].data();
-                document.querySelector('h1').textContent = sedeData.SEDE;
-                document.querySelector('#sede-container p span').textContent = sedeData.EMAIL;
-                // Popola altri campi
+                if (!querySnapshot.empty) {
+                    const sedeData = querySnapshot.docs[0].data();
+
+                    // Popola i dati della sede
+                    document.getElementById('sede-nome-title').textContent = sedeData.SEDE;
+                    document.getElementById('sede-nome-h1').textContent = sedeData.SEDE;
+                    document.getElementById('sede-nome').textContent = sedeData.SEDE;
+                    document.getElementById('sede-indirizzo').textContent = sedeData.INDIRIZZO || 'N/A'; // Assumi che tu abbia un campo INDIRIZZO
+                    document.getElementById('sede-responsabile').textContent = sedeData['NOMINATIVO PRESIDENTE'] || 'N/A';
+                    document.getElementById('sede-contatti').textContent = `${sedeData.EMAIL || 'N/A'}, ${sedeData.PEC || 'N/A'}`; // Combina email e PEC
+
+                    // Popola la tabella dei mezzi (se hai dati sui mezzi nel database)
+                    if (sedeData.mezzi && Array.isArray(sedeData.mezzi)) {
+                        const mezziTableBody = document.getElementById('mezzi-table').querySelector('tbody');
+                        sedeData.mezzi.forEach(mezzo => {
+                            const row = mezziTableBody.insertRow();
+                            row.insertCell().textContent = mezzo.targa || 'N/A';
+                            row.insertCell().textContent = mezzo.modello || 'N/A';
+                            row.insertCell().textContent = mezzo.scadenza_revisione || 'N/A';
+                            row.insertCell().textContent = mezzo.stato || 'N/A';
+                        });
+                    } else {
+                        document.getElementById('mezzi-table').style.display = 'none'; // Nascondi la tabella se non ci sono mezzi
+                    }
+
+                    // Popola la tabella delle attrezzature (se hai dati sulle attrezzature nel database)
+                    if (sedeData.attrezzature && Array.isArray(sedeData.attrezzature)) {
+                        const attrezzatureTableBody = document.getElementById('attrezzature-table').querySelector('tbody');
+                        sedeData.attrezzature.forEach(attrezzatura => {
+                            const row = attrezzatureTableBody.insertRow();
+                            row.insertCell().textContent = attrezzatura.tipologia || 'N/A';
+                            row.insertCell().textContent = attrezzatura.stato || 'N/A';
+                            row.insertCell().textContent = attrezzatura.ultima_manutenzione || 'N/A';
+                        });
+                    } else {
+                        document.getElementById('attrezzature-table').style.display = 'none'; // Nascondi la tabella se non ci sono attrezzature
+                    }
+
+                } else {
+                    document.querySelector('h1').textContent = 'Sede non trovata';
+                    document.querySelector('.dati-sede').innerHTML = '<p>La sede richiesta non è stata trovata nel database.</p>';
+                    document.querySelector('.mezzi').style.display = 'none';
+                    document.querySelector('.attrezzature').style.display = 'none';
+                }
             } else {
-                document.querySelector('#sede-container').innerHTML = '<p>Sede non trovata.</p>';
+                document.querySelector('h1').textContent = 'Errore: Sede non specificata';
+                document.querySelector('.dati-sede').innerHTML = '<p>Nessuna sede specificata nell\'URL.</p>';
+                document.querySelector('.mezzi').style.display = 'none';
+                document.querySelector('.attrezzature').style.display = 'none';
             }
         });
     </script>
