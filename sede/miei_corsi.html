@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLGestionale - I Miei Corsi</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 15px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 95%;
+            border-radius: 5px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        .header a:first-child {
+            margin-left: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .header img {
+            max-height: 40px;
+            margin-right: 10px;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .corsi-container, .news-container, .attestati-container {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 95%;
+        }
+
+        .news-item {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .news-item h4 {
+            margin-top: 0;
+            color: #555;
+        }
+
+        .corso-item {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .corso-info {
+            flex-grow: 1;
+        }
+
+        .corso-actions button {
+            padding: 8px 12px;
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .corso-actions button:hover {
+            background-color: #0056b3;
+        }
+
+        .upload-attestato-form label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .upload-attestato-form input[type="file"] {
+            margin-top: 5px;
+        }
+
+        .upload-attestato-form button[type="submit"] {
+            padding: 10px 15px;
+            margin-top: 15px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .upload-attestato-form button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        .attestato-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .attestato-list li {
+            margin-bottom: 8px;
+        }
+
+        .attestato-list li a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .attestato-list li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, doc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+            authDomain: "glgest.firebaseapp.com",
+            projectId: "glgest",
+            storageBucket: "glgest.firebasestorage.app",
+            messagingSenderId: "423155306554",
+            appId: "1:423155306554:web:c598640f199e296d276503"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const newsCollection = collection(db, 'news');
+        const corsiVolontariCollection = collection(db, 'corsi_volontari');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            auth.onAuthStateChanged(async user => {
+                if (user) {
+                    console.log("Volontario loggato, UID:", user.uid);
+                    await caricaNews();
+                    await caricaCorsiVolontario(user.uid);
+                } else {
+                    console.log("Utente non loggato, reindirizzo al login.");
+                    window.location.href = '/gestionalegl/index.html'; // Cambia con la tua pagina di login
+                }
+            });
+
+            document.getElementById('upload-attestato-form')?.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const corsoId = event.target.dataset.corsoId;
+                const file = document.getElementById(`attestato-file-${corsoId}`).files[0];
+                if (file) {
+                    await uploadAttestato(corsoId, file);
+                } else {
+                    alert('Seleziona un file da caricare.');
+                }
+            });
+        });
+
+        async function caricaNews() {
+            try {
+                const querySnapshot = await getDocs(newsCollection);
+                const newsContainer = document.getElementById('news-list');
+                newsContainer.innerHTML = ''; // Pulisci la lista precedente
+                querySnapshot.forEach(doc => {
+                    const news = doc.data();
+                    const newsItem = document.createElement('div');
+                    newsItem.classList.add('news-item');
+                    newsItem.innerHTML = `
+                        <h4>${news.titolo || 'Senza Titolo'}</h4>
+                        <p>${news.testo || ''}</p>
+                        <small>${news.data ? new Date(news.data.seconds * 1000).toLocaleDateString() : 'Data non disponibile'}</small>
+                    `;
+                    newsContainer.appendChild(newsItem);
+                });
+            } catch (error) {
+                console.error("Errore nel caricamento delle news:", error);
+                document.getElementById('news-list').innerHTML = '<p>Errore nel caricamento delle news.</p>';
+            }
+        }
+
+        async function caricaCorsiVolontario(uid) {
+            try {
+                const q = query(corsiVolontariCollection, where('volontarioId', '==', uid));
+                const querySnapshot = await getDocs(q);
+                const corsiContainer = document.getElementById('corsi-list');
+                corsiContainer.innerHTML = ''; // Pulisci la lista precedente
+
+                querySnapshot.forEach(doc => {
+                    const corso = doc.data();
+                    const corsoItem = document.createElement('div');
+                    corsoItem.classList.add('corso-item');
+                    corsoItem.innerHTML = `
+                        <div class="corso-info">
+                            <strong>${corso.nomeCorso || 'Nome corso non disponibile'}</strong>
+                            <p>Data completamento: ${corso.dataCompletamento ? new Date(corso.dataCompletamento.seconds * 1000).toLocaleDateString() : 'Non specificata'}</p>
+                            <div id="attestati-${doc.id}"></div>
+                        </div>
+                        <div class="corso-actions">
+                            <button onclick="mostraFormUpload('${doc.id}')">Carica Attestato</button>
+                        </div>
+                        <form id="upload-attestato-form-${doc.id}" class="upload-attestato-form" data-corso-id="${doc.id}" style="display:none;">
+                            <label for="attestato-file-${doc.id}">Seleziona file:</label>
+                            <input type="file" id="attestato-file-${doc.id}" accept="application/pdf, image/*" required>
+                            <button type="submit">Carica</button>
+                        </form>
+                    `;
+                    corsiContainer.appendChild(corsoItem);
+                    caricaAttestatiCorso(doc.id);
+                });
+            } catch (error) {
+                console.error("Errore nel caricamento dei corsi del volontario:", error);
+                document.getElementById('corsi-list').innerHTML = '<p>Errore nel caricamento dei tuoi corsi.</p>';
+            }
+        }
+
+        async function caricaAttestatiCorso(corsoId) {
+            const attestatiContainer = document.getElementById(`attestati-${corsoId}`);
+            attestatiContainer.innerHTML = '<strong>Attestati:</strong>';
+            if (corso.attestatoUrl) {
+                const link = document.createElement('a');
+                link.href = corso.attestatoUrl;
+                link.textContent = 'Visualizza Attestato';
+                link.target = '_blank';
+                attestatiContainer.appendChild(link);
+            } else {
+                const span = document.createElement('span');
+                span.textContent = 'Nessun attestato caricato.';
+                attestatiContainer.appendChild(span);
+            }
+        }
+
+        async function uploadAttestato(corsoId, file) {
+            const storageRef = ref(storage, `attestati/${auth.currentUser.uid}/${corsoId}/${file.name}`);
+            try {
+                const snapshot = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                const corsoDocRef = doc(db, 'corsi_volontari', corsoId);
+                await updateDoc(corsoDocRef, {
+                    attestatoUrl: downloadURL
+                });
+                alert('Attestato caricato con successo!');
+                // Ricarica i corsi per visualizzare l'attestato
+                await caricaCorsiVolontario(auth.currentUser.uid);
+            } catch (error) {
+                console.error("Errore nel caricamento dell'attestato:", error);
+                alert('Errore nel caricamento dell\'attestato.');
+            }
+        }
+
+        function mostraFormUpload(corsoId) {
+            const form = document.getElementById(`upload-attestato-form-${corsoId}`);
+            form.style.display = 'block';
+        }
+
+        function logout() {
+            signOut(auth).then(() => {
+                window.location.href = '/gestionalegl/index.html'; // Reindirizza alla homepage o login
+            }).catch((error) => {
+                console.error('Errore durante il logout:', error);
+                alert('Errore durante il logout.');
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="/gestionalegl/index.html" style="display: flex; align-items: center;">
+                <img src="https://github.com/Eatapples15/gestionalegl/blob/c2b7da673f00c54eda592f4db9b018baf4ba0685/logo_tra_Volontariato.png?raw=true" alt="Logo Gruppo Lucano">
+                <span>Gestionale Gruppo Lucano</span>
+            </a>
+            <a href="/gestionalegl/sede_template.html?sede=NomeDellaSede">Dashboard Sede</a>
+            <a href="/gestionalegl/volontario_profilo.html">Profilo</a>
+            <a href="/gestionalegl/miei_corsi.html">I Miei Corsi</a>
+        </div>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <div class="corsi-container">
+        <h1>I Miei Corsi</h1>
+        <div id="corsi-list">
+            </div>
+    </div>
+
+    <div class="news-container">
+        <h2>News dal Coordinamento</h2>
+        <div id="news-list">
+            </div>
+    </div>
+</body>
+</html>
