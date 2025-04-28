@@ -55,4 +55,34 @@
   row.insertCell().textContent = data.Modello || 'N/A';
   row.insertCell().textContent = data.Targa || 'N/A';
   row.insertCell().textContent = data.Stato || 'N/A';
-  row.
+  row.insertCell().textContent = data['Scadenza Revisione'] ? new Date(data['Scadenza Revisione']).toLocaleDateString() : 'N/A';
+  row.insertCell().textContent = data['Scadenza assicurazione'] ? new Date(data['Scadenza assicurazione']).toLocaleDateString() : 'N/A';
+  row.insertCell().textContent = data.Note || 'N/A';
+  // Aggiungi altre colonne in base ai tuoi dati dei mezzi
+  });
+  }
+  </script>
+ </head>
+ <body>
+  <div class="container">
+  <h1>Visualizza Mezzi</h1>
+  <table>
+  <thead>
+  <tr>
+  <th>ID</th>
+  <th>Tipologia</th>
+  <th>Modello</th>
+  <th>Targa</th>
+  <th>Stato</th>
+  <th>Scadenza Revisione</th>
+  <th>Scadenza Assicurazione</th>
+  <th>Note</th>
+  </tr>
+  </thead>
+  <tbody id="mezzi-table-body">
+  </tbody>
+  </table>
+  <a href="dashboard_coordinamento.html" class="back-link">Torna alla Dashboard</a>
+  </div>
+ </body>
+ </html>
