@@ -9,7 +9,7 @@
         .sezione { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; }
         h2 { margin-top: 0; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="email"], input[type="number"], input[type="date"], select, textarea {
+        input[type="text"], input[type="email"], input[type="number"], input[type="date"], select, textarea, input[type="file"] {
             width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; box-sizing: border-box;
         }
         button { padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; }
@@ -19,11 +19,20 @@
         th { background-color: #f2f2f2; }
         .alert-scadenza { font-weight: bold; color: orange; }
         .alert-scadenza.imminente { color: red; }
+        #upload-feedback { margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <h1>Gestione Sede - <span id="nome-sede"></span></h1>
+
+    <div class="sezione" id="upload-dati-sede">
+        <h2>Carica Dati da File Excel</h2>
+        <label for="file-upload">Seleziona il file Excel (.xlsx):</label>
+        <input type="file" id="file-upload" accept=".xlsx">
+        <button onclick="caricaDatiExcel()">Carica Dati</button>
+        <div id="upload-feedback"></div>
+    </div>
 
     <div class="sezione" id="dati-sede">
         <h2>Dati Sede</h2>
@@ -31,30 +40,7 @@
             <label for="codice-fiscale">Codice Fiscale:</label>
             <input type="text" id="codice-fiscale" name="codice-fiscale">
 
-            <label for="nome-responsabile">Nome Responsabile:</label>
-            <input type="text" id="nome-responsabile" name="nome-responsabile">
-
-            <label for="email-sede">Email:</label>
-            <input type="email" id="email-sede" name="email-sede">
-
-            <label for="pec-sede">PEC:</label>
-            <input type="email" id="pec-sede" name="pec-sede">
-
-            <label for="indirizzo-sede">Indirizzo:</label>
-            <input type="text" id="indirizzo-sede" name="indirizzo-sede">
-
-            <label for="citta-sede">Città:</label>
-            <input type="text" id="citta-sede" name="citta-sede">
-
-            <label for="provincia-sede">Provincia:</label>
-            <input type="text" id="provincia-sede" name="provincia-sede">
-
-            <label for="nome-sede-input">Nome Sede:</label>
-            <input type="text" id="nome-sede-input" name="nome-sede-input">
-
-            <label for="posizione-sede">Posizione (Indirizzo):</label>
-            <input type="text" id="posizione-sede" name="posizione-sede">
-
+            </form>
             <button type="submit">Salva Dati Sede</button>
         </form>
     </div>
@@ -117,43 +103,4 @@
 
     <div class="sezione" id="elenco-volontari">
         <h2>Elenco Volontari</h2>
-        <table id="tabella-volontari">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Cognome</th>
-                    <th>Email</th>
-                    <th>Codice Fiscale</th>
-                    <th>Contatto</th>
-                    <th>Specializzazioni</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
-
-    <script>
-        // Funzioni JavaScript per mostrare/nascondere i form di aggiunta
-        function mostraFormNuovoMezzo() {
-            document.getElementById('form-nuovo-mezzo').style.display = 'block';
-        }
-
-        function nascondiFormNuovoMezzo() {
-            document.getElementById('form-nuovo-mezzo').style.display = 'none';
-        }
-
-        function mostraFormNuovaAttrezzatura() {
-            document.getElementById('form-nuova-attrezzatura').style.display = 'block';
-        }
-
-        function nascondiFormNuovaAttrezzatura() {
-            document.getElementById('form-nuova-attrezzatura').style.display = 'none';
-        }
-
-        // Qui aggiungeremo il codice JavaScript per interagire con Firestore,
-        // caricare i dati e gestire le modifiche.
-    </script>
-</body>
-</html>
+        <table id="tabella-vol
