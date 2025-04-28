@@ -63,7 +63,7 @@
   <p>Indirizzo: <span id="dashboard-indirizzo-sede"></span></p>
   <p>Città: <span id="dashboard-citta-sede"></span></p>
   <p>Provincia: <span id="dashboard-provincia-sede"></span></p>
-  <p>Nome Sede: <span id="dashboard-nome-sede-input"></span></p>
+  <p>Nome Sede: <span id="dashboard-nome-sede"></span></p>
   <p>Posizione: <span id="dashboard-posizione-sede"></span></p>
   </div>
 
@@ -220,7 +220,7 @@
   document.getElementById('dashboard-indirizzo-sede').textContent = sedeData['Indirizzo'] || '';
   document.getElementById('dashboard-citta-sede').textContent = sedeData['Città'] || '';
   document.getElementById('dashboard-provincia-sede').textContent = sedeData['Provincia'] || '';
-  document.getElementById('dashboard-nome-sede-input').textContent = sedeData['SEDE'] || ''; // **MODIFICATO: Usa 'SEDE'**
+  document.getElementById('dashboard-nome-sede').textContent = sedeData['SEDE'] || ''; // **MODIFICATO: Usa 'SEDE'**
   document.getElementById('dashboard-posizione-sede').textContent = sedeData['Posizione'] || '';
   } else {
   console.log("Nessun dato sede trovato per l'ID:", sedeId);
@@ -299,20 +299,20 @@
   if (user && isAdminSede(user)) {
   console.log("Admin sede loggato, UID:", user.uid);
 
-  let sedeId;
+  const sedeId = user.uid; // **ASSUNZIONE: UID utente = ID documento sede**
+  console.log("Recupero dati per la sede con ID:", sedeId);
+  popolaDashboardSede(sedeId);
+  popolaDashboardMezzi(sedeId);
+  popolaDashboardAttrezzature(sedeId);
 
-  // **STRATEGIA 1 (Più comune): L'UID dell'utente corrisponde all'ID del documento 'sedi'**
-  sedeId = user.uid; // Usa l'UID dell'utente come ID della sede
-  console.log("Tentativo di recupero sedeId con strategia 1:", sedeId);
-
-  // **STRATEGIA 2: L'ID della sede è memorizzato nell'oggetto utente Firebase Auth (custom claims)**
-  // if (user.customClaims && user.customClaims.sedeId) {
-  //  sedeId = user.customClaims.sedeId;
-  //  console.log("Tentativo di recupero sedeId con strategia 2:", sedeId);
-  // }
-
-  // **STRATEGIA 3: L'ID della sede è memorizzato in una collezione separata (es. 'admin_sedi')**
-  // const adminSediRef = db.collection('admin_sedi').where('uid', '==', user.uid);
-  // try {
-  //  const adminSediSnap = await adminSediRef.get();
-  //  if (!adminSediSnap
+  } else if (user) {
+  console.log("Utente loggato ma non admin, reindirizzo.");
+  window.location.href = 'sede_template.html';} 
+else {
+  console.log("Utente non loggato, reindirizzo alla pagina di login.");
+  window.location.href = 'login.html';
+  }
+  });
+  </script>
+ </body>
+ </html>
