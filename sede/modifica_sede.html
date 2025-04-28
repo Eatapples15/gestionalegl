@@ -113,7 +113,8 @@
 
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-  import { getFirestore, collection, doc, getDocs, setDoc, query, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+  import { getFirestore, collection, doc, getDocs, setDoc, query, where, getDoc as getFirestoreDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
   import * as XLSX from 'https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs';
 
   const firebaseConfig = {
@@ -127,27 +128,24 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
   const sediCollection = collection(db, 'sedi');
-
-  // Ottieni l'ID della sede dall'URL (presumendo che sia passato come parametro)
-  const urlParams = new URLSearchParams(window.location.search);
-  const sedeId = urlParams.get('id'); // Assicurati che l'ID sia passato correttamente nell'URL
 
   async function loadSedeData(sedeId) {
   if (!sedeId) {
-  document.getElementById('sede-details').innerHTML = '<p>ID Sede non specificato nell\'URL.</p>';
+  document.getElementById('sede-details').innerHTML = '<p>Impossibile determinare l\'ID della sede.</p>';
   return;
   }
 
   const sedeDocRef = doc(db, 'sedi', sedeId);
-  const sedeSnapshot = await getDoc(sedeDocRef);
+  const sedeSnapshot = await getFirestoreDoc(sedeDocRef);
 
   if (sedeSnapshot.exists()) {
   const sedeData = sedeSnapshot.data();
   let sedeHTML = '<h3>Dettagli Sede</h3><table>';
   for (const key in sedeData) {
   if (key !== 'mezzi' && key !== 'attrezzature') {
-  sedeHTML += `<tr><th><span class="math-inline">\{key\}</th\><td\></span>{sedeData[key] || 'N/A'}</td></tr>`;
+  sedeHTML += `<tr><th>${key}</th><td>${sedeData[key] || 'N/A'}</td></tr>`;
   }
   }
   sedeHTML += '</table>';
@@ -156,7 +154,7 @@
   if (sedeData.mezzi && sedeData.mezzi.length > 0) {
   let mezziHTML = '<h3>Mezzi</h3><table><thead><tr><th>Targa</th><th>Modello</th><th>Scadenza Revisione</th><th>Stato</th></tr></thead><tbody>';
   sedeData.mezzi.forEach(mezzo => {
-  mezziHTML += `<tr><td><span class="math-inline">\{mezzo\.targa \|\| 'N/A'\}</td\><td\></span>{mezzo.modello || 'N/A'}</td><td><span class="math-inline">\{mezzo\.scadenza\_revisione \|\| 'N/A'\}</td\><td\></span>{mezzo.stato || 'N/A'}</td></tr>`;
+  mezziHTML += `<tr><td>${mezzo.targa || 'N/A'}</td><td>${mezzo.modello || 'N/A'}</td><td>${mezzo.scadenza_revisione || 'N/A'}</td><td>${mezzo.stato || 'N/A'}</td></tr>`;
   });
   mezziHTML += '</tbody></table>';
   document.getElementById('mezzi-details').innerHTML = mezziHTML;
@@ -167,7 +165,7 @@
   if (sedeData.attrezzature && sedeData.attrezzature.length > 0) {
   let attrezzatureHTML = '<h3>Attrezzature</h3><table><thead><tr><th>Tipologia</th><th>Stato</th><th>Ultima Manutenzione</th></tr></thead><tbody>';
   sedeData.attrezzature.forEach(attrezzatura => {
-  attrezzatureHTML += `<tr><td><span class="math-inline">\{attrezzatura\.tipologia \|\| 'N/A'\}</td\><td\></span>{attrezzatura.stato || 'N/A'}</td><td>${attrezzatura.ultima_manutenzione || 'N/A'}</td></tr>`;
+  attrezzatureHTML += `<tr><td>${attrezzatura.tipologia || 'N/A'}</td><td>${attrezzatura.stato || 'N/A'}</td><td>${attrezzatura.ultima_manutenzione || 'N/A'}</td></tr>`;
   });
   attrezzatureHTML += '</tbody></table>';
   document.getElementById('attrezzature-details').innerHTML = attrezzatureHTML;
@@ -185,16 +183,19 @@
   window.uploadExcelData = async () => {
   const fileInput = document.getElementById('excel-file-input');
   const file = fileInput.files[0];
+  const user = auth.currentUser;
 
   if (!file) {
   alert('Seleziona un file Excel.');
   return;
   }
 
-  if (!sedeId) {
-  alert('ID della sede non disponibile. Impossibile caricare i dati.');
+  if (!user) {
+  alert('Utente non autenticato. Riprova dopo aver effettuato l\'accesso.');
   return;
   }
+
+  const sedeId = user.uid; // **ASSUNZIONE: UID utente = ID documento sede**
 
   const reader = new FileReader();
   reader.onload = async (e) => {
@@ -235,7 +236,6 @@
   const attrezzature = [];
 
   excelData.forEach(row => {
-  // Tentativo di identificare la sezione in base alle intestazioni (da adattare al tuo template)
   if (row['SEDE'] || row['INDIRIZZO'] || row['NOMINATIVO PRESIDENTE']) {
   processedData['SEDE'] = row['SEDE'];
   processedData['INDIRIZZO'] = row['INDIRIZZO'];
@@ -270,17 +270,22 @@
 
   async function getDoc(docRef) {
   try {
-  return await docRef.get();
+  return await getFirestoreDoc(docRef);
   } catch (error) {
   console.error("Errore durante la lettura del documento:", error);
   return null;
   }
   }
 
-  // Carica i dati della sede all'avvio se l'ID è presente
-  if (sedeId) {
+  onAuthStateChanged(auth, async (user) => {
+  if (user) {
+  const sedeId = user.uid; // **ASSUNZIONE: UID utente = ID documento sede**
   loadSedeData(sedeId);
+  } else {
+  console.log("Utente non loggato.");
+  // Puoi reindirizzare l'utente alla pagina di login qui se necessario
   }
+  });
   </script>
  </body>
  </html>
