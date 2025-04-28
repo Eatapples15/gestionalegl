@@ -1,0 +1,776 @@
+[
+  {
+    "NUM.": "1",
+    "C.F.": "90021360772",
+    "SEDE": "ACCETTURA",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Pezzolla Mario",
+    "EMAIL": "accettura@pcgl.it",
+    "PEC": "prot.civ.accettura@pec.it"
+  },
+  {
+    "NUM.": "2",
+    "C.F.": "96106560764",
+    "SEDE": "ACERENZA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Turlione Rossella",
+    "EMAIL": "acerenza@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "3",
+    "C.F.": "90014860770",
+    "SEDE": "ALIANO",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Montano Francesco",
+    "EMAIL": "aliano@pcgl.it",
+    "PEC": "aliano.pcgl@pec.it"
+  },
+  {
+    "NUM.": "4",
+    "C.F.": "94008750781",
+    "SEDE": "AMENDOLARA",
+    "PROVINCIA": "Cosenza",
+    "NOMINATIVO PRESIDENTE": "Gerundino Franco",
+    "EMAIL": "amendolara@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "5",
+    "C.F.": "96048970766",
+    "SEDE": "ARMENTO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Lorenzi Francesco",
+    "EMAIL": "armento@pcgl.it",
+    "PEC": "armento.pcgl@pec.it"
+  },
+  {
+    "NUM.": "6",
+    "C.F.": "93017660767",
+    "SEDE": "ATELLA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Mecca Vito",
+    "EMAIL": "atella@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "7",
+    "C.F.": "96066620764",
+    "SEDE": "AVIGLIANO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Potenza Vito",
+    "EMAIL": "avigliano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "8",
+    "C.F.": "93022510767",
+    "SEDE": "BANZI",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Arresta Pasquale",
+    "EMAIL": "banzi@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "9",
+    "C.F.": "90032750771",
+    "SEDE": "BERNALDA",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Bray Giuseppe",
+    "EMAIL": "bernalda@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "10",
+    "C.F.": "96086410766",
+    "SEDE": "BRIENZA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Loisi Raffaele",
+    "EMAIL": "brienza@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "11",
+    "C.F.": "92020350655",
+    "SEDE": "BUONABITACOLO",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "Rinaldi Vincenzo",
+    "EMAIL": "buonabitacolo@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "12",
+    "C.F.": "96106350760",
+    "SEDE": "CANCELLARA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Orlando Andrea",
+    "EMAIL": "cancellara@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "13",
+    "C.F.": "",
+    "SEDE": "CARBONE",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Clemente Donato",
+    "EMAIL": "carbone@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "14",
+    "C.F.": "96080230764",
+    "SEDE": "CASTELGRANDE",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Massilotti Angela",
+    "EMAIL": "castelgrande@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "15",
+    "C.F.": "",
+    "SEDE": "CASTELLUCCIO SUP.",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "reggente-Attadia Giuseppe",
+    "EMAIL": "castellucciosup@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "16",
+    "C.F.": "91007760761",
+    "SEDE": "CASTRONUOVO S.ANDREA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Durante Andrea",
+    "EMAIL": "castronuovo@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "17",
+    "C.F.": "94036020785",
+    "SEDE": "CERCHIARA",
+    "PROVINCIA": "Cosenza",
+    "NOMINATIVO PRESIDENTE": "Laino Giuseppe",
+    "EMAIL": "cerchiara@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "18",
+    "C.F.": "91007090763",
+    "SEDE": "CHIAROMONTE",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Ciotola Romualdo",
+    "EMAIL": "chiaromonte@pcgl.it",
+    "PEC": "chiaromonte.pcgl@pce.it"
+  },
+  {
+    "NUM.": "19",
+    "C.F.": "",
+    "SEDE": "CIRIGLIANO",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Urgo Lucia",
+    "EMAIL": "cirigliano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "20",
+    "C.F.": "96035060761",
+    "SEDE": "COORDINAMENTO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Martoccia Pietro Luigi",
+    "EMAIL": "coordinamento@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "21",
+    "C.F.": "",
+    "SEDE": "CRACO",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Montemurro Franco",
+    "EMAIL": "",
+    "PEC": ""
+  },
+  {
+    "NUM.": "22",
+    "C.F.": "NR",
+    "SEDE": "EPISCOPIA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Iannibelli Egidio",
+    "EMAIL": "",
+    "PEC": ""
+  },
+  {
+    "NUM.": "23",
+    "C.F.": "1688980760",
+    "SEDE": "FARDELLA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Favale Francesco",
+    "EMAIL": "fardella@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "24",
+    "C.F.": "96051600763",
+    "SEDE": "FILIANO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Montinaro Lorenzo",
+    "EMAIL": "filiano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "25",
+    "C.F.": "93027210769",
+    "SEDE": "FORENZA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Andreana Diego Michele",
+    "EMAIL": "forenza@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "26",
+    "C.F.": "90015240774",
+    "SEDE": "GORGOGLIONE",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Tornetta Ignazio",
+    "EMAIL": "gorgoglione@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "27",
+    "C.F.": "93046590779",
+    "SEDE": "GRASSANO",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Tortorelli Pasquale",
+    "EMAIL": "grassano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "28",
+    "C.F.": "96045970769",
+    "SEDE": "GUARDIA PERTICARA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Camporeale Massimo",
+    "EMAIL": "guardiaperticara@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "29",
+    "C.F.": "93037620650",
+    "SEDE": "ISPANI",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "Mega Biagio",
+    "EMAIL": "ispani@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "30",
+    "C.F.": "",
+    "SEDE": "LAINO BORGO",
+    "PROVINCIA": "Cosenza",
+    "NOMINATIVO PRESIDENTE": "Prince Carmine",
+    "EMAIL": "lainoborgo@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "31",
+    "C.F.": "96054440761",
+    "SEDE": "LAURENZANA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Martoccia Pietro Luigi",
+    "EMAIL": "laurenzana@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "32",
+    "C.F.": "91006930761",
+    "SEDE": "LAURIA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Iannarella Giuseppe",
+    "EMAIL": "lauria@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "33",
+    "C.F.": "93027690762",
+    "SEDE": "LAVELLO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Mosca Pasquale",
+    "EMAIL": "lavello@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "34",
+    "C.F.": "91005440762",
+    "SEDE": "MARATEA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Colavolpe Lara",
+    "EMAIL": "maratea@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "35",
+    "C.F.": "96053550768",
+    "SEDE": "MARSICO NUOVO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Cianciarulo Carmela",
+    "EMAIL": "marsiconuovo@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "36",
+    "C.F.": "96090790765",
+    "SEDE": "MARSICOVETERE",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Votta Michele",
+    "EMAIL": "marsicovetere@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "37",
+    "C.F.": "93047550772",
+    "SEDE": "MATERA",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Bochicchio Enzo",
+    "EMAIL": "matera@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "38",
+    "C.F.": "1591740764",
+    "SEDE": "MISSANELLO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Racioppi Senatro",
+    "EMAIL": "missanello@pcgl.it",
+    "PEC": "missanellopcgl@pec.it"
+  },
+  {
+    "NUM.": "39",
+    "C.F.": "96066260769",
+    "SEDE": "MOLITERNO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Spina Mario",
+    "EMAIL": "moliterno@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "40",
+    "C.F.": "96046880769",
+    "SEDE": "MONTEMURRO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Andriulo Luciano",
+    "EMAIL": "montemurro@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "41",
+    "C.F.": "92014620659",
+    "SEDE": "MONTESANO",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "De Luca Pasquale",
+    "EMAIL": "montesano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "42",
+    "C.F.": "96058030766",
+    "SEDE": "MURO LUCANO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Cristiano Giuseppina",
+    "EMAIL": "murolucano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "43",
+    "C.F.": "NR",
+    "SEDE": "NOEPOLI",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Ferrara Francesco",
+    "EMAIL": "noepoli@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "44",
+    "C.F.": "96052210760",
+    "SEDE": "PATERNO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Bitetti Agnese",
+    "EMAIL": "paterno@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "45",
+    "C.F.": "93045860652",
+    "SEDE": "PERDIFUMO",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "Apicella Luca Vito",
+    "EMAIL": "pcglperdifumo@virgilio.it",
+    "PEC": "protezione.civile.perdifumo@pec.it"
+  },
+  {
+    "NUM.": "46",
+    "C.F.": "96060220769",
+    "SEDE": "PESCOPAGANO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Finelli Pasquale",
+    "EMAIL": "pescopagano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "47",
+    "C.F.": "",
+    "SEDE": "PETINA",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "D'Amato Emanuele",
+    "EMAIL": "",
+    "PEC": ""
+  },
+  {
+    "NUM.": "48",
+    "C.F.": "96069240768",
+    "SEDE": "PIETRAGALLA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Nilo Saverio",
+    "EMAIL": "pietragalla@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "49",
+    "C.F.": "90023790778",
+    "SEDE": "POLICORO",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Benevento Pasquale",
+    "EMAIL": "policoro@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "50",
+    "C.F.": "96065310763",
+    "SEDE": "POTENZA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Dapoto Giuseppe",
+    "EMAIL": "potenza@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "51",
+    "C.F.": "93023360766",
+    "SEDE": "RAPOLLA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Bellabene Michele",
+    "EMAIL": "rapolla@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "52",
+    "C.F.": "91013720767",
+    "SEDE": "RIVELLO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Flora Fiorella",
+    "EMAIL": "rivello@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "53",
+    "C.F.": "94041170781",
+    "SEDE": "ROCCA IMPERIALE",
+    "PROVINCIA": "Cosenza",
+    "NOMINATIVO PRESIDENTE": "Corrado Mario",
+    "EMAIL": "roccaimperiale@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "54",
+    "C.F.": "93024290657",
+    "SEDE": "ROCCAGLORIOSA",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "Petracca Aniello",
+    "EMAIL": "roccagloriosa@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "55",
+    "C.F.": "91009460766",
+    "SEDE": "ROCCANOVA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Novelli Mario",
+    "EMAIL": "roccanova@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "56",
+    "C.F.": "94027750788",
+    "SEDE": "ROSETO CAPO SPULICO",
+    "PROVINCIA": "Cosenza",
+    "NOMINATIVO PRESIDENTE": "Rossini Massimo",
+    "EMAIL": "rosetocapospulico@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "57",
+    "C.F.": "90033310773",
+    "SEDE": "ROTONDELLA",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Di Matteo Giuseppe",
+    "EMAIL": "rotondella@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "58",
+    "C.F.": "93040790771",
+    "SEDE": "SALANDRA",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Puzzutiello Giuseppe",
+    "EMAIL": "salandra@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "59",
+    "C.F.": "",
+    "SEDE": "SALENTO",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "Pinto Gianfranco",
+    "EMAIL": "",
+    "PEC": ""
+  },
+  {
+    "NUM.": "60",
+    "C.F.": "91008450768",
+    "SEDE": "SAN COSTANTINO ALBANESE",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Riccardi Mariastella",
+    "EMAIL": "sancostantino@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "61",
+    "C.F.": "NR",
+    "SEDE": "SAN FELE",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Santarsiero Antonio",
+    "EMAIL": "",
+    "PEC": ""
+  },
+  {
+    "NUM.": "62",
+    "C.F.": "90018110776",
+    "SEDE": "SAN GIORGIO LUCANO",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Lacanna Franca",
+    "EMAIL": "sangiorgiolucano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "63",
+    "C.F.": "93019190656",
+    "SEDE": "SAN GIOVANNI A PIRO",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "Bruno Vito",
+    "EMAIL": "sangiovanni@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "64",
+    "C.F.": "",
+    "SEDE": "SAN MARTINO D'AGRI",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Manieri Melania",
+    "EMAIL": "sanmartinodagri@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "65",
+    "C.F.": "91009710764",
+    "SEDE": "SAN SEVERINO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Conte Vincenzo",
+    "EMAIL": "sanseverino@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "66",
+    "C.F.": "96045530787",
+    "SEDE": "SAN SOSTI",
+    "PROVINCIA": "Cosenza",
+    "NOMINATIVO PRESIDENTE": "Lanzillotta Francesco",
+    "EMAIL": "sansosti@pcgl.it",
+    "PEC": "gruppolucanosansosti@pec.it"
+  },
+  {
+    "NUM.": "67",
+    "C.F.": "96049510769",
+    "SEDE": "SANT'ANGELO LE FRATTE",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Ruggiero Michele",
+    "EMAIL": "santangelo@pcgl.it",
+    "PEC": "santangelo.pcgl@pec.it"
+  },
+  {
+    "NUM.": "68",
+    "C.F.": "96106510769",
+    "SEDE": "SARCONI",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Bruno Filippo",
+    "EMAIL": "sarconi@pcgl.it",
+    "PEC": "sarconipcgl@pec.it"
+  },
+  {
+    "NUM.": "69",
+    "C.F.": "92016170653",
+    "SEDE": "SASSANO",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "Marra Margherita",
+    "EMAIL": "sassano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "70",
+    "C.F.": "96093880761",
+    "SEDE": "SASSO DI CASTALDA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Corleto Rocco",
+    "EMAIL": "sassodicastalda@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "71",
+    "C.F.": "96057650762",
+    "SEDE": "SATRIANO DI LUCANIA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Di Vito Giuseppe",
+    "EMAIL": "satriano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "72",
+    "C.F.": "96049430760",
+    "SEDE": "SAVOIA DI LUCANIA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Mangieri Marco",
+    "EMAIL": "savoia@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "73",
+    "C.F.": "90018950775",
+    "SEDE": "SCANZANO JONICO",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Lospinuso Nunzio",
+    "EMAIL": "scanzano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "74",
+    "C.F.": "91009390765",
+    "SEDE": "SENISE",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Zampaglione Egidio",
+    "EMAIL": "senise@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "75",
+    "C.F.": "",
+    "SEDE": "SPINOSO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Solimando Vitale Enrico",
+    "EMAIL": "spinoso@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "76",
+    "C.F.": "91010400769",
+    "SEDE": "TERRANOVA DEL POLLINO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Genovese Francesco",
+    "EMAIL": "terranova@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "77",
+    "C.F.": "96106890765",
+    "SEDE": "TITO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Rinaldi Valentina",
+    "EMAIL": "tito@pcgl.it",
+    "PEC": "tito.pcgl@pec.it"
+  },
+  {
+    "NUM.": "78",
+    "C.F.": "96046340764",
+    "SEDE": "TRAMUTOLA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Mazzeo Giuseppe",
+    "EMAIL": "tramutola@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "79",
+    "C.F.": "93037220774",
+    "SEDE": "TRICARICO",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Mangiamele Antonio",
+    "EMAIL": "tricarico@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "80",
+    "C.F.": "96106400763",
+    "SEDE": "TRIVIGNO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Cinefra Giovanni",
+    "EMAIL": "trivigno@pcgl.it",
+    "PEC": "pcgltrivigno@pec.it"
+  },
+  {
+    "NUM.": "81",
+    "C.F.": "90018400761",
+    "SEDE": "TURSI",
+    "PROVINCIA": "Matera",
+    "NOMINATIVO PRESIDENTE": "Laragione Biagio",
+    "EMAIL": "tursi@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "82",
+    "C.F.": "96095510762",
+    "SEDE": "VAGLIO BASILICATA",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "De Bonis Vito",
+    "EMAIL": "vaglio@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "83",
+    "C.F.": "93021500652",
+    "SEDE": "VALLO DELLA LUCANIA",
+    "PROVINCIA": "Salerno",
+    "NOMINATIVO PRESIDENTE": "Merola Giuseppe",
+    "EMAIL": "vallodellalucania@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "84",
+    "C.F.": "91006940760",
+    "SEDE": "VIGGIANELLO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Attadia Giuseppe",
+    "EMAIL": "viggianello@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "85",
+    "C.F.": "94000890767",
+    "SEDE": "VIGGIANO",
+    "PROVINCIA": "Potenza",
+    "NOMINATIVO PRESIDENTE": "Mallaurino Vincenzo",
+    "EMAIL": "viggiano@pcgl.it",
+    "PEC": ""
+  },
+  {
+    "NUM.": "86",
+    "C.F.": "",
+    "SEDE": "VILLAPIANA",
+    "PROVINCIA": "Cosenza",
+    "NOMINATIVO PRESIDENTE": "Dramisimo Mario",
+    "EMAIL": "villapiana@pcgl.it",
+    "PEC": ""
+  }
+]
