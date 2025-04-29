@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Gestionale</title>
+    <link rel="stylesheet" href="../../css/style_generale.css">
+    <style>
+        .container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            width: 200px;
+            text-align: center;
+        }
+        .eventi {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            width: 300px;
+        }
+        .eventi p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Portale Protezione Civile</h1>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="../sala_operativa/index.html">Sala Operativa</a></li>
+                </ul>
+        </nav>
+    </header>
+    <main class="container">
+        <div class="card">
+            <h2>Mezzi Disponibili</h2>
+            <p id="numero-mezzi">...</p>
+        </div>
+        <div class="card">
+            <h2>Sedi Attive</h2>
+            <p id="numero-sedi">...</p>
+        </div>
+        <div class="eventi">
+            <h2>Eventi</h2>
+            <p>Eventi Gestiti: <span id="eventi-gestiti">...</span></p>
+            <p>Eventi Attivi: <span id="eventi-attivi">...</span></p>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 Protezione Civile</p>
+    </footer>
+
+    <script>
+        // Funzioni JavaScript per recuperare i dati dal database (lato server)
+        async function recuperaConteggi() {
+            try {
+                const response = await fetch('/api/conteggi'); // Endpoint API da definire lato server
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('numero-mezzi').textContent = data.mezzi;
+                    document.getElementById('numero-sedi').textContent = data.sedi;
+                    document.getElementById('eventi-gestiti').textContent = data.eventiGestiti;
+                    document.getElementById('eventi-attivi').textContent = data.eventiAttivi;
+                } else {
+                    console.error('Errore nel recupero dei conteggi.');
+                }
+            } catch (error) {
+                console.error('Impossibile connettersi al server.', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', recuperaConteggi);
+    </script>
+</body>
+</html>
