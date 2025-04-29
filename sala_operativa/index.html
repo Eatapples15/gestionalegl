@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala Operativa</title>
+    <link rel="stylesheet" href="../../css/style_generale.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Sala Operativa</h1>
+        <nav>
+            <ul>
+                <li><a href="../gestionale/sogl/dashboard.html">Dashboard</a></li>
+                <li><a href="index.html">Sala Operativa</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="nuova-emergenza">
+            <h2>Nuova Emergenza</h2>
+            <form id="form-nuova-emergenza">
+                <div>
+                    <label for="tipo-emergenza">Tipo di Emergenza:</label>
+                    <input type="text" id="tipo-emergenza" required>
+                </div>
+                <div>
+                    <label for="descrizione">Descrizione:</label>
+                    <textarea id="descrizione" rows="3" required></textarea>
+                </div>
+                <div>
+                    <label for="localita">Località:</label>
+                    <input type="text" id="localita" required>
+                </div>
+                <div>
+                    <label for="coordinate">Coordinate (Lat, Lon):</label>
+                    <input type="text" id="coordinate">
+                </div>
+                <div>
+                    <label for="priorita">Priorità:</label>
+                    <select id="priorita">
+                        <option value="bassa">Bassa</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                        <option value="critica">Critica</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="sede-intervento">Sede di Intervento:</label>
+                    <select id="sede-intervento">
+                        <option value="">Seleziona Sede</option>
+                        </select>
+                </div>
+                <div>
+                    <label for="squadra-intervento">Squadra di Intervento:</label>
+                    <select id="squadra-intervento">
+                        <option value="">Seleziona Squadra</option>
+                    </select>
+                </div>
+                <button type="submit">Crea Emergenza</button>
+            </form>
+        </section>
+
+        <section id="eventi-attivi">
+            <h2>Eventi Attivi</h2>
+            <ul id="lista-eventi-attivi">
+                </ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Protezione Civile</p>
+    </footer>
+
+    <div id="notifiche-container" class="notifiche">
+        </div>
+
+    <div id="modal-dettagli-evento" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Dettagli Evento</h2>
+            <div id="dettagli-evento-container">
+                </div>
+            <h3>Diario Evento</h3>
+            <ul id="diario-evento-lista">
+                </ul>
+            <textarea id="nuova-voce-diario" placeholder="Aggiungi una nuova voce al diario"></textarea>
+            <button id="aggiungi-voce-diario-btn">Aggiungi Voce</button>
+            <h3>Informazioni Utili e Consigli</h3>
+            <div id="informazioni-utili">
+                </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="../js/utils.js"></script>
+    <style>
+        .notifiche {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .notifica {
+            background-color: #f0f8ff;
+            border: 1px solid #add8e6;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 5px;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</body>
+</html>
