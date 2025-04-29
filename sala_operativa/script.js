@@ -1,3 +1,20 @@
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, arrayUnion, onSnapshot } from 'firebase/firestore';
+
+// Your web app's Firebase configuration (assicurati che sia corretto)
+const firebaseConfig = {
+    apiKey: "AIzaSyDkVEFv5WIfIJYNqjWSRA5viFjhHr9Ps0c",
+    authDomain: "glgest.firebaseapp.com",
+    projectId: "glgest",
+    storageBucket: "glgest.firebasestorage.app",
+    messagingSenderId: "423155306554",
+    appId: "1:423155306554:web:c598640f199e296d276503"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 document.addEventListener('DOMContentLoaded', () => {
     const formNuovaEmergenza = document.getElementById('form-nuova-emergenza');
     const listaEventiAttivi = document.getElementById('lista-eventi-attivi');
@@ -20,55 +37,54 @@ document.addEventListener('DOMContentLoaded', () => {
         const notifica = document.createElement('div');
         notifica.classList.add('notifica');
         notifica.textContent = messaggio;
+        if (tipo === 'success') notifica.classList.add('success');
+        if (tipo === 'error') notifica.classList.add('error');
+        if (tipo === 'warning') notifica.classList.add('warning');
         notificheContainer.appendChild(notifica);
         setTimeout(() => {
             notifica.remove();
         }, 5000); // La notifica scompare dopo 5 secondi
     }
 
-    // Funzione per recuperare le sedi dal database e popolare la select
+    // Funzione per recuperare le sedi da Firestore e popolare la select
     async function recuperaSedi() {
         try {
-            const response = await fetch('/api/sedi'); // Endpoint API per le sedi
-            if (response.ok) {
-                const sedi = await response.json();
-                sedi.forEach(sede => {
-                    const option = document.createElement('option');
-                    option.value = sede.id;
-                    option.textContent = sede.nome;
-                    sedeInterventoSelect.appendChild(option);
-                });
-            } else {
-                console.error('Errore nel recupero delle sedi.');
-                mostraNotifica('Errore nel caricamento delle sedi.', 'error');
-            }
+            const sediCollection = collection(db, 'sedi');
+            const querySnapshot = await getDocs(sediCollection);
+            sedeInterventoSelect.innerHTML = '<option value="">Seleziona Sede</option>';
+            querySnapshot.forEach((doc) => {
+                const sedeData = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id; // Usa l'ID del documento come valore
+                option.textContent = sedeData.nome + (sedeData.indirizzo ? ` - ${sedeData.indirizzo}` : '');
+                sedeInterventoSelect.appendChild(option);
+            });
         } catch (error) {
-            console.error('Impossibile connettersi al server per le sedi.', error);
-            mostraNotifica('Impossibile caricare le sedi.', 'error');
+            console.error('Errore nel recupero delle sedi da Firestore:', error);
+            mostraNotifica('Errore nel caricamento delle sedi.', 'error');
         }
     }
 
-    // Funzione per recuperare le squadre disponibili per una data sede
+    // Funzione per recuperare le squadre disponibili per una data sede da Firestore
     async function recuperaSquadre(sedeId) {
         squadraInterventoSelect.innerHTML = '<option value="">Seleziona Squadra</option>'; // Reset delle opzioni
         if (sedeId) {
             try {
-                const response = await fetch(`/api/sedi/${sedeId}/squadre`); // Endpoint API per le squadre della sede
-                if (response.ok) {
-                    const squadre = await response.json();
-                    squadre.forEach(squadra => {
+                const squadreCollection = collection(db, 'squadre');
+                const querySnapshot = await getDocs(squadreCollection);
+                querySnapshot.forEach((doc) => {
+                    const squadraData = doc.data();
+                    // Assumi che ogni squadra abbia un campo 'sede_id' che corrisponde all'ID della sede
+                    if (squadraData.sede_id === sedeId) {
                         const option = document.createElement('option');
-                        option.value = squadra.id;
-                        option.textContent = squadra.nome;
+                        option.value = doc.id; // Usa l'ID del documento come valore
+                        option.textContent = squadraData.nome;
                         squadraInterventoSelect.appendChild(option);
-                    });
-                } else {
-                    console.error('Errore nel recupero delle squadre per la sede.', response.status);
-                    mostraNotifica('Errore nel caricamento delle squadre.', 'error');
-                }
+                    }
+                });
             } catch (error) {
-                console.error('Impossibile connettersi al server per le squadre.', error);
-                mostraNotifica('Impossibile caricare le squadre.', 'error');
+                console.error('Errore nel recupero delle squadre da Firestore:', error);
+                mostraNotifica('Errore nel caricamento delle squadre.', 'error');
             }
         }
     }
@@ -79,29 +95,23 @@ document.addEventListener('DOMContentLoaded', () => {
         recuperaSquadre(sedeId);
     });
 
-    // Funzione per creare una nuova emergenza
+    // Funzione per creare una nuova emergenza in Firestore
     async function creaNuovaEmergenza(formData) {
         try {
-            const response = await fetch('/api/emergenze', { // Endpoint API per creare emergenze
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
+            const emergenzeCollection = collection(db, 'emergenze');
+            const docRef = await setDoc(doc(emergenzeCollection), {
+                ...formData,
+                stato: 'attivo',
+                diario: [],
+                informazioni_utili: '',
+                data_creazione: new Date().toISOString(),
             });
-
-            if (response.ok) {
-                const nuovaEmergenza = await response.json();
-                mostraNotifica(`Emergenza "${nuovaEmergenza.tipo}" creata con successo!`, 'success');
-                formNuovaEmergenza.reset();
-                caricaEventiAttivi(); // Ricarica la lista degli eventi attivi
-            } else {
-                console.error('Errore nella creazione dell\'emergenza.', response.status);
-                mostraNotifica('Errore nella creazione dell\'emergenza.', 'error');
-            }
+            mostraNotifica(`Emergenza "${formData.tipo}" creata con successo!`, 'success');
+            formNuovaEmergenza.reset();
+            caricaEventiAttivi(); // Ricarica la lista degli eventi attivi
         } catch (error) {
-            console.error('Impossibile connettersi al server per creare l\'emergenza.', error);
-            mostraNotifica('Impossibile creare l\'emergenza.', 'error');
+            console.error('Errore nella creazione dell\'emergenza in Firestore:', error);
+            mostraNotifica('Errore nella creazione dell\'emergenza.', 'error');
         }
     }
 
@@ -124,30 +134,27 @@ document.addEventListener('DOMContentLoaded', () => {
             priorita,
             sede_intervento_id: sedeInterventoId,
             squadra_intervento_id: squadraInterventoId,
-            stato: 'attivo', // Imposta lo stato iniziale
-            diario: [],
-            informazioni_utili: '',
-            data_creazione: new Date().toISOString(),
         };
 
         await creaNuovaEmergenza(nuovaEmergenza);
     });
 
-    // Funzione per caricare gli eventi attivi dal database
-    async function caricaEventiAttivi() {
-        try {
-            const response = await fetch('/api/emergenze/attive'); // Endpoint API per gli eventi attivi
-            if (response.ok) {
-                eventiAttivi = await response.json();
-                renderEventiAttivi();
-            } else {
-                console.error('Errore nel recupero degli eventi attivi.', response.status);
-                mostraNotifica('Errore nel caricamento degli eventi attivi.', 'error');
-            }
-        } catch (error) {
-            console.error('Impossibile connettersi al server per gli eventi attivi.', error);
-            mostraNotifica('Impossibile caricare gli eventi attivi.', 'error');
-        }
+    // Funzione per caricare gli eventi attivi da Firestore e sottoscrivere agli aggiornamenti in tempo reale
+    function caricaEventiAttivi() {
+        const emergenzeCollection = collection(db, 'emergenze');
+        // Query per ottenere solo gli eventi con stato 'attivo'
+        const q = query(emergenzeCollection, where("stato", "==", "attivo"));
+
+        onSnapshot(q, (snapshot) => {
+            eventiAttivi = [];
+            snapshot.forEach((doc) => {
+                eventiAttivi.push({ id: doc.id, ...doc.data() });
+            });
+            renderEventiAttivi();
+        }, (error) => {
+            console.error('Errore nella sottoscrizione agli eventi attivi da Firestore:', error);
+            mostraNotifica('Errore nel caricamento degli eventi attivi.', 'error');
+        });
     }
 
     // Funzione per renderizzare la lista degli eventi attivi
@@ -173,22 +180,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Funzione per caricare i dettagli di un evento specifico
+    // Funzione per caricare i dettagli di un evento specifico da Firestore
     async function caricaDettagliEvento(eventoId) {
         try {
-            const response = await fetch(`/api/emergenze/${eventoId}`); // Endpoint API per i dettagli dell'evento
-            if (response.ok) {
-                eventoSelezionato = await response.json();
+            const eventoDocRef = doc(db, 'emergenze', eventoId);
+            const docSnap = await getDoc(eventoDocRef);
+            if (docSnap.exists()) {
+                eventoSelezionato = { id: docSnap.id, ...docSnap.data() };
                 renderDettagliEvento(eventoSelezionato);
                 renderDiarioEvento(eventoSelezionato.diario);
                 informazioniUtiliDiv.textContent = eventoSelezionato.informazioni_utili || '';
             } else {
-                console.error(`Errore nel recupero dei dettagli dell'evento ${eventoId}.`, response.status);
-                mostraNotifica('Errore nel caricamento dei dettagli dell\'evento.', 'error');
+                console.error(`Nessun evento trovato con ID: ${eventoId}`);
+                mostraNotifica('Evento non trovato.', 'warning');
             }
         } catch (error) {
-            console.error('Impossibile connettersi al server per i dettagli dell\'evento.', error);
-            mostraNotifica('Impossibile caricare i dettagli dell\'evento.', 'error');
+            console.error('Errore nel recupero dei dettagli dell\'evento da Firestore:', error);
+            mostraNotifica('Errore nel caricamento dei dettagli dell\'evento.', 'error');
         }
     }
 
@@ -200,11 +208,13 @@ document.addEventListener('DOMContentLoaded', () => {
             <p><strong>Località:</strong> ${evento.localita}</p>
             <p><strong>Coordinate:</strong> ${evento.coordinate || 'N/A'}</p>
             <p><strong>Priorità:</strong> ${evento.priorita}</p>
-            <p><strong>Sede Intervento:</strong> ${evento.sede_intervento ? evento.sede_intervento.nome : 'N/A'}</p>
-            <p><strong>Squadra Intervento:</strong> ${evento.squadra_intervento ? evento.squadra_intervento.nome : 'N/A'}</p>
+            <p><strong>Sede Intervento ID:</strong> ${evento.sede_intervento_id || 'N/A'}</p>
+            <p><strong>Squadra Intervento ID:</strong> ${evento.squadra_intervento_id || 'N/A'}</p>
             <p><strong>Stato:</strong> ${evento.stato}</p>
             <p><strong>Data Creazione:</strong> ${new Date(evento.data_creazione).toLocaleString()}</p>
         `;
+        // Potresti voler recuperare i nomi reali di sede e squadra usando i loro ID
+        // facendo ulteriori query a Firestore.
     }
 
     // Funzione per renderizzare il diario dell'evento
@@ -217,28 +227,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Funzione per aggiungere una voce al diario dell'evento
+    // Funzione per aggiungere una voce al diario dell'evento in Firestore
     async function aggiungiVoceDiario(eventoId, testo) {
         try {
-            const response = await fetch(`/api/emergenze/${eventoId}/diario`, { // Endpoint API per aggiungere al diario
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ testo }),
+            const eventoDocRef = doc(db, 'emergenze', eventoId);
+            await updateDoc(eventoDocRef, {
+                diario: arrayUnion({
+                    testo: testo,
+                    data: new Date().toISOString(),
+                    operatore: 'OPERATORE_LOGGATO' // Dovresti gestire l'operatore loggato
+                })
             });
-
-            if (response.ok) {
-                const updatedEvento = await response.json();
-                renderDiarioEvento(updatedEvento.diario);
-                nuovaVoceDiarioInput.value = '';
-            } else {
-                console.error('Errore nell\'aggiunta della voce al diario.', response.status);
-                mostraNotifica('Errore nell\'aggiunta della voce al diario.', 'error');
-            }
+            // Dopo l'aggiornamento, il listener onSnapshot in caricaDettagliEvento
+            // si attiverà e aggiornerà automaticamente la modale.
+            nuovaVoceDiarioInput.value = '';
         } catch (error) {
-            console.error('Impossibile connettersi al server per aggiungere al diario.', error);
-            mostraNotifica('Impossibile aggiungere la voce al diario.', 'error');
+            console.error('Errore nell\'aggiunta della voce al diario in Firestore:', error);
+            mostraNotifica('Errore nell\'aggiunta della voce al diario.', 'error');
         }
     }
 
@@ -271,33 +276,24 @@ document.addEventListener('DOMContentLoaded', () => {
     recuperaSedi();
     caricaEventiAttivi();
 
-    // --- Logica per il Dispatcher (Notifiche Real-time - Concettuale) ---
-    // Per implementare un vero dispatcher real-time, avresti bisogno di:
-    // 1. Una tecnologia real-time come WebSockets (Socket.IO, WebSocket API).
-    // 2. Un sistema lato server che gestisce le connessioni e invia notifiche
-    //    agli operatori/volontari interessati.
-    //
-    // Ecco un esempio concettuale di come potresti gestire l'invio di un'allerta:
+    // --- Logica per il Dispatcher (Notifiche Real-time - Concettuale con Firestore) ---
+    // Potresti "allertare" aggiornando un campo nell'oggetto evento su Firestore.
+    // Un listener onSnapshot sui dettagli dell'evento o su una collezione separata
+    // di "allarmi" potrebbe notificare gli utenti interessati in tempo reale.
+
     async function allertaSquadra(eventoId, squadraId) {
         try {
-            const response = await fetch(`/api/emergenze/${eventoId}/allerta`, { // Endpoint API per l'allerta
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ squadra_id: squadraId }),
+            const eventoDocRef = doc(db, 'emergenze', eventoId);
+            await updateDoc(eventoDocRef, {
+                squadra_allertata_id: squadraId,
+                // Potresti aggiungere un timestamp di allerta, uno stato dell'allerta, ecc.
             });
-
-            if (response.ok) {
-                mostraNotifica(`Squadra ${squadraId} allertata per l'evento ${eventoId}.`, 'success');
-                // Qui dovresti anche inviare una notifica real-time agli utenti (tramite WebSockets, ecc.)
-            } else {
-                console.error('Errore nell\'invio dell\'allerta.', response.status);
-                mostraNotifica('Errore nell\'invio dell\'allerta.', 'error');
-            }
+            mostraNotifica(`Squadra ${squadraId} allertata per l'evento ${eventoId}.`, 'success');
+            // Qui, un altro listener Firestore lato client (per i volontari/squadre)
+            // potrebbe reagire a questo aggiornamento.
         } catch (error) {
-            console.error('Impossibile connettersi al server per l\'allerta.', error);
-            mostraNotifica('Impossibile inviare l\'allerta.', 'error');
+            console.error('Errore nell\'invio dell\'allerta a Firestore:', error);
+            mostraNotifica('Errore nell\'invio dell\'allerta.', 'error');
         }
     }
 
