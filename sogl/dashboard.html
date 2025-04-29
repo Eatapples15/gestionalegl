@@ -6,26 +6,121 @@
     <title>Dashboard Gestionale</title>
     <link rel="stylesheet" href="../../css/style_generale.css">
     <style>
-        .container {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
             display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        header nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        header nav ul li {
+            margin-left: 20px;
+        }
+
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        header nav ul li a:hover,
+        header nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        main.container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             padding: 20px;
+            flex-grow: 1;
         }
+
         .card {
-            border: 1px solid #ccc;
-            padding: 15px;
-            border-radius: 5px;
-            width: 200px;
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
             text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
-        .eventi {
-            border: 1px solid #ccc;
-            padding: 15px;
-            border-radius: 5px;
-            width: 300px;
-        }
-        .eventi p {
+
+        .card h2 {
+            color: #007bff;
+            margin-top: 0;
             margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .card p {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 0;
+        }
+
+        .eventi {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .eventi h2 {
+            color: #28a745; /* Verde per gli eventi */
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+            font-size: 1.5em;
+            text-align: left;
+        }
+
+        .eventi p {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .eventi p span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.9em;
         }
     </style>
 </head>
@@ -34,7 +129,7 @@
         <h1>Portale Protezione Civile</h1>
         <nav>
             <ul>
-                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
                 <li><a href="../sala_operativa/index.html">Sala Operativa</a></li>
             </ul>
         </nav>
