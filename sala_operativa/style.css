@@ -1,0 +1,91 @@
+/* Stili specifici per la pagina della sala operativa */
+#nuova-emergenza {
+    padding: 20px;
+    border: 1px solid #eee;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+#nuova-emergenza h2 {
+    margin-top: 0;
+}
+
+#form-nuova-emergenza div {
+    margin-bottom: 10px;
+}
+
+#form-nuova-emergenza label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#form-nuova-emergenza input[type="text"],
+#form-nuova-emergenza textarea,
+#form-nuova-emergenza select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+#form-nuova-emergenza button[type="submit"] {
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+#form-nuova-emergenza button[type="submit"]:hover {
+    background-color: #4cae4c;
+}
+
+#eventi-attivi {
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+#eventi-attivi h2 {
+    margin-top: 0;
+}
+
+#lista-eventi-attivi {
+    list-style: none;
+    padding: 0;
+}
+
+#lista-eventi-attivi li {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#lista-eventi-attivi li span {
+    font-weight: bold;
+}
+
+#lista-eventi-attivi li button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+#lista-eventi-attivi li button:hover {
+    background-color: #0056b3;
+}
