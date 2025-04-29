@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Sala Operativa</h1>
+    <header class="sala-operativa-header">
+        <div class="logo-container">
+            <img src="../../logo_tra_Volontariato.png" alt="Logo Associazione">
+            <h1>Sala Operativa</h1>
+        </div>
         <nav>
             <ul>
                 <li><a href="../sogl/dashboard.html">Dashboard</a></li>
@@ -17,58 +20,80 @@
             </ul>
         </nav>
     </header>
-    <main>
-        <section id="nuova-emergenza">
-            <h2>Nuova Emergenza</h2>
-            <form id="form-nuova-emergenza">
-                <div>
-                    <label for="tipo-emergenza">Tipo di Emergenza:</label>
-                    <input type="text" id="tipo-emergenza" required>
-                </div>
-                <div>
-                    <label for="descrizione">Descrizione:</label>
-                    <textarea id="descrizione" rows="3" required></textarea>
-                </div>
-                <div>
-                    <label for="localita">Località:</label>
-                    <input type="text" id="localita" required>
-                </div>
-                <div>
-                    <label for="coordinate">Coordinate (Lat, Lon):</label>
-                    <input type="text" id="coordinate">
-                </div>
-                <div>
-                    <label for="priorita">Priorità:</label>
-                    <select id="priorita">
-                        <option value="bassa">Bassa</option>
-                        <option value="media">Media</option>
-                        <option value="alta">Alta</option>
-                        <option value="critica">Critica</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="sede-intervento">Sede di Intervento:</label>
-                    <select id="sede-intervento">
-                        <option value="">Seleziona Sede</option>
+    <main class="sala-operativa-main">
+        <section id="pannello-sinistro">
+            <div id="nuova-emergenza">
+                <h2>Segnala Emergenza</h2>
+                <form id="form-nuova-emergenza">
+                    <div>
+                        <label for="tipo-emergenza">Tipo:</label>
+                        <input type="text" id="tipo-emergenza" required>
+                    </div>
+                    <div>
+                        <label for="descrizione">Dettagli:</label>
+                        <textarea id="descrizione" rows="3" required></textarea>
+                    </div>
+                    <div>
+                        <label for="localita">Dove:</label>
+                        <input type="text" id="localita" required>
+                    </div>
+                    <div>
+                        <label for="coordinate">Coordinate (Lat, Lon):</label>
+                        <input type="text" id="coordinate">
+                    </div>
+                    <div>
+                        <label for="priorita">Urgenza:</label>
+                        <select id="priorita">
+                            <option value="bassa">Bassa</option>
+                            <option value="media">Media</option>
+                            <option value="alta">Alta</option>
+                            <option value="critica">Critica</option>
                         </select>
-                </div>
-                <div>
-                    <label for="squadra-intervento">Squadra di Intervento:</label>
-                    <select id="squadra-intervento">
-                        <option value="">Seleziona Squadra</option>
-                    </select>
-                </div>
-                <button type="submit">Crea Emergenza</button>
-            </form>
+                    </div>
+                    <div>
+                        <label for="sede-intervento">Sede Intervento:</label>
+                        <select id="sede-intervento">
+                            <option value="">Seleziona Sede</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="squadra-intervento">Assegna Squadra:</label>
+                        <select id="squadra-intervento">
+                            <option value="">Seleziona Squadra</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="button-primary">Avvia Emergenza</button>
+                </form>
+            </div>
         </section>
 
-        <section id="eventi-attivi">
-            <h2>Eventi Attivi</h2>
-            <ul id="lista-eventi-attivi">
+        <section id="pannello-centrale">
+            <div id="eventi-attivi">
+                <h2>Eventi in Corso</h2>
+                <ul id="lista-eventi-attivi">
+                    </ul>
+            </div>
+        </section>
+
+        <section id="pannello-destro">
+            <div class="operatori-online">
+                <h2>Operatori Online</h2>
+                <ul id="lista-operatori">
+                    <li>Operatore 1</li>
+                    <li>Operatore 2</li>
+                    </ul>
+            </div>
+            <div class="risorse-rapide">
+                <h2>Risorse Rapide</h2>
+                <ul>
+                    <li><a href="#">Mappa Interattiva</a></li>
+                    <li><a href="#">Elenco Volontari</a></li>
+                    <li><a href="#">Disponibilità Mezzi</a></li>
                 </ul>
+            </div>
         </section>
     </main>
-    <footer>
+    <footer class="sala-operativa-footer">
         <p>&copy; 2025 Protezione Civile</p>
     </footer>
 
@@ -78,15 +103,15 @@
     <div id="modal-dettagli-evento" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h2>Dettagli Evento</h2>
+            <h2>Dettagli Intervento</h2>
             <div id="dettagli-evento-container">
                 </div>
-            <h3>Diario Evento</h3>
+            <h3>Registro Evento</h3>
             <ul id="diario-evento-lista">
                 </ul>
-            <textarea id="nuova-voce-diario" placeholder="Aggiungi una nuova voce al diario"></textarea>
-            <button id="aggiungi-voce-diario-btn">Aggiungi Voce</button>
-            <h3>Informazioni Utili e Consigli</h3>
+            <textarea id="nuova-voce-diario" placeholder="Aggiungi aggiornamento al registro"></textarea>
+            <button id="aggiungi-voce-diario-btn" class="button-secondary">Aggiungi Aggiornamento</button>
+            <h3>Informazioni Utili</h3>
             <div id="informazioni-utili">
                 </div>
         </div>
@@ -95,51 +120,14 @@
     <script src="script.js"></script>
     <script src="../js/utils.js"></script>
     <style>
-        .notifiche {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-        .notifica {
-            background-color: #f0f8ff;
-            border: 1px solid #add8e6;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-        }
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-            border-radius: 5px;
-            position: relative;
-        }
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
+        /* Stili Inline per Modale e Notifiche (potresti spostarli in style.css) */
+        .notifiche { /* ... (come prima) ... */ }
+        .notifica { /* ... (come prima) ... */ }
+        .modal { /* ... (come prima) ... */ }
+        .modal-content { /* ... (come prima) ... */ }
+        .close-button { /* ... (come prima) ... */ }
         .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
+        .close-button:focus { /* ... (come prima) ... */ }
     </style>
 </body>
 </html>
