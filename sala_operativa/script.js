@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chiudiModalBtn = modalDettagliEvento.querySelector('.close-button');
     const sedeInterventoSelect = document.getElementById('sede-intervento');
     const squadraInterventoSelect = document.getElementById('squadra-intervento');
+    const listaVolontari = document.getElementById('lista-volontari'); // Aggiunto
+    const listaMezzi = document.getElementById('lista-mezzi'); // Aggiunto
 
     let eventiAttivi = [];
     let eventoSelezionato = null;
@@ -143,9 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function caricaEventiAttivi() {
         const emergenzeCollection = collection(db, 'emergenze');
         // Query per ottenere solo gli eventi con stato 'attivo'
-        const q = query(emergenzeCollection, where("stato", "==", "attivo"));
+        //const q = query(emergenzeCollection, where("stato", "==", "attivo"));
 
-        onSnapshot(q, (snapshot) => {
+        onSnapshot(emergenzeCollection, (snapshot) => { //q, (snapshot) => {
             eventiAttivi = [];
             snapshot.forEach((doc) => {
                 eventiAttivi.push({ id: doc.id, ...doc.data() });
@@ -272,10 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Inizializzazione: carica le sedi e gli eventi attivi all'avvio
-    recuperaSedi();
-    caricaEventiAttivi();
-
     // --- Logica per il Dispatcher (Notifiche Real-time - Concettuale con Firestore) ---
     // Potresti "allertare" aggiornando un campo nell'oggetto evento su Firestore.
     // Un listener onSnapshot sui dettagli dell'evento o su una collezione separata
@@ -301,4 +299,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // per "Allertare Squadra" e collegarlo a questa funzione, passando
     // l'ID dell'evento e l'ID della squadra selezionata.
 
+    // Funzioni per recuperare e visualizzare volontari e mezzi
+    async function recuperaVolontari() {
+        try {
+            const volontariCollection = collection(db, 'volontari');
+            const volontariSnapshot = await getDocs(volontariCollection);
+            listaVolontari.innerHTML = '';
+            volontariSnapshot.forEach(doc => {
+                const volontarioData = doc.data();
+                const listItem = document.createElement('li');
+                listItem.textContent = volontarioData.nome + ' ' + volontarioData.cognome; // Assumi che ci siano campi nome e cognome
+                listaVolontari.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error('Errore nel recupero dei volontari da Firestore:', error);
+            mostraNotifica('Errore nel caricamento dei volontari.', 'error');
+        }
+    }
+
+    async function recuperaMezzi() {
+        try {
+            const mezziCollection = collection(db, 'mezzi');
+            const mezziSnapshot = await getDocs(mezziCollection);
+            listaMezzi.innerHTML = '';
+            mezziSnapshot.forEach(doc => {
+                const mezzoData = doc.data();
+                const listItem = document.createElement('li');
+                listItem.textContent = mezzoData.tipo + ' - ' + mezzoData.targa; // Assumi che ci siano campi tipo e targa
+                listaMezzi.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error('Errore nel recupero dei mezzi da Firestore:', error);
+            mostraNotifica('Errore nel caricamento dei mezzi.', 'error');
+        }
+    }
+
+    // Inizializzazione: carica le sedi, gli eventi attivi, i volontari e i mezzi all'avvio
+    recuperaSedi();
+    caricaEventiAttivi();
+    recuperaVolontari(); // Carica i volontari
+    recuperaMezzi(); // Carica i mezzi
 });
